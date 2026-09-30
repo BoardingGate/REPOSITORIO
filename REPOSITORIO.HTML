@@ -243,9 +243,22 @@ Por ejemplo:
           <label class="block font-semibold mb-1">URL de tu Google Apps Script:</label>
           <div class="flex gap-2">
             <input id="input-drive-url" type="url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="flex-1 px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
-            <button id="btn-test-drive" class="px-3 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 rounded-lg font-semibold shrink-0">Probar</button>
+            <button id="btn-test-drive" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shrink-0">🔍 Probar Guardado Real</button>
           </div>
-          <p id="drive-test-msg" class="text-[11px] mt-1 font-medium hidden"></p>
+          <div id="drive-test-msg" class="text-[11px] mt-1.5 font-medium hidden p-2 rounded-lg"></div>
+        </div>
+
+        <!-- Guía de problemas comunes -->
+        <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-xs space-y-1.5">
+          <p class="font-bold text-amber-900 dark:text-amber-200">
+            ⚠️ ¿Por qué al pulsar guardar no ves el fichero en Google Drive?
+          </p>
+          <ul class="space-y-1 text-zinc-700 dark:text-zinc-300 text-[11px] list-disc pl-4 leading-relaxed">
+            <li><strong>Cuenta de Google diferente:</strong> El fichero se guarda en la cuenta de Google con la que creaste el Apps Script. Si tienes varias cuentas abiertas, comprueba en la cuenta propietaria.</li>
+            <li><strong>Reutilizar script de Bolsa o Bancos:</strong> Los scripts de Bolsa o Bancos suelen guardar en una Hoja de Cálculo (Google Sheets) o esperan otro formato. Para este documento crea un proyecto nuevo con el código de abajo.</li>
+            <li><strong>Falta autorizar permisos:</strong> En script.google.com, Google pide pulsar "Revisar permisos" y "Permitir" para que el script pueda acceder a Drive.</li>
+            <li><strong>Si editaste el código:</strong> Recuerda ir a <em>Implementar &gt; Administrar implementaciones &gt; Editar &gt; Versión: "Nueva versión" &gt; Implementar</em>.</li>
+          </ul>
         </div>
 
         <div class="border-t pt-3 dark:border-zinc-800">
@@ -579,20 +592,44 @@ Por ejemplo:
       const url = inputDriveUrl.value.trim();
       const msg = document.getElementById('drive-test-msg');
       if (!url) return;
-      msg.textContent = 'Probando conexión...';
-      msg.className = 'text-[11px] mt-1 font-medium text-blue-500 block';
+      msg.innerHTML = '<span class="text-blue-500">Probando guardado real en Google Drive...</span>';
+      msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900';
       try {
-        const res = await fetch(url + '?test=1');
-        if (res.ok) {
-          msg.textContent = '¡Conexión verificada con éxito!';
-          msg.className = 'text-[11px] mt-1 font-medium text-emerald-600 block';
+        const payload = {
+          action: 'save',
+          filename: 'Tesla_Grok_Test_Conexion.txt',
+          content: 'Prueba de conexión con Google Drive realizada el ' + new Date().toLocaleString()
+        };
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch(e) {
+          throw new Error('Respuesta no válida de Google Apps Script: ' + text.slice(0, 100));
+        }
+
+        if (data.status === 'success') {
+          let html = '<p class="text-emerald-700 dark:text-emerald-300 font-bold">¡Prueba guardada con éxito en Google Drive!</p>';
+          if (data.ownerEmail) {
+            html += '<p class="text-zinc-600 dark:text-zinc-300">📧 Guardado en la cuenta de: <strong>' + data.ownerEmail + '</strong></p>';
+          }
+          if (data.url) {
+            html += '<p class="mt-1"><a href="' + data.url + '" target="_blank" class="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 font-bold underline">Abrir archivo de prueba en Google Drive ↗</a></p>';
+          }
+          msg.innerHTML = html;
+          msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800';
         } else {
-          msg.textContent = 'Error al responder. Asegúrate de dar acceso "Cualquier usuario".';
-          msg.className = 'text-[11px] mt-1 font-medium text-amber-600 block';
+          msg.innerHTML = '<p class="text-red-700 dark:text-red-300 font-bold">Error devuelto por Google Apps Script:</p><p class="font-mono text-[10px]">' + (data.message || 'Error desconocido') + '</p>';
+          msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800';
         }
       } catch (err) {
-        msg.textContent = 'No se pudo contactar con la URL. Revisa que sea correcta.';
-        msg.className = 'text-[11px] mt-1 font-medium text-red-500 block';
+        msg.innerHTML = '<p class="text-red-700 dark:text-red-300 font-bold">Error de conexión:</p><p class="font-mono text-[10px]">' + (err.message || String(err)) + '</p>';
+        msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800';
       }
     };
 
@@ -603,30 +640,70 @@ Por ejemplo:
 
     const APPS_SCRIPT_CODE = `function doPost(e) {
   try {
-    var data = JSON.parse(e.postData.contents);
-    var fileName = data.filename || "Tesla_Grok_Knowledge_Base.txt";
-    var content = data.content || "";
-    var files = DriveApp.getFilesByName(fileName);
-    var file;
-    if (files.hasNext()) {
-      file = files.next();
+    var fileName = "Tesla_Grok_Knowledge_Base.txt";
+    var content = "";
+    if (e && e.postData && e.postData.contents) {
+      try {
+        var parsed = JSON.parse(e.postData.contents);
+        if (parsed.filename) fileName = parsed.filename;
+        if (parsed.content !== undefined) content = parsed.content;
+      } catch (err) {
+        content = e.postData.contents;
+      }
+    }
+    if (!content && e && e.parameter) {
+      if (e.parameter.filename) fileName = e.parameter.filename;
+      if (e.parameter.content !== undefined) content = e.parameter.content;
+    }
+    var files = DriveApp.getRootFolder().getFilesByName(fileName);
+    var file = null;
+    while (files.hasNext()) {
+      var candidate = files.next();
+      if (!candidate.isTrashed()) { file = candidate; break; }
+    }
+    if (file) {
       file.setContent(content);
     } else {
-      file = DriveApp.createFile(fileName, content, MimeType.PLAIN_TEXT);
+      file = DriveApp.getRootFolder().createFile(fileName, content, MimeType.PLAIN_TEXT);
     }
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", id: file.getId(), url: file.getUrl() })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      id: file.getId(),
+      url: file.getUrl(),
+      fileName: file.getName(),
+      ownerEmail: Session.getActiveUser().getEmail() || Session.getEffectiveUser().getEmail()
+    })).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
   }
 }
 function doGet(e) {
   try {
-    var fileName = e.parameter.filename || "Tesla_Grok_Knowledge_Base.txt";
-    var files = DriveApp.getFilesByName(fileName);
-    if (files.hasNext()) {
-      return ContentService.createTextOutput(JSON.stringify({ status: "success", content: files.next().getBlob().getDataAsString() })).setMimeType(ContentService.MimeType.JSON);
+    if (e && e.parameter && e.parameter.test) {
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Conexión OK", ownerEmail: Session.getActiveUser().getEmail() || Session.getEffectiveUser().getEmail() })).setMimeType(ContentService.MimeType.JSON);
     }
-    return ContentService.createTextOutput(JSON.stringify({ status: "not_found", content: "" })).setMimeType(ContentService.MimeType.JSON);
+    var fileName = (e && e.parameter && e.parameter.filename) || "Tesla_Grok_Knowledge_Base.txt";
+    if (e && e.parameter && e.parameter.action === "save" && e.parameter.content !== undefined) {
+      var content = e.parameter.content;
+      var files = DriveApp.getRootFolder().getFilesByName(fileName);
+      var file = null;
+      while (files.hasNext()) {
+        var candidate = files.next();
+        if (!candidate.isTrashed()) { file = candidate; break; }
+      }
+      if (file) { file.setContent(content); } else { file = DriveApp.getRootFolder().createFile(fileName, content, MimeType.PLAIN_TEXT); }
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", id: file.getId(), url: file.getUrl(), fileName: file.getName() })).setMimeType(ContentService.MimeType.JSON);
+    }
+    var files = DriveApp.getRootFolder().getFilesByName(fileName);
+    var target = null;
+    while (files.hasNext()) {
+      var f = files.next();
+      if (!f.isTrashed()) { target = f; break; }
+    }
+    if (target) {
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", content: target.getBlob().getDataAsString(), url: target.getUrl(), fileName: target.getName() })).setMimeType(ContentService.MimeType.JSON);
+    }
+    return ContentService.createTextOutput(JSON.stringify({ status: "not_found", content: "", message: "Archivo no encontrado" })).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
   }
