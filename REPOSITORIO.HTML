@@ -98,11 +98,28 @@
   </header>
 
   <!-- SUB-BARRA DE HERRAMIENTAS -->
-  <div class="border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/40 text-xs py-1.5 px-4 transition-colors">
-    <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <span>Archivo: <input id="doc-title" type="text" value="Tesla_Grok_Knowledge_Base.txt" class="font-medium bg-transparent border-b border-dashed border-zinc-300 dark:border-zinc-700 hover:border-blue-500 focus:border-blue-500 focus:outline-hidden text-zinc-800 dark:text-zinc-200 px-1" /></span>
-        <a id="drive-link" href="#" target="_blank" class="hidden text-blue-600 dark:text-blue-400 hover:underline">Abrir en Google Drive ↗</a>
+  <div class="border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/40 text-xs py-2 px-4 transition-colors">
+    <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <div class="flex items-center gap-1.5">
+          <span class="font-semibold text-zinc-600 dark:text-zinc-400">📄 Archivo:</span>
+          <input id="doc-title" type="text" value="Tesla_Grok_Knowledge_Base.txt" class="font-mono text-xs font-semibold px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 focus:outline-hidden focus:ring-2 focus:ring-blue-500 w-60 sm:w-64" title="Nombre del archivo en tu Google Drive" />
+        </div>
+
+        <span class="text-zinc-300 dark:text-zinc-700 hidden sm:inline">|</span>
+
+        <div class="inline-flex items-center gap-1 text-[11px] text-zinc-600 dark:text-zinc-400 bg-zinc-200/60 dark:bg-zinc-800 px-2 py-1 rounded-lg font-medium">
+          <span>📁 Ubicación:</span>
+          <strong class="text-zinc-800 dark:text-zinc-200">Google Drive &gt; Mi unidad</strong>
+        </div>
+
+        <a id="drive-link" href="#" target="_blank" class="hidden items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors" title="Abrir este archivo directamente en Google Drive para verificarlo">
+          <span>Abrir en Google Drive ↗</span>
+        </a>
+
+        <a id="btn-search-drive" href="https://drive.google.com/drive/u/0/search?q=Tesla_Grok_Knowledge_Base.txt" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/60 border border-blue-200 dark:border-blue-900/60 font-medium text-xs transition-colors" title="Buscar en Google Drive">
+          <span>Buscar en Drive 🔍</span>
+        </a>
       </div>
 
       <div class="flex items-center gap-2">
@@ -202,6 +219,24 @@ Por ejemplo:
         <div class="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-blue-950 dark:text-blue-200 space-y-1">
           <p class="font-bold">Método de guardado permanente para Tesla (estilo BoardingGate / Bolsa)</p>
           <p>Usa una URL de Google Apps Script Web App. Guarda y carga automáticamente desde tu Google Drive en el Tesla sin pedir inicios de sesión ni borrarse al vaciar la caché.</p>
+        </div>
+
+        <!-- Dónde se guarda y cómo comprobarlo -->
+        <div class="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 text-xs space-y-2">
+          <p class="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+            <span>📁</span> Ubicación y nombre del archivo en tu Google Drive:
+          </p>
+          <ul class="space-y-1 text-zinc-600 dark:text-zinc-300 pl-4 list-disc">
+            <li>
+              <strong>Carpeta de destino:</strong> En la carpeta raíz de tu Google Drive: <strong>"Mi unidad"</strong>.
+            </li>
+            <li>
+              <strong>Nombre del archivo:</strong> El nombre indicado en la barra (por defecto: <code class="bg-zinc-200 dark:bg-zinc-700 px-1 py-0.5 rounded font-mono text-[11px]">Tesla_Grok_Knowledge_Base.txt</code>).
+            </li>
+            <li>
+              <strong>Comprobación inmediata:</strong> Tras pulsar "Guardar", haz clic en el botón azul <strong>"Abrir en Google Drive ↗"</strong> de la barra superior o en el aviso verde para ver el archivo creado con tus datos.
+            </li>
+          </ul>
         </div>
 
         <div>
@@ -365,16 +400,29 @@ Por ejemplo:
     const savedTitle = localStorage.getItem(TITLE_KEY) || 'Tesla_Grok_Knowledge_Base.txt';
     docTitle.value = savedTitle;
 
-    function showToast(msg, type = 'info') {
+    const storedDriveUrl = localStorage.getItem('tesla_drive_file_url');
+    if (storedDriveUrl) {
+      const link = document.getElementById('drive-link');
+      link.href = storedDriveUrl;
+      link.classList.remove('hidden');
+      link.classList.add('inline-flex');
+    }
+
+    function showToast(msg, type = 'info', linkUrl = null, linkText = 'Abrir archivo en Google Drive ↗') {
       const toast = document.getElementById('toast');
       const toastMsg = document.getElementById('toast-message');
-      toastMsg.textContent = msg;
-      toast.className = 'fixed top-4 right-4 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl text-sm font-medium border ' + (
-        type === 'success' ? 'bg-emerald-50 text-emerald-900 border-emerald-200' :
-        type === 'error' ? 'bg-red-50 text-red-900 border-red-200' :
-        'bg-blue-50 text-blue-900 border-blue-200'
+      if (linkUrl) {
+        toastMsg.innerHTML = `<div class="flex flex-col sm:flex-row sm:items-center gap-2"><span>${msg}</span><a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition-colors shrink-0">${linkText}</a></div>`;
+      } else {
+        toastMsg.textContent = msg;
+      }
+      toast.className = 'fixed top-4 right-4 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl text-sm font-medium border max-w-lg ' + (
+        type === 'success' ? 'bg-emerald-50 text-emerald-950 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-200 dark:border-emerald-800' :
+        type === 'error' ? 'bg-red-50 text-red-900 border-red-300 dark:bg-red-950 dark:text-red-200 dark:border-red-800' :
+        'bg-blue-50 text-blue-900 border-blue-300 dark:bg-blue-950 dark:text-blue-200 dark:border-blue-800'
       );
-      setTimeout(() => toast.classList.add('hidden'), 3500);
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 8000);
     }
 
     function updateStats() {
@@ -392,7 +440,12 @@ Por ejemplo:
     updateStats();
 
     docTitle.addEventListener('input', () => {
+      const title = docTitle.value.trim() || 'Tesla_Grok_Knowledge_Base.txt';
       localStorage.setItem(TITLE_KEY, docTitle.value);
+      const searchBtn = document.getElementById('btn-search-drive');
+      if (searchBtn) {
+        searchBtn.href = 'https://drive.google.com/drive/u/0/search?q=' + encodeURIComponent(title);
+      }
     });
 
     // CARGA AUTOMÁTICA DESDE GOOGLE DRIVE AL ABRIR EN EL TESLA
@@ -400,7 +453,8 @@ Por ejemplo:
       if (!driveScriptUrl) return;
       syncStatus.textContent = 'Sincronizando con Google Drive...';
       try {
-        const url = driveScriptUrl + '?filename=' + encodeURIComponent(docTitle.value.trim() || 'Tesla_Grok_Knowledge_Base.txt');
+        const fileName = docTitle.value.trim() || 'Tesla_Grok_Knowledge_Base.txt';
+        const url = driveScriptUrl + '?filename=' + encodeURIComponent(fileName);
         const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
@@ -408,12 +462,15 @@ Por ejemplo:
             editor.value = data.content;
             updateStats();
             syncStatus.textContent = 'Sincronizado con Google Drive (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
-            showToast('Documento cargado desde Google Drive.', 'success');
+            const fileUrl = data.url || localStorage.getItem('tesla_drive_file_url');
             if (data.url) {
+              localStorage.setItem('tesla_drive_file_url', data.url);
               const link = document.getElementById('drive-link');
               link.href = data.url;
               link.classList.remove('hidden');
+              link.classList.add('inline-flex');
             }
+            showToast('Documento cargado desde Google Drive.', 'success', fileUrl);
           }
         }
       } catch (err) {
@@ -438,9 +495,10 @@ Por ejemplo:
       const btnText = document.getElementById('btn-save-text');
       btnText.textContent = 'Guardando en Drive...';
       try {
+        const fileName = docTitle.value.trim() || 'Tesla_Grok_Knowledge_Base.txt';
         const payload = {
           action: 'save',
-          filename: docTitle.value.trim() || 'Tesla_Grok_Knowledge_Base.txt',
+          filename: fileName,
           content: editor.value
         };
         const res = await fetch(driveScriptUrl, {
@@ -452,12 +510,20 @@ Por ejemplo:
           const data = await res.json();
           const now = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
           syncStatus.textContent = 'Sincronizado en Drive a las ' + now;
-          showToast('¡Guardado con éxito en Google Drive a las ' + now + '!', 'success');
+          const directUrl = data.url || localStorage.getItem('tesla_drive_file_url');
           if (data.url) {
+            localStorage.setItem('tesla_drive_file_url', data.url);
             const link = document.getElementById('drive-link');
             link.href = data.url;
             link.classList.remove('hidden');
+            link.classList.add('inline-flex');
           }
+          showToast(
+            '¡Guardado con éxito! Archivo "' + fileName + '" en tu carpeta "Mi unidad" de Google Drive.',
+            'success',
+            directUrl,
+            'Abrir archivo en Google Drive ↗'
+          );
         } else {
           showToast('Error en la respuesta de Google Drive.', 'error');
         }
