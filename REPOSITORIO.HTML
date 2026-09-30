@@ -1,1 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documento de Datos Tesla & Grok — Hoja de Notas</title>
+  <meta name="description" content="Editor estilo hoja de Word para registrar información y guardarla en Google Drive para consultas con Grok en Tesla." />
+  
+  <!-- Tailwind CSS CDN for self-contained single file -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+            serif: ['Georgia', 'Cambria', '"Times New Roman"', 'serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
 
+  <!-- Google Identity Services for Google Drive integration -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    /* Word Sheet Elevation & Realistic Page Styling */
+    .word-sheet {
+      box-shadow: 0 4px 25px -4px rgba(0, 0, 0, 0.12), 0 2px 10px -3px rgba(0, 0, 0, 0.08);
+      min-height: 850px;
+    }
+    .dark .word-sheet {
+      box-shadow: 0 4px 30px -4px rgba(0, 0, 0, 0.6);
+    }
+    textarea:focus {
+      outline: none;
+    }
+  </style>
+</head>
+<body class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed top-4 right-4 z-50 hidden items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl text-sm font-medium border transition-all duration-200">
+    <span id="toast-icon"></span>
+    <span id="toast-message"></span>
+  </div>
+
+  <!-- HEADER BAR -->
+  <header class="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/90 border-b border-zinc-200 dark:border-zinc-800 backdrop-blur-md shadow-xs transition-colors">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Title & Branding -->
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/30">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Hoja de Datos Tesla & Grok</h1>
+            <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">Google Drive</span>
+          </div>
+          <p id="sync-status" class="text-[11px] text-zinc-500 dark:text-zinc-400">Listo para escribir · Guardado automático local activo</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center flex-wrap gap-2">
+        <!-- SAVE BUTTON (Google Drive) -->
+        <button id="btn-save" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl shadow-sm transition-all" title="Guardar en Google Drive (Ctrl+S)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+          <span id="btn-save-text">Guardar en Google Drive</span>
+        </button>
+
+        <!-- CLEAR BUTTON (Triple Confirmation) -->
+        <button id="btn-clear" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-xl transition-all" title="Vaciar hoja (con triple confirmación)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          <span>Limpiar datos</span>
+        </button>
+
+        <!-- TESLA & GROK BUTTON -->
+        <button id="btn-grok" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl transition-all">
+          <span class="text-red-500">⚡</span>
+          <span>Uso en Tesla / Grok</span>
+        </button>
+
+        <!-- TESLA NIGHT MODE TOGGLE -->
+        <button id="btn-theme" class="px-2.5 py-2 rounded-xl text-xs font-medium border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 transition-colors">
+          <span id="theme-icon">🌙</span> <span id="theme-text">Modo Tesla</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SUB-BAR / UTILITY -->
+  <div class="border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/40 text-xs py-1.5 px-4 transition-colors">
+    <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span>Archivo: <input id="doc-title" type="text" value="Tesla_Grok_Knowledge_Base.txt" class="font-medium bg-transparent border-b border-dashed border-zinc-300 dark:border-zinc-700 hover:border-blue-500 focus:border-blue-500 focus:outline-hidden text-zinc-800 dark:text-zinc-200 px-1" /></span>
+        <a id="drive-link" href="#" target="_blank" class="hidden text-blue-600 dark:text-blue-400 hover:underline">Abrir en Google Drive ↗</a>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="btn-template" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Cargar ejemplo para Tesla</button>
+        <span class="text-zinc-300 dark:text-zinc-700">|</span>
+        <button id="btn-copy-all" class="hover:text-zinc-700 dark:hover:text-zinc-200 px-2 py-0.5 rounded hover:bg-zinc-200/60 dark:hover:bg-zinc-800">Copiar todo</button>
+        <button id="btn-download-txt" class="hover:text-zinc-700 dark:hover:text-zinc-200 px-2 py-0.5 rounded hover:bg-zinc-200/60 dark:hover:bg-zinc-800">Descargar .txt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN WORD SHEET CONTAINER -->
+  <main class="flex-1 flex flex-col pt-4 px-3 sm:px-6 pb-8">
+    
+    <!-- Controls Bar above the sheet -->
+    <div class="w-full max-w-4xl mx-auto mb-3 flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-white/90 dark:bg-zinc-900/90 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
+      <div class="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+        <span>Formato: <strong>Hoja de Documento A4</strong></span>
+      </div>
+
+      <!-- Typography & Size controls -->
+      <div class="flex items-center gap-2">
+        <!-- Font family -->
+        <div class="inline-flex rounded-lg border border-zinc-200 dark:border-zinc-800 p-0.5 bg-zinc-50 dark:bg-zinc-800 text-xs">
+          <button id="font-sans" class="px-2 py-1 rounded bg-white dark:bg-zinc-700 font-semibold text-zinc-900 dark:text-zinc-100 shadow-xs">Sans</button>
+          <button id="font-serif" class="px-2 py-1 rounded text-zinc-500 hover:text-zinc-900 font-serif">Serif</button>
+          <button id="font-mono" class="px-2 py-1 rounded text-zinc-500 hover:text-zinc-900 font-mono">Mono</button>
+        </div>
+
+        <!-- Font size -->
+        <div class="inline-flex rounded-lg border border-zinc-200 dark:border-zinc-800 p-0.5 bg-zinc-50 dark:bg-zinc-800 text-xs">
+          <button id="size-sm" class="px-2 py-1 rounded text-zinc-500">A-</button>
+          <button id="size-base" class="px-2 py-1 rounded bg-white dark:bg-zinc-700 font-semibold text-zinc-900 dark:text-zinc-100 shadow-xs">A</button>
+          <button id="size-lg" class="px-2 py-1 rounded text-zinc-500">A+</button>
+          <button id="size-xl" class="px-2 py-1 rounded text-zinc-500">A++</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- THE WORD SHEET CANVAS -->
+    <div class="flex-1 flex justify-center w-full">
+      <div class="word-sheet w-full max-w-4xl bg-white dark:bg-zinc-900 rounded-sm border border-zinc-200 dark:border-zinc-800 flex flex-col transition-colors">
+        
+        <!-- Word Header / Ruler -->
+        <div class="flex items-center justify-between px-8 py-3 select-none text-[11px] font-mono tracking-wider border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900 text-zinc-400">
+          <div class="flex items-center gap-3">
+            <span class="font-sans font-semibold text-zinc-500 dark:text-zinc-400">HOJA DE NOTAS · PÁGINA 1</span>
+            <span class="hidden sm:inline">|</span>
+            <span class="hidden sm:inline">Márgenes 2.5 cm</span>
+          </div>
+          <div id="read-time" class="text-zinc-400">~1 min de lectura</div>
+        </div>
+
+        <!-- Editable Area -->
+        <div class="flex-1 p-6 sm:p-12 md:p-16 flex flex-col">
+          <textarea
+            id="editor"
+            class="w-full flex-1 resize-none bg-transparent outline-none border-none p-0 leading-relaxed placeholder:text-zinc-300 dark:placeholder:text-zinc-600 text-base min-h-[600px] sm:min-h-[750px]"
+            placeholder="Escribe aquí cualquier información que desees guardar...
+
+Por ejemplo:
+- Datos del coche, presiones de neumáticos, seguro y asistencias
+- Códigos de acceso de garajes, portales, alarmas y claves Wi-Fi
+- Puntos de recarga frecuentes o direcciones clave de viaje
+- Notas para que Grok en tu Tesla busque y te responda al momento al preguntarle"
+          ></textarea>
+        </div>
+
+        <!-- Word Bottom Status Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-2 px-6 sm:px-8 py-2.5 text-xs select-none border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400">
+          <div class="flex items-center gap-4">
+            <span><strong id="stat-words" class="text-zinc-800 dark:text-zinc-200">0</strong> palabras</span>
+            <span><strong id="stat-chars" class="text-zinc-800 dark:text-zinc-200">0</strong> caracteres</span>
+            <span class="hidden sm:inline"><strong id="stat-lines" class="text-zinc-800 dark:text-zinc-200">1</strong> líneas</span>
+          </div>
+          <div class="flex items-center gap-3 text-[11px]">
+            <span class="text-emerald-600 dark:text-emerald-400 font-medium">● Respaldo en tiempo real</span>
+            <span>·</span>
+            <span>Atajo: <kbd class="px-1.5 py-0.5 bg-zinc-200 dark:bg-zinc-800 rounded font-mono">Ctrl+S</kbd></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- TRIPLE CONFIRMATION MODAL (LIMPIAR DATOS) -->
+  <div id="modal-clear" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+    <div class="relative w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-red-200 dark:border-red-900/40 overflow-hidden text-zinc-900 dark:text-zinc-100">
+      
+      <!-- Modal Header with 3 steps -->
+      <div class="px-6 pt-6 pb-4 border-b border-zinc-100 dark:border-zinc-800">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-xl bg-red-100 dark:bg-red-950/60 text-red-600 flex items-center justify-center font-bold">!</div>
+            <div>
+              <h3 class="text-base font-semibold">Limpiar hoja de datos</h3>
+              <p class="text-xs text-zinc-500">Confirmación triple de seguridad requerida</p>
+            </div>
+          </div>
+          <button id="modal-clear-close" class="p-1.5 text-zinc-400 hover:text-zinc-600">✕</button>
+        </div>
+
+        <!-- 3-Step Bar -->
+        <div class="grid grid-cols-3 gap-2 mt-4">
+          <div id="step-bar-1" class="h-1.5 rounded-full bg-red-500"></div>
+          <div id="step-bar-2" class="h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-700"></div>
+          <div id="step-bar-3" class="h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-700"></div>
+        </div>
+        <div class="flex justify-between text-[11px] font-medium text-zinc-500 mt-1">
+          <span id="step-lbl-1" class="text-red-600 font-bold">1. Aviso</span>
+          <span id="step-lbl-2">2. Revisión</span>
+          <span id="step-lbl-3">3. Definitivo</span>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6">
+        <!-- Step 1 -->
+        <div id="step-content-1" class="space-y-4">
+          <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 text-amber-900 dark:text-amber-200 text-sm">
+            <p class="font-semibold mb-1">Paso 1 de 3 — ¿Vaciar contenido de la hoja?</p>
+            <p class="text-xs">Estás a punto de borrar todo el texto que has escrito en la hoja de trabajo.</p>
+          </div>
+          <div class="flex justify-end gap-3 pt-3">
+            <button id="step-1-cancel" class="px-4 py-2 text-sm text-zinc-600 dark:text-zinc-400">Cancelar</button>
+            <button id="step-1-next" class="px-4 py-2 text-sm font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-lg">Continuar al Paso 2 →</button>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div id="step-content-2" class="hidden space-y-4">
+          <div class="p-3.5 rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200 text-orange-900 dark:text-orange-200 text-sm">
+            <p class="font-semibold mb-1">Paso 2 de 3 — Advertencia de pérdida de datos</p>
+            <p class="text-xs">Vas a perder la información actual. Puedes copiarla al portapapeles como respaldo.</p>
+          </div>
+          <button id="step-2-backup" class="w-full py-2 px-3 text-xs font-medium border border-zinc-300 dark:border-zinc-700 rounded-lg bg-zinc-50 dark:bg-zinc-800">
+            📋 Copiar texto de respaldo al portapapeles
+          </button>
+          <div class="flex justify-between pt-3">
+            <button id="step-2-back" class="text-xs text-zinc-500">← Volver al Paso 1</button>
+            <button id="step-2-next" class="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg">Ir al Paso 3 Final →</button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div id="step-content-3" class="hidden space-y-4">
+          <div class="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-300 text-red-950 dark:text-red-200 text-sm">
+            <p class="font-semibold mb-1">Paso 3 de 3 — Confirmación irrevocable</p>
+            <p class="text-xs">Escribe la palabra <strong class="bg-red-200 dark:bg-red-900 px-1 py-0.5 rounded font-mono">BORRAR</strong> para habilitar el botón.</p>
+          </div>
+          <input id="step-3-input" type="text" placeholder="Escribe BORRAR aquí" class="w-full px-3 py-2 border-2 border-red-300 dark:border-red-800 rounded-lg font-mono text-sm uppercase bg-white dark:bg-zinc-800" />
+          <div class="flex justify-between items-center pt-3">
+            <button id="step-3-back" class="text-xs text-zinc-500">← Volver al Paso 2</button>
+            <button id="step-3-confirm" disabled class="px-5 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg">
+              Borrar definitivamente todo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TESLA & GROK MODAL -->
+  <div id="modal-grok" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+    <div class="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-4">
+      <div class="flex items-center justify-between border-b pb-3 dark:border-zinc-800">
+        <h3 class="text-base font-bold flex items-center gap-2">
+          <span>⚡</span> Uso con Grok en tu Tesla
+        </h3>
+        <button id="modal-grok-close" class="text-zinc-400 hover:text-zinc-600">✕</button>
+      </div>
+
+      <p class="text-xs text-zinc-600 dark:text-zinc-400">
+        Copia este prompt con toda tu información ya formateada para que Grok en el Tesla responda preguntas sobre ella:
+      </p>
+
+      <div class="relative">
+        <textarea id="grok-prompt-box" readonly class="w-full h-36 bg-zinc-900 text-zinc-200 p-3 rounded-xl font-mono text-xs leading-relaxed resize-none"></textarea>
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <span class="text-xs text-zinc-500">Consejo: Guarda esta página en favoritos de tu Tesla.</span>
+        <button id="btn-copy-grok-prompt" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold">
+          Copiar Prompt para Grok
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    const STORAGE_KEY = 'tesla_grok_doc_content';
+    const TITLE_KEY = 'tesla_grok_doc_title';
+    const CLIENT_ID_KEY = 'tesla_grok_google_client_id';
+
+    const editor = document.getElementById('editor');
+    const docTitle = document.getElementById('doc-title');
+    const syncStatus = document.getElementById('sync-status');
+    const statWords = document.getElementById('stat-words');
+    const statChars = document.getElementById('stat-chars');
+    const statLines = document.getElementById('stat-lines');
+    const readTime = document.getElementById('read-time');
+
+    let accessToken = null;
+    let driveFileId = localStorage.getItem('tesla_drive_file_id') || null;
+
+    // Load initial text
+    const savedContent = localStorage.getItem(STORAGE_KEY) || '';
+    editor.value = savedContent;
+    const savedTitle = localStorage.getItem(TITLE_KEY) || 'Tesla_Grok_Knowledge_Base.txt';
+    docTitle.value = savedTitle;
+
+    // Toast helper
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = msg;
+      toast.className = 'fixed top-4 right-4 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl text-sm font-medium border ' + (
+        type === 'success' ? 'bg-emerald-50 text-emerald-900 border-emerald-200' :
+        type === 'error' ? 'bg-red-50 text-red-900 border-red-200' :
+        'bg-blue-50 text-blue-900 border-blue-200'
+      );
+      setTimeout(() => toast.classList.add('hidden'), 3500);
+    }
+
+    // Update stats
+    function updateStats() {
+      const text = editor.value;
+      const chars = text.length;
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      const lines = text ? text.split('\n').length : 1;
+      statWords.textContent = words;
+      statChars.textContent = chars;
+      statLines.textContent = lines;
+      readTime.textContent = '~' + Math.max(1, Math.ceil(words / 200)) + ' min de lectura';
+      localStorage.setItem(STORAGE_KEY, text);
+    }
+    editor.addEventListener('input', updateStats);
+    updateStats();
+
+    docTitle.addEventListener('input', () => {
+      localStorage.setItem(TITLE_KEY, docTitle.value);
+    });
+
+    // Dark Mode / Tesla Mode
+    const btnTheme = document.getElementById('btn-theme');
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      const isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('tesla_dark_mode', isDark);
+      document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙';
+      document.getElementById('theme-text').textContent = isDark ? 'Modo Día' : 'Modo Tesla';
+    }
+    btnTheme.addEventListener('click', toggleTheme);
+    if (localStorage.getItem('tesla_dark_mode') === 'true') {
+      document.documentElement.classList.add('dark');
+      document.getElementById('theme-icon').textContent = '☀️';
+      document.getElementById('theme-text').textContent = 'Modo Día';
+    }
+
+    // Font Controls
+    document.getElementById('font-sans').onclick = () => {
+      editor.className = editor.className.replace(/font-\w+/g, '') + ' font-sans';
+    };
+    document.getElementById('font-serif').onclick = () => {
+      editor.className = editor.className.replace(/font-\w+/g, '') + ' font-serif';
+    };
+    document.getElementById('font-mono').onclick = () => {
+      editor.className = editor.className.replace(/font-\w+/g, '') + ' font-mono';
+    };
+    document.getElementById('size-sm').onclick = () => { editor.style.fontSize = '14px'; };
+    document.getElementById('size-base').onclick = () => { editor.style.fontSize = '16px'; };
+    document.getElementById('size-lg').onclick = () => { editor.style.fontSize = '19px'; };
+    document.getElementById('size-xl').onclick = () => { editor.style.fontSize = '22px'; };
+
+    // Google Drive Save Logic
+    const btnSave = document.getElementById('btn-save');
+    async function saveToGoogleDrive() {
+      if (!accessToken) {
+        let clientId = localStorage.getItem(CLIENT_ID_KEY) || '821024044946-ot3svjs17pdp9g4s17gs0uv1hjma45t0.apps.googleusercontent.com';
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+          const client = google.accounts.oauth2.initTokenClient({
+            client_id: clientId,
+            scope: 'https://www.googleapis.com/auth/drive.file',
+            callback: async (resp) => {
+              if (resp.access_token) {
+                accessToken = resp.access_token;
+                performDriveUpload();
+              }
+            }
+          });
+          client.requestAccessToken();
+          return;
+        } else {
+          downloadTxtFile();
+          showToast('Guardado en local y descargado como .txt.', 'info');
+          return;
+        }
+      }
+      performDriveUpload();
+    }
+
+    async function performDriveUpload() {
+      const btnText = document.getElementById('btn-save-text');
+      btnText.textContent = 'Guardando...';
+      const name = docTitle.value.trim() || 'Tesla_Grok_Knowledge_Base.txt';
+      const content = editor.value;
+
+      try {
+        const metadata = { name: name, mimeType: 'text/plain' };
+        const boundary = '-------314159265358979323846';
+        const delimiter = '\r\n--' + boundary + '\r\n';
+        const closeDelimiter = '\r\n--' + boundary + '--';
+        const body = delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(metadata) + delimiter + 'Content-Type: text/plain; charset=UTF-8\r\n\r\n' + content + closeDelimiter;
+
+        let url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink';
+        let method = 'POST';
+
+        if (driveFileId) {
+          url = 'https://www.googleapis.com/upload/drive/v3/files/' + driveFileId + '?uploadType=media';
+          const updateRes = await fetch(url, {
+            method: 'PATCH',
+            headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'text/plain; charset=UTF-8' },
+            body: content
+          });
+          if (updateRes.ok) {
+            showToast('Guardado con éxito en Google Drive.', 'success');
+            syncStatus.textContent = 'Sincronizado con Google Drive a las ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            btnText.textContent = 'Guardar en Google Drive';
+            return;
+          }
+        }
+
+        const res = await fetch(url, {
+          method: method,
+          headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'multipart/related; boundary=' + boundary },
+          body: body
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          driveFileId = data.id;
+          localStorage.setItem('tesla_drive_file_id', driveFileId);
+          if (data.webViewLink) {
+            const link = document.getElementById('drive-link');
+            link.href = data.webViewLink;
+            link.classList.remove('hidden');
+          }
+          showToast('¡Archivo creado y guardado en Google Drive!', 'success');
+          syncStatus.textContent = 'Sincronizado en Drive (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
+        } else {
+          showToast('Error en Drive. Guardado seguro en local.', 'error');
+        }
+      } catch (e) {
+        showToast('Guardado en local. No se pudo contactar con Drive.', 'info');
+      } finally {
+        btnText.textContent = 'Guardar en Google Drive';
+      }
+    }
+
+    btnSave.addEventListener('click', saveToGoogleDrive);
+
+    // Ctrl+S
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        saveToGoogleDrive();
+      }
+    });
+
+    // TRIPLE CONFIRMATION CLEAR MODAL
+    const modalClear = document.getElementById('modal-clear');
+    const btnClear = document.getElementById('btn-clear');
+    const modalClearClose = document.getElementById('modal-clear-close');
+    const step1 = document.getElementById('step-content-1');
+    const step2 = document.getElementById('step-content-2');
+    const step3 = document.getElementById('step-content-3');
+    const step3Input = document.getElementById('step-3-input');
+    const step3Confirm = document.getElementById('step-3-confirm');
+
+    function openClearModal() {
+      modalClear.classList.remove('hidden');
+      modalClear.classList.add('flex');
+      showStep(1);
+    }
+    function closeClearModal() {
+      modalClear.classList.add('hidden');
+      modalClear.classList.remove('flex');
+      step3Input.value = '';
+      step3Confirm.disabled = true;
+    }
+    function showStep(num) {
+      step1.classList.toggle('hidden', num !== 1);
+      step2.classList.toggle('hidden', num !== 2);
+      step3.classList.toggle('hidden', num !== 3);
+      document.getElementById('step-bar-1').className = num >= 1 ? 'h-1.5 rounded-full bg-red-500' : 'h-1.5 rounded-full bg-zinc-200';
+      document.getElementById('step-bar-2').className = num >= 2 ? 'h-1.5 rounded-full bg-red-500' : 'h-1.5 rounded-full bg-zinc-200';
+      document.getElementById('step-bar-3').className = num >= 3 ? 'h-1.5 rounded-full bg-red-600 animate-pulse' : 'h-1.5 rounded-full bg-zinc-200';
+    }
+
+    btnClear.addEventListener('click', openClearModal);
+    modalClearClose.addEventListener('click', closeClearModal);
+    document.getElementById('step-1-cancel').onclick = closeClearModal;
+    document.getElementById('step-1-next').onclick = () => showStep(2);
+    document.getElementById('step-2-back').onclick = () => showStep(1);
+    document.getElementById('step-2-next').onclick = () => showStep(3);
+    document.getElementById('step-3-back').onclick = () => showStep(2);
+    document.getElementById('step-2-backup').onclick = () => {
+      navigator.clipboard.writeText(editor.value);
+      showToast('Copia de respaldo copiada al portapapeles.', 'success');
+    };
+
+    step3Input.addEventListener('input', (e) => {
+      step3Confirm.disabled = e.target.value.trim().toUpperCase() !== 'BORRAR';
+    });
+    step3Confirm.addEventListener('click', () => {
+      editor.value = '';
+      updateStats();
+      closeClearModal();
+      showToast('Hoja limpiada por completo.', 'info');
+    });
+
+    // Copy all
+    document.getElementById('btn-copy-all').onclick = () => {
+      navigator.clipboard.writeText(editor.value);
+      showToast('Texto copiado al portapapeles.', 'success');
+    };
+
+    // Download .txt
+    function downloadTxtFile() {
+      const blob = new Blob([editor.value], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = docTitle.value.trim() || 'notas_tesla.txt';
+      a.click();
+    }
+    document.getElementById('btn-download-txt').onclick = downloadTxtFile;
+
+    // Tesla Template
+    document.getElementById('btn-template').onclick = () => {
+      editor.value = '🚗 BASE DE DATOS PERSONAL PARA TESLA & GROK\n' +
+'=====================================================\n' +
+'[DATOS DEL VEHÍCULO]\n' +
+'- Modelo: Tesla Model 3 / Model Y\n' +
+'- Matrícula: 1234-XYZ\n' +
+'- Presión recomendada: 2.9 bar (42 psi)\n' +
+'- Asistencia 24h: +34 900 123 456\n\n' +
+'[PUNTOS DE RECARGA]\n' +
+'- Supercharger habitual: Área Km 45 (V3 250kW)\n' +
+'- Clave de poste garaje: 4489\n\n' +
+'[CÓDIGOS Y ACCESOS]\n' +
+'- Puerta garaje: #9201*\n' +
+'- Alarma de casa: 5821\n' +
+'- Wi-Fi invitados: ClaveSegura2026\n\n' +
+'[NOTAS RÁPIDAS]\n' +
+'- Cita ITV: 15 de Noviembre\n' +
+'- Repuesto en guantera: Fusibles y linterna';
+      updateStats();
+      showToast('Plantilla para Tesla cargada.', 'success');
+    };
+
+    // Grok Modal
+    const modalGrok = document.getElementById('modal-grok');
+    document.getElementById('btn-grok').onclick = () => {
+      modalGrok.classList.remove('hidden');
+      modalGrok.classList.add('flex');
+      document.getElementById('grok-prompt-box').value = 
+'[BASE DE DATOS Y CONOCIMIENTO PERSONAL]:\n' +
+editor.value + '\n\n' +
+'==========================================\n' +
+'INSTRUCCIÓN: Actúa como mi asistente inteligente en el vehículo. Basándote ÚNICAMENTE en la información anterior, responde a la siguiente consulta con concisión y exactitud:\n' +
+'[CONSULTA]: ';
+    };
+    document.getElementById('modal-grok-close').onclick = () => {
+      modalGrok.classList.add('hidden');
+      modalGrok.classList.remove('flex');
+    };
+    document.getElementById('btn-copy-grok-prompt').onclick = () => {
+      navigator.clipboard.writeText(document.getElementById('grok-prompt-box').value);
+      showToast('Prompt para Grok copiado al portapapeles.', 'success');
+      modalGrok.classList.add('hidden');
+      modalGrok.classList.remove('flex');
+    };
+  </script>
+</body>
+</html>
