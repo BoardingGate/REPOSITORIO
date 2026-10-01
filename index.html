@@ -44,11 +44,11 @@
 <body class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
 
   <!-- AVISO TOAST FLOTANTE -->
-  <div id="toast" class="fixed top-2 right-2 sm:top-4 sm:right-4 z-50 hidden items-center gap-2 px-3 py-2 rounded-xl shadow-2xl text-xs sm:text-sm font-medium border transition-all duration-200">
+  <div id="toast" class="fixed top-2 right-2 sm:top-4 sm:right-4 z-50 hidden items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl shadow-2xl text-xs sm:text-sm font-medium border transition-all duration-200">
     <span id="toast-message"></span>
   </div>
 
-  <!-- BARRA SUPERIOR ULTRA COMPACTA (Auto-ocultable al hacer scroll) -->
+  <!-- BARRA SUPERIOR ULTRA COMPACTA (Auto-ocultable en Tesla) -->
   <header id="top-bar" class="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/95 border-b border-zinc-200 dark:border-zinc-800 backdrop-blur-md shadow-xs">
     <div class="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-1 sm:gap-2">
       
@@ -136,6 +136,63 @@ Ejemplo:
     </div>
   </main>
 
+  <!-- MODAL DE CONFIGURACIÓN GOOGLE DRIVE CON INSTRUCCIONES Y CÓDIGO COPIABLE -->
+  <div id="modal-drive" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
+    <div class="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-4 text-zinc-900 dark:text-zinc-100 text-xs max-h-[92vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
+        <h3 class="text-sm font-bold flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
+          <span>☁️</span> Conectar Google Apps Script con tu Google Drive
+        </h3>
+        <button id="modal-drive-close" class="text-zinc-400 hover:text-zinc-600 p-1">✕</button>
+      </div>
+
+      <!-- Campo URL -->
+      <div>
+        <label class="block font-semibold mb-1 text-zinc-800 dark:text-zinc-200">1. Pega aquí la URL de tu aplicación web (Apps Script):</label>
+        <div class="flex gap-1.5">
+          <input id="input-drive-url" type="url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="flex-1 px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
+          <button id="btn-test-drive" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shrink-0">Probar</button>
+        </div>
+        <div id="drive-test-msg" class="text-[11px] mt-1.5 font-medium hidden p-2 rounded-lg"></div>
+      </div>
+
+      <!-- Instrucciones paso a paso para crearlo -->
+      <div class="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-2">
+        <p class="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1">
+          <span>📝</span> ¿Cómo crearlo en Google en 1 minuto? (Paso a paso):
+        </p>
+        <ol class="list-decimal list-inside space-y-1.5 text-zinc-600 dark:text-zinc-300 text-[11px] leading-relaxed">
+          <li>Abre <a href="https://script.google.com" target="_blank" class="text-blue-600 underline font-bold">script.google.com</a> e inicia sesión con tu cuenta de Google.</li>
+          <li>Pulsa arriba a la izquierda en <strong>"Nuevo proyecto"</strong>.</li>
+          <li>Borra lo que aparezca y pega el código usando el botón de abajo.</li>
+          <li>Pulsa arriba a la derecha en <strong>Implementar &gt; Nueva implementación</strong>.</li>
+          <li>En tipo (⚙️) elige <strong>Aplicación web</strong>.</li>
+          <li>Configura: <strong>Ejecutar como:</strong> <em>Yo</em> | <strong>Quién tiene acceso:</strong> <em>Cualquier usuario</em> (para que Grok pueda leerlo sin login).</li>
+          <li>Pulsa <strong>Implementar</strong>, autoriza los permisos y copia la URL terminada en <code class="bg-zinc-200 dark:bg-zinc-700 px-1 py-0.5 rounded font-mono">/exec</code>.</li>
+        </ol>
+
+        <!-- Botón copiar código -->
+        <div class="pt-1 flex flex-wrap gap-2">
+          <button id="btn-copy-script" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5">
+            <span>📋</span> Copiar Código de Apps Script al Portapapeles
+          </button>
+          <button id="btn-toggle-code-view" class="px-3 py-1.5 bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg font-medium text-xs">
+            Ver código
+          </button>
+        </div>
+
+        <!-- Visor de código desplegable -->
+        <pre id="code-preview" class="hidden mt-2 p-2.5 bg-zinc-900 text-emerald-400 rounded-lg text-[10px] font-mono overflow-x-auto max-h-40 leading-relaxed"></pre>
+      </div>
+
+      <div class="pt-2 flex justify-between items-center border-t dark:border-zinc-800">
+        <button id="btn-drive-cancel" class="text-zinc-500">Cancelar</button>
+        <button id="btn-drive-save-url" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold">Guardar Configuración</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: CÓMO USARLO CON GROK EN EL TESLA -->
   <div id="modal-grok" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
     <div class="relative w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3.5 text-zinc-900 dark:text-zinc-100 text-xs">
@@ -173,33 +230,6 @@ Ejemplo:
     </div>
   </div>
 
-  <!-- MODAL DE CONFIGURACIÓN GOOGLE DRIVE -->
-  <div id="modal-drive" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
-    <div class="relative w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3.5 text-zinc-900 dark:text-zinc-100 text-xs">
-      
-      <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
-        <h3 class="text-sm font-bold flex items-center gap-1.5">
-          <span>☁️</span> Conectar Google Apps Script
-        </h3>
-        <button id="modal-drive-close" class="text-zinc-400 hover:text-zinc-600 p-1">✕</button>
-      </div>
-
-      <div>
-        <label class="block font-semibold mb-1">Pega la URL de tu aplicación web de Google Apps Script:</label>
-        <div class="flex gap-1.5">
-          <input id="input-drive-url" type="url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="flex-1 px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
-          <button id="btn-test-drive" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shrink-0">Probar</button>
-        </div>
-        <div id="drive-test-msg" class="text-[11px] mt-1.5 font-medium hidden p-2 rounded-lg"></div>
-      </div>
-
-      <div class="pt-2 flex justify-between items-center border-t dark:border-zinc-800">
-        <button id="btn-drive-cancel" class="text-zinc-500">Cancelar</button>
-        <button id="btn-drive-save-url" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold">Guardar</button>
-      </div>
-    </div>
-  </div>
-
   <!-- MODAL DE CONFIRMACIÓN TRIPLE (LIMPIAR DATOS) -->
   <div id="modal-clear" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
     <div class="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-red-200 dark:border-red-900/40 p-4 text-zinc-900 dark:text-zinc-100 space-y-3">
@@ -216,10 +246,70 @@ Ejemplo:
     </div>
   </div>
 
-  <!-- JAVASCRIPT: LÓGICA COMPLETA -->
+  <!-- JAVASCRIPT -->
   <script>
     const STORAGE_KEY = 'tesla_grok_doc_content';
     const SCRIPT_URL_KEY = 'tesla_drive_script_url';
+
+    // CÓDIGO COMPLETO DE GOOGLE APPS SCRIPT PARA COPIAR CON 1 CLIC
+    const APPS_SCRIPT_SOURCE = `function doPost(e) {
+  try {
+    var fileName = "Tesla_Grok_Knowledge_Base.txt";
+    var content = "";
+    if (e && e.postData && e.postData.contents) {
+      try {
+        var parsed = JSON.parse(e.postData.contents);
+        if (parsed.filename) fileName = parsed.filename;
+        if (parsed.content !== undefined) content = parsed.content;
+      } catch (err) {
+        content = e.postData.contents;
+      }
+    }
+    var files = DriveApp.getRootFolder().getFilesByName(fileName);
+    var file = null;
+    while (files.hasNext()) {
+      var candidate = files.next();
+      if (!candidate.isTrashed()) { file = candidate; break; }
+    }
+    if (file) {
+      file.setContent(content);
+    } else {
+      file = DriveApp.getRootFolder().createFile(fileName, content, MimeType.PLAIN_TEXT);
+    }
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      id: file.getId(),
+      url: file.getUrl()
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  try {
+    var fileName = (e && e.parameter && e.parameter.filename) || "Tesla_Grok_Knowledge_Base.txt";
+    var files = DriveApp.getRootFolder().getFilesByName(fileName);
+    var target = null;
+    while (files.hasNext()) {
+      var candidate = files.next();
+      if (!candidate.isTrashed()) { target = candidate; break; }
+    }
+    var content = target ? target.getBlob().getDataAsString() : "No hay datos guardados todavía en tu Google Drive.";
+    
+    // Si la web pide formato JSON para el editor
+    if (e && e.parameter && e.parameter.format === "json") {
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", content: content }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // Para Grok o navegador: TEXTO PLANO DIRECTO SIN JAVASCRIPT
+    return ContentService.createTextOutput(content)
+      .setMimeType(ContentService.MimeType.TEXT);
+  } catch (err) {
+    return ContentService.createTextOutput("Error: " + err.toString()).setMimeType(ContentService.MimeType.TEXT);
+  }
+}`;
 
     const editor = document.getElementById('editor');
     const syncStatus = document.getElementById('sync-status');
@@ -328,7 +418,7 @@ Ejemplo:
         });
         if (res.ok) {
           syncStatus.textContent = 'Guardado ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-          showToast('Guardado en Google Drive. Grok ya tiene tus datos actualizados.', 'success');
+          showToast('Guardado en Google Drive con éxito.', 'success');
         } else {
           showToast('Error en la respuesta de Google Drive.', 'error');
         }
@@ -364,6 +454,19 @@ Ejemplo:
     document.getElementById('modal-drive-close').onclick = closeDriveModal;
     document.getElementById('btn-drive-cancel').onclick = closeDriveModal;
 
+    // COPIAR CÓDIGO AL PORTAPAPELES
+    document.getElementById('btn-copy-script').onclick = () => {
+      navigator.clipboard.writeText(APPS_SCRIPT_SOURCE);
+      showToast('Código copiado al portapapeles. Pégalo en script.google.com', 'success');
+    };
+
+    // ALTERNAR VISOR DE CÓDIGO
+    const codePreview = document.getElementById('code-preview');
+    codePreview.textContent = APPS_SCRIPT_SOURCE;
+    document.getElementById('btn-toggle-code-view').onclick = () => {
+      codePreview.classList.toggle('hidden');
+    };
+
     document.getElementById('btn-drive-save-url').onclick = () => {
       driveScriptUrl = inputDriveUrl.value.trim();
       localStorage.setItem(SCRIPT_URL_KEY, driveScriptUrl);
@@ -376,51 +479,28 @@ Ejemplo:
     };
 
     // Probar conexión
-// Probar conexión con diagnóstico detallado
     document.getElementById('btn-test-drive').onclick = async () => {
       const url = inputDriveUrl.value.trim();
       const msg = document.getElementById('drive-test-msg');
       if (!url) return;
-      
-      if (!url.endsWith('/exec')) {
-        msg.textContent = 'Aviso: La URL debe terminar en /exec, no en /edit';
-        msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-amber-50 text-amber-700';
-        return;
-      }
-
-      msg.textContent = 'Contactando con Google Apps Script...';
+      msg.textContent = 'Probando conexión...';
       msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-blue-50 text-blue-700';
-      
       try {
         const res = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ 
-            action: 'save', 
-            filename: 'Tesla_Grok_Knowledge_Base.txt', 
-            content: editor.value || 'Prueba de conexión Tesla & Grok OK.' 
-          })
+          body: JSON.stringify({ action: 'save', filename: 'Tesla_Grok_Knowledge_Base.txt', content: editor.value || 'Prueba de conexión Tesla & Grok OK.' })
         });
-        
-        const rawText = await res.text();
-        
-        // Comprobar si Google respondió con HTML (página de error/login)
-        if (rawText.trim().startsWith('<') || rawText.includes('<!DOCTYPE') || rawText.includes('ServiceLogin')) {
-          msg.innerHTML = '<strong>Error de permisos en Google:</strong> Google pide inicio de sesión.<br>En script.google.com ve a <em>Implementar > Administrar implementaciones > Editar > Quién tiene acceso</em> y pon <strong>"Cualquier usuario"</strong> (Nueva versión).';
-          msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 text-red-700 border border-red-200';
-          return;
-        }
-
-        const data = JSON.parse(rawText);
+        const data = await res.json();
         if (data.status === 'success') {
-          msg.textContent = '¡Conexión verificada con éxito! Archivo creado en tu Google Drive.';
+          msg.textContent = '¡Conexión verificada con éxito!';
           msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-emerald-50 text-emerald-700';
         } else {
-          msg.textContent = 'Error devuelto por el script: ' + (data.message || 'Error desconocido');
+          msg.textContent = 'Error: ' + data.message;
           msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 text-red-700';
         }
       } catch (err) {
-        msg.textContent = 'Fallo de conexión de red: ' + err.message;
+        msg.textContent = 'Fallo de conexión: ' + err.message;
         msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 text-red-700';
       }
     };
