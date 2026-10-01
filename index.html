@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Tesla & Grok — Base de Datos</title>
-  <meta name="description" content="Editor ultra compacto optimizado para pantalla Tesla con servidor de texto directo para Grok." />
+  <title>Base de Datos Tesla — BoardingGate</title>
+  <meta name="description" content="Base de datos de notas del vehículo accesible para el asistente Grok en Tesla." />
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -23,21 +23,14 @@
   </script>
 
   <style>
-    /* Transición suave para auto-ocultación de cabecera en Tesla */
+    /* Ocultación de cabecera al hacer scroll en Tesla */
     #top-bar {
-      transition: transform 0.25s ease-in-out, opacity 0.2s ease-in-out;
+      transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
     }
     #top-bar.hide-header {
       transform: translateY(-100%);
       opacity: 0;
       pointer-events: none;
-    }
-    .word-sheet {
-      box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.08);
-      min-height: calc(100vh - 80px);
-    }
-    .dark .word-sheet {
-      box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.7);
     }
     textarea:focus { outline: none; }
   </style>
@@ -45,56 +38,43 @@
 <body class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
 
   <!-- AVISO TOAST FLOTANTE -->
-  <div id="toast" class="fixed top-2 right-2 sm:top-4 sm:right-4 z-50 hidden items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl shadow-2xl text-xs sm:text-sm font-medium border transition-all duration-200">
+  <div id="toast" class="fixed top-2 right-2 sm:top-4 sm:right-4 z-50 hidden items-center gap-2 px-3 py-2 rounded-xl shadow-2xl text-xs sm:text-sm font-medium border transition-all duration-200">
     <span id="toast-message"></span>
   </div>
 
-  <!-- BARRA SUPERIOR ULTRA COMPACTA (Auto-ocultable al hacer scroll en Tesla) -->
+  <!-- CABECERA ULTRA COMPACTA (Auto-ocultable en Tesla) -->
   <header id="top-bar" class="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/95 border-b border-zinc-200 dark:border-zinc-800 backdrop-blur-md shadow-xs">
     <div class="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
       
-      <!-- Lado Izquierdo: Título y Archivo compacto -->
-      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-xs">
+      <!-- Título de la Web / Proyecto -->
+      <div class="flex items-center gap-1.5 shrink-0">
+        <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-xs">
           ⚡
         </div>
-        <div class="flex items-center gap-1">
-          <input id="doc-title" type="text" value="Tesla_Grok_Knowledge_Base.txt" class="font-mono text-[11px] sm:text-xs font-semibold px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 w-36 sm:w-56 focus:ring-1 focus:ring-blue-500" title="Nombre del archivo en Google Drive" />
-          <span id="badge-drive" class="text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">Offline</span>
-        </div>
+        <span class="font-bold text-xs tracking-tight">BoardingGate <span class="text-blue-600 font-normal">Repositorio</span></span>
+        <span id="badge-status" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Grok Ready</span>
       </div>
 
-      <!-- Lado Derecho: Acciones principales abreviadas -->
+      <!-- Acciones de edición y guardado -->
       <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap">
-        <!-- BOTÓN GUARDAR -->
-        <button id="btn-save" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition-all" title="Guardar en Drive (Ctrl+S)">
+        <!-- BOTÓN GUARDAR DIRECTO EN GITHUB -->
+        <button id="btn-save-github" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition-all" title="Guardar cambios directamente en GitHub para que Grok los lea">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-          <span id="btn-save-text">Guardar</span>
+          <span id="btn-save-text">Guardar en GitHub</span>
         </button>
 
-        <!-- BOTÓN CONEXIÓN DRIVE -->
-        <button id="btn-config-drive" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 text-zinc-700 dark:text-zinc-300 transition-all" title="Configurar conexión con Google Drive">
-          <span class="text-blue-500">☁️</span>
-          <span id="btn-config-text">Drive</span>
+        <!-- BOTÓN CONFIGURAR CONEXIÓN GITHUB -->
+        <button id="btn-config-gh" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 transition-all" title="Configurar cuenta de GitHub para guardado automático">
+          <span>⚙️ Conectar GitHub</span>
         </button>
 
-        <!-- BOTÓN GROK TESLA (ACCESO DIRECTO CRAWLER) -->
-        <button id="btn-grok" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all" title="Ver URL directa para Grok en Tesla">
-          <span>⚡ Grok</span>
+        <!-- BOTÓN DESCARGAR HTML ESTÁTICO LISTO -->
+        <button id="btn-download-html" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 transition-all" title="Descargar este archivo con el texto ya metido dentro para subirlo a mano si no quieres usar tokens">
+          <span>⬇️ Descargar HTML</span>
         </button>
 
-        <!-- BOTÓN ABRIR DRIVE -->
-        <a id="drive-link" href="#" target="_blank" class="hidden items-center px-1.5 py-1 text-xs text-blue-600 dark:text-blue-400 hover:underline" title="Abrir archivo en Google Drive">
-          ↗ Drive
-        </a>
-
-        <!-- BOTONES SECUNDARIOS COMPACTOS -->
-        <button id="btn-template" class="hidden md:inline-flex px-1.5 py-1 text-xs text-zinc-600 dark:text-zinc-400 hover:text-blue-600" title="Cargar plantilla">Plantilla</button>
-        <button id="btn-copy-all" class="px-1.5 py-1 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100" title="Copiar texto">Copiar</button>
-        <button id="btn-clear" class="px-1.5 py-1 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded" title="Limpiar con triple confirmación">Limpiar</button>
-
-        <!-- MODO NOCTURNO TESLA -->
-        <button id="btn-theme" class="px-2 py-1 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300" title="Alternar modo noche Tesla">
+        <!-- ALTERNAR MODO DÍA / NOCHE TESLA -->
+        <button id="btn-theme" class="px-2 py-1 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
           <span id="theme-icon">🌙</span>
         </button>
       </div>
@@ -102,249 +82,139 @@
     </div>
   </header>
 
-  <!-- LIENZO PRINCIPAL DEL TEXTO (MÁXIMA ALTURA ÚTIL PARA TESLA) -->
-  <main class="flex-1 flex flex-col p-1.5 sm:p-3">
-    <div class="flex-1 flex justify-center w-full">
-      <div class="word-sheet w-full max-w-5xl bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 flex flex-col transition-colors">
-        
-        <!-- Mini barra superior de estado de la hoja -->
-        <div class="flex items-center justify-between px-3 py-1 text-[11px] text-zinc-400 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50">
-          <div class="flex items-center gap-2">
-            <span id="sync-status" class="text-zinc-500 dark:text-zinc-400">Listo</span>
-            <span class="text-zinc-300 dark:text-zinc-700">|</span>
-            <span id="stat-words">0 palabras</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="hidden sm:inline text-zinc-400">Desplaza hacia abajo para ocultar cabecera</span>
-            <span id="stat-chars" class="font-mono">0 car</span>
-          </div>
-        </div>
-
-        <!-- Área de escritura principal -->
-        <div class="flex-1 p-3 sm:p-6 md:p-8 flex flex-col">
-          <textarea
-            id="editor"
-            class="w-full flex-1 resize-none bg-transparent outline-none border-none p-0 leading-relaxed placeholder:text-zinc-300 dark:placeholder:text-zinc-600 text-base sm:text-lg min-h-[70vh]"
-            placeholder="Escribe aquí los datos para que Grok los lea desde tu Tesla...
-
-Ejemplos:
-- Presiones de neumáticos: 2.9 bar (42 psi)
-- Códigos de acceso garaje y portón: #8821*
-- Puntos de recarga y claves
-- Póliza de seguro y teléfono de asistencia en carretera"
-          ></textarea>
-        </div>
-
-      </div>
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="flex-1 flex flex-col p-2 sm:p-4 max-w-5xl mx-auto w-full">
+    
+    <!-- AVISO VISUAL DE FUNCIONAMIENTO -->
+    <div class="mb-2 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-[11px] text-blue-900 dark:text-blue-200 flex items-center justify-between">
+      <span>📖 <strong>Modo Lectura para Grok:</strong> Todo el texto que escribas abajo se guarda en el código HTML para que Grok lo lea al instante en el coche.</span>
+      <span id="stat-words" class="font-mono text-zinc-500">0 palabras</span>
     </div>
+
+    <!-- ÁREA DE EDICIÓN ESTILO WORD (DONDE TÚ ESCRIBES EN LA PANTALLA) -->
+    <div class="flex-1 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col p-4 sm:p-6">
+      <textarea
+        id="editor"
+        class="w-full flex-1 resize-none bg-transparent outline-none border-none p-0 leading-relaxed text-base sm:text-lg min-h-[60vh] text-zinc-900 dark:text-zinc-100 font-sans"
+        placeholder="Escribe aquí los datos para que Grok te los responda por voz en el Tesla...
+
+Ejemplo:
+[VEHÍCULO]
+- Matrícula: 1234-XYZ
+- Presión de neumáticos recomendada: 2.9 bar (42 psi)
+- Teléfono de asistencia 24h: 900 123 456
+
+[GARAGE Y CLAVES]
+- Código portón garaje: #8821*
+- Alarma de casa: 5821
+- Wi-Fi invitados: ClaveSegura2026"
+      ></textarea>
+    </div>
+
+    <!-- SECCIÓN DE TEXTO HTML ESTÁTICO (ESTO ES LO QUE GROK LEE FÍSICAMENTE AL ENTRAR A GITHUB, IGUAL QUE EN EL MARCA) -->
+    <section class="mt-4 p-4 rounded-lg bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-xs">
+      <h2 class="font-bold text-zinc-800 dark:text-zinc-200 mb-1 flex items-center gap-1.5">
+        <span>📄</span> Vista previa del contenido HTML que Grok lee:
+      </h2>
+      <article id="grok-article-display" class="prose dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 font-mono text-[11px] whitespace-pre-wrap leading-relaxed">
+[VEHÍCULO]
+- Matrícula: 1234-XYZ
+- Presión de neumáticos recomendada: 2.9 bar (42 psi)
+- Teléfono de asistencia 24h: 900 123 456
+
+[GARAGE Y CLAVES]
+- Código portón garaje: #8821*
+- Alarma de casa: 5821
+- Wi-Fi invitados: ClaveSegura2026
+      </article>
+    </section>
   </main>
 
-  <!-- MODAL GROK: CÓMO HACER QUE GROK LEA TUS DATOS SIN EJECUTAR JAVASCRIPT -->
-  <div id="modal-grok" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
-    <div class="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3.5 text-zinc-900 dark:text-zinc-100 max-h-[92vh] overflow-y-auto text-xs">
-      
-      <div class="flex items-center justify-between border-b pb-2.5 dark:border-zinc-800">
-        <h3 class="text-sm font-bold flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-          <span>⚡</span> ¿Cómo lee Grok este archivo en tu Tesla?
-        </h3>
-        <button id="modal-grok-close" class="text-zinc-400 hover:text-zinc-600 p-1">✕</button>
-      </div>
-
-      <!-- Explicación técnica clara -->
-      <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-blue-950 dark:text-blue-200 space-y-1">
-        <p class="font-bold">Por qué Grok decía que no tenía acceso:</p>
-        <p>El rastreador de Grok hace peticiones HTTP estáticas y <strong>no ejecuta JavaScript ni carga localStorage</strong>. Por eso, al intentar leer una web normal, la encontraba en blanco.</p>
-      </div>
-
-      <!-- La solución automática -->
-      <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-2">
-        <p class="font-bold text-emerald-900 dark:text-emerald-300">
-          ✅ Tu Enlace Directo para Grok (Servidor de Texto Puro sin JS):
-        </p>
-        <p class="text-zinc-600 dark:text-zinc-300">
-          Tu Apps Script devuelve el texto directamente como contenido plano cuando Grok lo consulta.
-        </p>
-        <div class="flex gap-1.5">
-          <input id="grok-direct-url" readonly type="text" class="flex-1 px-2.5 py-1.5 bg-white dark:bg-zinc-800 border rounded-lg font-mono text-[11px] text-zinc-800 dark:text-zinc-200" value="Configura primero tu enlace de Google Drive" />
-          <button id="btn-copy-grok-url" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold shrink-0">Copiar URL</button>
-        </div>
-      </div>
-
-      <!-- Ejemplos de uso con Grok -->
-      <div class="space-y-1.5">
-        <p class="font-semibold text-zinc-700 dark:text-zinc-300">¿Cómo preguntarle a Grok en el Tesla?</p>
-        <div class="p-2.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg space-y-1 font-mono text-[11px] text-zinc-700 dark:text-zinc-300">
-          <p>💬 <em>"Grok, consulta en [pega tu URL] y dime cuál es la presión recomendada de mis ruedas"</em></p>
-          <p>💬 <em>"Grok, lee [pega tu URL] y recuérdame el código del garaje"</em></p>
-        </div>
-      </div>
-
-      <!-- Prompt copiable alternativo -->
-      <div class="space-y-1 pt-1">
-        <div class="flex justify-between items-center">
-          <span class="font-semibold text-zinc-700 dark:text-zinc-300">Opción 2: Pegar datos directamente en el chat de Grok</span>
-          <button id="btn-copy-full-prompt" class="text-blue-600 dark:text-blue-400 underline font-medium">Copiar todo el texto formateado</button>
-        </div>
-      </div>
-
-      <div class="pt-2 flex justify-end">
-        <button id="btn-grok-done" class="px-4 py-1.5 bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 rounded-lg font-semibold">Entendido</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL DE CONFIGURACIÓN GOOGLE DRIVE (GOOGLE APPS SCRIPT) -->
-  <div id="modal-drive" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
-    <div class="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 flex flex-col max-h-[92vh]">
-      
-      <div class="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-        <h3 class="text-sm font-semibold flex items-center gap-1.5">
-          <span>☁️</span> Conexión Drive & Grok para Tesla
-        </h3>
-        <button id="modal-drive-close" class="text-zinc-400 hover:text-zinc-600 p-1">✕</button>
-      </div>
-
-      <div class="p-4 space-y-3 overflow-y-auto text-xs">
-        <div>
-          <label class="block font-semibold mb-1">URL de tu Google Apps Script:</label>
-          <div class="flex gap-1.5">
-            <input id="input-drive-url" type="url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="flex-1 px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
-            <button id="btn-test-drive" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shrink-0">Probar</button>
-          </div>
-          <div id="drive-test-msg" class="text-[11px] mt-1.5 font-medium hidden p-2 rounded-lg"></div>
-        </div>
-
-        <div class="border-t pt-2.5 dark:border-zinc-800 space-y-2">
-          <p class="font-bold text-zinc-700 dark:text-zinc-300">
-            Código Apps Script (Optimizado para que Grok lo lea sin JavaScript):
-          </p>
-          <p class="text-[11px] text-zinc-500">
-            Copia este código en tu <a href="https://script.google.com" target="_blank" class="text-blue-600 underline">script.google.com</a>, pulsa <strong>Implementar &gt; Nueva implementación &gt; Aplicación Web &gt; Acceso: Cualquier usuario</strong>.
-          </p>
-          <button id="btn-copy-script" class="w-full py-1.5 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-lg font-semibold text-xs transition-colors">
-            📋 Copiar Código Actualizado de Apps Script
-          </button>
-        </div>
-      </div>
-
-      <div class="px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
-        <button id="btn-drive-cancel" class="text-xs text-zinc-500">Cancelar</button>
-        <button id="btn-drive-save-url" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-xs">Guardar Configuración</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL DE CONFIRMACIÓN TRIPLE (LIMPIAR DATOS) -->
-  <div id="modal-clear" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
-    <div class="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-red-200 dark:border-red-900/40 p-5 text-zinc-900 dark:text-zinc-100 space-y-4">
+  <!-- MODAL DE CONFIGURACIÓN GITHUB API (GUARDADO AUTOMÁTICO DESDE EL TESLA) -->
+  <div id="modal-gh" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
+    <div class="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3 text-zinc-900 dark:text-zinc-100 text-xs">
       
       <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
-        <h3 class="text-sm font-bold text-red-600 flex items-center gap-1.5">
-          <span>⚠️</span> Limpiar hoja de datos
+        <h3 class="text-sm font-bold flex items-center gap-1.5">
+          <span>⚙️</span> Conectar con tu GitHub (BoardingGate)
         </h3>
-        <button id="modal-clear-close" class="text-zinc-400 hover:text-zinc-600">✕</button>
+        <button id="modal-gh-close" class="text-zinc-400 hover:text-zinc-600 p-1">✕</button>
       </div>
 
-      <!-- Barra de progreso 3 pasos -->
-      <div class="grid grid-cols-3 gap-1.5">
-        <div id="step-bar-1" class="h-1 rounded-full bg-red-500"></div>
-        <div id="step-bar-2" class="h-1 rounded-full bg-zinc-200 dark:bg-zinc-700"></div>
-        <div id="step-bar-3" class="h-1 rounded-full bg-zinc-200 dark:bg-zinc-700"></div>
-      </div>
+      <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+        Configura esto <strong>una sola vez</strong>. Así, cada vez que pulses "Guardar en GitHub" en la pantalla del coche, el archivo de GitHub se actualizará automáticamente con tu texto real para que Grok lo lea al momento.
+      </p>
 
-      <!-- Paso 1 -->
-      <div id="step-content-1" class="space-y-3 text-xs">
-        <p class="text-zinc-600 dark:text-zinc-300">Paso 1 de 3: ¿Deseas vaciar todo el contenido de la hoja?</p>
-        <div class="flex justify-end gap-2">
-          <button id="step-1-cancel" class="px-3 py-1.5 text-zinc-500">Cancelar</button>
-          <button id="step-1-next" class="px-3 py-1.5 font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-lg">Paso 2 →</button>
+      <div class="space-y-2">
+        <div>
+          <label class="block font-semibold mb-0.5">Usuario de GitHub:</label>
+          <input id="gh-user" type="text" placeholder="Ej: tu-usuario" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-0.5">Repositorio:</label>
+          <input id="gh-repo" type="text" value="BoardingGate" placeholder="BoardingGate" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-0.5">Ruta del archivo en el repositorio:</label>
+          <input id="gh-path" type="text" value="repositorio.html" placeholder="repositorio.html o index.html" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-0.5">GitHub Personal Access Token (Classic o Fine-grained con permiso de Repo):</label>
+          <input id="gh-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
+          <p class="text-[10px] text-zinc-500 mt-0.5">Se crea gratis en GitHub &gt; Settings &gt; Developer settings &gt; Personal access tokens.</p>
         </div>
       </div>
 
-      <!-- Paso 2 -->
-      <div id="step-content-2" class="hidden space-y-3 text-xs">
-        <p class="text-zinc-600 dark:text-zinc-300">Paso 2 de 3: Perderás la información no guardada en Drive.</p>
-        <button id="step-2-backup" class="w-full py-1.5 px-2 font-medium border border-zinc-300 dark:border-zinc-700 rounded-lg bg-zinc-50 dark:bg-zinc-800">
-          📋 Copiar respaldo al portapapeles
-        </button>
-        <div class="flex justify-between">
-          <button id="step-2-back" class="text-zinc-500">← Atrás</button>
-          <button id="step-2-next" class="px-3 py-1.5 font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg">Paso 3 Final →</button>
-        </div>
-      </div>
-
-      <!-- Paso 3 -->
-      <div id="step-content-3" class="hidden space-y-3 text-xs">
-        <p class="text-zinc-600 dark:text-zinc-300">Paso 3 de 3: Escribe <strong class="text-red-600 font-mono">BORRAR</strong> para confirmar:</p>
-        <input id="step-3-input" type="text" placeholder="BORRAR" class="w-full px-2.5 py-1.5 border-2 border-red-300 dark:border-red-800 rounded-lg font-mono text-xs uppercase bg-white dark:bg-zinc-800" />
-        <div class="flex justify-between items-center">
-          <button id="step-3-back" class="text-zinc-500">← Atrás</button>
-          <button id="step-3-confirm" disabled class="px-4 py-1.5 font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-40 rounded-lg">
-            Borrar Todo
-          </button>
-        </div>
+      <div class="pt-2 flex justify-between items-center border-t dark:border-zinc-800">
+        <button id="btn-gh-cancel" class="text-zinc-500">Cancelar</button>
+        <button id="btn-gh-save" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold">Guardar Configuración</button>
       </div>
     </div>
   </div>
 
-  <!-- JAVASCRIPT: LÓGICA COMPACTA Y AUTO-HIDE EN SCROLL -->
+  <!-- JAVASCRIPT: SINCRONIZACIÓN Y GUARDADO REAL EN GITHUB -->
   <script>
-    const STORAGE_KEY = 'tesla_grok_doc_content';
-    const TITLE_KEY = 'tesla_grok_doc_title';
-    const SCRIPT_URL_KEY = 'tesla_drive_script_url';
+    const STORAGE_KEY = 'tesla_grok_content';
+    const GH_CONFIG_KEY = 'tesla_gh_config';
 
     const editor = document.getElementById('editor');
-    const docTitle = document.getElementById('doc-title');
-    const syncStatus = document.getElementById('sync-status');
+    const grokArticleDisplay = document.getElementById('grok-article-display');
     const statWords = document.getElementById('stat-words');
-    const statChars = document.getElementById('stat-chars');
-    const badgeDrive = document.getElementById('badge-drive');
-    const btnConfigText = document.getElementById('btn-config-text');
-    const grokDirectUrlInput = document.getElementById('grok-direct-url');
     const topBar = document.getElementById('top-bar');
 
-    // AUTO-HIDE CABECERA AL HACER SCROLL PARA PANTALLA DE TESLA
+    // Auto-ocultación de cabecera al hacer scroll en Tesla
     let lastScrollY = window.scrollY;
     window.addEventListener('scroll', () => {
       const currentScrollY = window.scrollY;
       if (currentScrollY > 40 && currentScrollY > lastScrollY) {
-        // Desplazando hacia abajo: ocultar cabecera para ganar altura
         topBar.classList.add('hide-header');
       } else {
-        // Desplazando hacia arriba: mostrar cabecera
         topBar.classList.remove('hide-header');
       }
       lastScrollY = currentScrollY;
     }, { passive: true });
 
-    // Inicializar URLs y Estados
-    let driveScriptUrl = localStorage.getItem(SCRIPT_URL_KEY) || '';
-    function updateDriveStatus() {
-      if (driveScriptUrl) {
-        btnConfigText.textContent = 'Drive ✓';
-        badgeDrive.textContent = 'Drive Conectado';
-        badgeDrive.className = 'text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
-        // URL que entrega texto directo sin JS para Grok
-        grokDirectUrlInput.value = driveScriptUrl + '?grok=1';
-      } else {
-        btnConfigText.textContent = 'Drive';
-        badgeDrive.textContent = 'Local';
-        badgeDrive.className = 'text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400';
-        grokDirectUrlInput.value = 'Configura tu URL de Google Apps Script';
-      }
-    }
-    updateDriveStatus();
+    // Cargar contenido inicial (priorizando si ya viene dentro del HTML estático)
+    const initialStaticText = grokArticleDisplay.textContent.trim();
+    const savedLocalText = localStorage.getItem(STORAGE_KEY);
 
-    editor.value = localStorage.getItem(STORAGE_KEY) || '';
-    docTitle.value = localStorage.getItem(TITLE_KEY) || 'Tesla_Grok_Knowledge_Base.txt';
-
-    const storedDriveUrl = localStorage.getItem('tesla_drive_file_url');
-    if (storedDriveUrl) {
-      const link = document.getElementById('drive-link');
-      link.href = storedDriveUrl;
-      link.classList.remove('hidden');
-      link.classList.add('inline-flex');
+    if (savedLocalText) {
+      editor.value = savedLocalText;
+    } else if (initialStaticText) {
+      editor.value = initialStaticText;
     }
+
+    function updatePreview() {
+      const text = editor.value;
+      grokArticleDisplay.textContent = text || 'Sin contenido registrado aún.';
+      statWords.textContent = (text.trim() ? text.trim().split(/\s+/).length : 0) + ' palabras';
+      localStorage.setItem(STORAGE_KEY, text);
+    }
+    editor.addEventListener('input', updatePreview);
+    updatePreview();
 
     function showToast(msg, type = 'info') {
       const toast = document.getElementById('toast');
@@ -358,338 +228,120 @@ Ejemplos:
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
 
-    function updateStats() {
-      const text = editor.value;
-      statWords.textContent = (text.trim() ? text.trim().split(/\s+/).length : 0) + ' palabras';
-      statChars.textContent = text.length + ' car';
-      localStorage.setItem(STORAGE_KEY, text);
+    // GESTIÓN DE CONFIGURACIÓN GITHUB
+    let ghConfig = JSON.parse(localStorage.getItem(GH_CONFIG_KEY) || '{}');
+    const modalGh = document.getElementById('modal-gh');
+
+    function openGhModal() {
+      document.getElementById('gh-user').value = ghConfig.user || '';
+      document.getElementById('gh-repo').value = ghConfig.repo || 'BoardingGate';
+      document.getElementById('gh-path').value = ghConfig.path || 'repositorio.html';
+      document.getElementById('gh-token').value = ghConfig.token || '';
+      modalGh.classList.remove('hidden');
+      modalGh.classList.add('flex');
     }
-    editor.addEventListener('input', updateStats);
-    updateStats();
-
-    docTitle.addEventListener('input', () => {
-      localStorage.setItem(TITLE_KEY, docTitle.value);
-    });
-
-    // Cargar automáticamente de Drive al iniciar
-    async function autoLoadFromDrive() {
-      if (!driveScriptUrl) return;
-      syncStatus.textContent = 'Cargando de Drive...';
-      try {
-        const fileName = docTitle.value.trim() || 'Tesla_Grok_Knowledge_Base.txt';
-        const res = await fetch(driveScriptUrl + '?action=get&format=json&filename=' + encodeURIComponent(fileName));
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.status === 'success' && data.content !== undefined) {
-            editor.value = data.content;
-            updateStats();
-            syncStatus.textContent = 'Drive OK (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
-            if (data.url) {
-              localStorage.setItem('tesla_drive_file_url', data.url);
-              const link = document.getElementById('drive-link');
-              link.href = data.url;
-              link.classList.remove('hidden');
-              link.classList.add('inline-flex');
-            }
-          }
-        }
-      } catch (err) {
-        syncStatus.textContent = 'Modo local';
-      }
+    function closeGhModal() {
+      modalGh.classList.add('hidden');
+      modalGh.classList.remove('flex');
     }
-    autoLoadFromDrive();
+    document.getElementById('btn-config-gh').onclick = openGhModal;
+    document.getElementById('modal-gh-close').onclick = closeGhModal;
+    document.getElementById('btn-gh-cancel').onclick = closeGhModal;
 
-    // Guardar en Google Drive
-    async function saveToDrive() {
-      localStorage.setItem(STORAGE_KEY, editor.value);
-      localStorage.setItem(TITLE_KEY, docTitle.value);
+    document.getElementById('btn-gh-save').onclick = () => {
+      ghConfig = {
+        user: document.getElementById('gh-user').value.trim(),
+        repo: document.getElementById('gh-repo').value.trim(),
+        path: document.getElementById('gh-path').value.trim(),
+        token: document.getElementById('gh-token').value.trim()
+      };
+      localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(ghConfig));
+      showToast('Configuración de GitHub guardada.', 'success');
+      closeGhModal();
+    };
 
-      if (!driveScriptUrl) {
-        openDriveModal();
-        showToast('Configura tu URL de Google Apps Script', 'info');
+    // GUARDADO DIRECTO EN GITHUB MEDIANTE API (ACTUALIZA EL ARCHIVO REAL EN EL REPOSITORIO)
+    async function saveDirectToGitHub() {
+      if (!ghConfig.user || !ghConfig.repo || !ghConfig.token || !ghConfig.path) {
+        showToast('Configura primero los datos de tu GitHub', 'info');
+        openGhModal();
         return;
       }
 
       const btnSaveText = document.getElementById('btn-save-text');
-      btnSaveText.textContent = '...';
+      btnSaveText.textContent = 'Actualizando GitHub...';
+
       try {
-        const fileName = docTitle.value.trim() || 'Tesla_Grok_Knowledge_Base.txt';
-        const payload = {
-          action: 'save',
-          filename: fileName,
-          content: editor.value
-        };
-        const res = await fetch(driveScriptUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-          const data = await res.json();
-          syncStatus.textContent = 'Guardado ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-          if (data.url) {
-            localStorage.setItem('tesla_drive_file_url', data.url);
-            const link = document.getElementById('drive-link');
-            link.href = data.url;
-            link.classList.remove('hidden');
-            link.classList.add('inline-flex');
+        // 1. Obtener el archivo actual y su SHA
+        const apiUrl = `https://api.github.com/repos/${ghConfig.user}/${ghConfig.repo}/contents/${ghConfig.path}`;
+        const getRes = await fetch(apiUrl, {
+          headers: {
+            'Authorization': `Bearer ${ghConfig.token}`,
+            'Accept': 'application/vnd.github.v3+json'
           }
-          showToast('Guardado en Google Drive y listo para Grok.', 'success');
-        } else {
-          showToast('Error en la respuesta de Google Drive.', 'error');
+        });
+
+        let sha = null;
+        if (getRes.ok) {
+          const fileData = await getRes.json();
+          sha = fileData.sha;
         }
-      } catch (e) {
-        showToast('Error de conexión al guardar.', 'error');
-      } finally {
-        btnSaveText.textContent = 'Guardar';
-      }
-    }
-    document.getElementById('btn-save').addEventListener('click', saveToDrive);
 
-    // Atajo Ctrl+S
-    window.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-        e.preventDefault();
-        saveToDrive();
-      }
-    });
+        // 2. Generar el código HTML completo con los datos escritos dentro del DOM
+        let fullHtml = document.documentElement.outerHTML;
+        // Inyectar el texto seguro en el bloque del artículo
+        const safeText = editor.value.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        fullHtml = fullHtml.replace(
+          /<article id="grok-article-display"[\s\S]*?<\/article>/,
+          `<article id="grok-article-display" class="prose dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 font-mono text-[11px] whitespace-pre-wrap leading-relaxed">\n${safeText}\n      </article>`
+        );
 
-    // MODAL DE CONFIGURACIÓN DRIVE
-    const modalDrive = document.getElementById('modal-drive');
-    const inputDriveUrl = document.getElementById('input-drive-url');
-    function openDriveModal() {
-      inputDriveUrl.value = driveScriptUrl;
-      modalDrive.classList.remove('hidden');
-      modalDrive.classList.add('flex');
-    }
-    function closeDriveModal() {
-      modalDrive.classList.add('hidden');
-      modalDrive.classList.remove('flex');
-    }
-    document.getElementById('btn-config-drive').onclick = openDriveModal;
-    document.getElementById('modal-drive-close').onclick = closeDriveModal;
-    document.getElementById('btn-drive-cancel').onclick = closeDriveModal;
+        // Codificar en Base64 UTF-8 para GitHub API
+        const base64Content = btoa(unescape(encodeURIComponent('<!DOCTYPE html>\n' + fullHtml)));
 
-    document.getElementById('btn-drive-save-url').onclick = () => {
-      driveScriptUrl = inputDriveUrl.value.trim();
-      localStorage.setItem(SCRIPT_URL_KEY, driveScriptUrl);
-      updateDriveStatus();
-      if (driveScriptUrl) {
-        showToast('Drive conectado correctamente.', 'success');
-        autoLoadFromDrive();
-      }
-      closeDriveModal();
-    };
-
-    // PROBAR CONEXIÓN
-    document.getElementById('btn-test-drive').onclick = async () => {
-      const url = inputDriveUrl.value.trim();
-      const msg = document.getElementById('drive-test-msg');
-      if (!url) return;
-      msg.textContent = 'Probando guardado...';
-      msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700';
-      try {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        // 3. Hacer el commit a GitHub
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${ghConfig.token}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github.v3+json'
+          },
           body: JSON.stringify({
-            action: 'save',
-            filename: 'Tesla_Grok_Knowledge_Base.txt',
-            content: editor.value || 'Prueba de conexión Tesla & Grok OK.'
+            message: 'Actualización de notas Tesla para Grok',
+            content: base64Content,
+            sha: sha || undefined
           })
         });
-        const data = await res.json();
-        if (data.status === 'success') {
-          msg.textContent = '¡Conexión verificada con éxito!';
-          msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700';
+
+        if (putRes.ok) {
+          showToast('¡Guardado en GitHub con éxito! Grok ya puede leerlo.', 'success');
         } else {
-          msg.textContent = 'Error: ' + data.message;
-          msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 text-red-700';
+          const errData = await putRes.json();
+          showToast('Error de GitHub: ' + (errData.message || 'Comprueba tu Token'), 'error');
         }
       } catch (err) {
-        msg.textContent = 'Fallo de conexión: ' + err.message;
-        msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 text-red-700';
-      }
-    };
-
-    // CÓDIGO DE APPS SCRIPT PREPARADO PARA CRAWLERS DE GROK (SIN JAVASCRIPT)
-    const APPS_SCRIPT_GROK_CODE = `function doPost(e) {
-  try {
-    var fileName = "Tesla_Grok_Knowledge_Base.txt";
-    var content = "";
-    if (e && e.postData && e.postData.contents) {
-      try {
-        var parsed = JSON.parse(e.postData.contents);
-        if (parsed.filename) fileName = parsed.filename;
-        if (parsed.content !== undefined) content = parsed.content;
-      } catch (err) {
-        content = e.postData.contents;
+        showToast('Fallo de conexión con GitHub', 'error');
+      } finally {
+        btnSaveText.textContent = 'Guardar en GitHub';
       }
     }
-    var files = DriveApp.getRootFolder().getFilesByName(fileName);
-    var file = null;
-    while (files.hasNext()) {
-      var candidate = files.next();
-      if (!candidate.isTrashed()) { file = candidate; break; }
-    }
-    if (file) {
-      file.setContent(content);
-    } else {
-      file = DriveApp.getRootFolder().createFile(fileName, content, MimeType.PLAIN_TEXT);
-    }
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "success",
-      id: file.getId(),
-      url: file.getUrl(),
-      fileName: file.getName()
-    })).setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
-  }
-}
+    document.getElementById('btn-save-github').onclick = saveDirectToGitHub;
 
-// doGet: Si lo llama la web con format=json devuelve JSON.
-// Si lo llama Grok, un navegador o cualquier crawler, DEVUELVE EL TEXTO PURO DIRECTAMENTE SIN JAVASCRIPT.
-function doGet(e) {
-  try {
-    var fileName = (e && e.parameter && e.parameter.filename) || "Tesla_Grok_Knowledge_Base.txt";
-    var files = DriveApp.getRootFolder().getFilesByName(fileName);
-    var target = null;
-    while (files.hasNext()) {
-      var f = files.next();
-      if (!f.isTrashed()) { target = f; break; }
-    }
-    var content = target ? target.getBlob().getDataAsString() : "Sin datos registrados aun.";
-    
-    // Si la web pide formato JSON explícito
-    if (e && e.parameter && e.parameter.format === "json") {
-      return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        content: content,
-        url: target ? target.getUrl() : ""
-      })).setMimeType(ContentService.MimeType.JSON);
-    }
-    
-    // Para Grok en el Tesla y lectores directos: TEXTO PLANO PURO
-    return ContentService.createTextOutput(content).setMimeType(ContentService.MimeType.TEXT);
-  } catch (err) {
-    return ContentService.createTextOutput("Error al leer datos: " + err.toString()).setMimeType(ContentService.MimeType.TEXT);
-  }
-}`;
-
-    document.getElementById('btn-copy-script').onclick = () => {
-      navigator.clipboard.writeText(APPS_SCRIPT_GROK_CODE);
-      showToast('Código de Apps Script copiado.', 'success');
-    };
-
-    // MODAL GROK
-    const modalGrok = document.getElementById('modal-grok');
-    document.getElementById('btn-grok').onclick = () => {
-      updateDriveStatus();
-      modalGrok.classList.remove('hidden');
-      modalGrok.classList.add('flex');
-    };
-    document.getElementById('modal-grok-close').onclick = () => {
-      modalGrok.classList.add('hidden');
-      modalGrok.classList.remove('flex');
-    };
-    document.getElementById('btn-grok-done').onclick = () => {
-      modalGrok.classList.add('hidden');
-      modalGrok.classList.remove('flex');
-    };
-    document.getElementById('btn-copy-grok-url').onclick = () => {
-      if (driveScriptUrl) {
-        navigator.clipboard.writeText(driveScriptUrl + '?grok=1');
-        showToast('URL directa para Grok copiada.', 'success');
-      } else {
-        openDriveModal();
-      }
-    };
-    document.getElementById('btn-copy-full-prompt').onclick = () => {
-      const full = `[DATOS DE MI VEHÍCULO Y NOTAS PERSONALES]:\n${editor.value}\n\n====================\nResponde concisamente como asistente de Tesla basándote en la información anterior.`;
-      navigator.clipboard.writeText(full);
-      showToast('Prompt completo copiado.', 'success');
-    };
-
-    // TRIPLE CONFIRMACIÓN PARA LIMPIAR
-    const modalClear = document.getElementById('modal-clear');
-    const step1 = document.getElementById('step-content-1');
-    const step2 = document.getElementById('step-content-2');
-    const step3 = document.getElementById('step-content-3');
-    const step3Input = document.getElementById('step-3-input');
-    const step3Confirm = document.getElementById('step-3-confirm');
-
-    function openClearModal() {
-      modalClear.classList.remove('hidden');
-      modalClear.classList.add('flex');
-      showStep(1);
-    }
-    function closeClearModal() {
-      modalClear.classList.add('hidden');
-      modalClear.classList.remove('flex');
-      step3Input.value = '';
-      step3Confirm.disabled = true;
-    }
-    function showStep(num) {
-      step1.classList.toggle('hidden', num !== 1);
-      step2.classList.toggle('hidden', num !== 2);
-      step3.classList.toggle('hidden', num !== 3);
-      document.getElementById('step-bar-1').className = num >= 1 ? 'h-1 rounded-full bg-red-500' : 'h-1 rounded-full bg-zinc-200';
-      document.getElementById('step-bar-2').className = num >= 2 ? 'h-1 rounded-full bg-red-500' : 'h-1 rounded-full bg-zinc-200';
-      document.getElementById('step-bar-3').className = num >= 3 ? 'h-1 rounded-full bg-red-600 animate-pulse' : 'h-1 rounded-full bg-zinc-200';
-    }
-
-    document.getElementById('btn-clear').onclick = openClearModal;
-    document.getElementById('modal-clear-close').onclick = closeClearModal;
-    document.getElementById('step-1-cancel').onclick = closeClearModal;
-    document.getElementById('step-1-next').onclick = () => showStep(2);
-    document.getElementById('step-2-back').onclick = () => showStep(1);
-    document.getElementById('step-2-next').onclick = () => showStep(3);
-    document.getElementById('step-3-back').onclick = () => showStep(2);
-    document.getElementById('step-2-backup').onclick = () => {
-      navigator.clipboard.writeText(editor.value);
-      showToast('Copia de respaldo copiada.', 'success');
-    };
-    step3Input.addEventListener('input', (e) => {
-      step3Confirm.disabled = e.target.value.trim().toUpperCase() !== 'BORRAR';
-    });
-    step3Confirm.onclick = () => {
-      editor.value = '';
-      updateStats();
-      closeClearModal();
-      showToast('Hoja limpiada.', 'info');
-    };
-
-    // BOTONES AUXILIARES
-    document.getElementById('btn-copy-all').onclick = () => {
-      navigator.clipboard.writeText(editor.value);
-      showToast('Texto copiado.', 'success');
-    };
-
-    document.getElementById('btn-template').onclick = () => {
-      editor.value = `🚗 BASE DE DATOS PERSONAL PARA TESLA & GROK
-=====================================================
-[DATOS DEL VEHÍCULO]
-- Modelo: Tesla Model 3 / Model Y
-- Matrícula: 1234-XYZ
-- Presión recomendada neumáticos: 2.9 bar (42 psi)
-- Asistencia en carretera 24h: +34 900 123 456
-- Número de póliza de seguro: POL-889922
-
-[PUNTOS DE RECARGA]
-- Supercharger habitual: Área Km 45 (V3 250kW)
-- Clave de poste garaje: 4489
-
-[CÓDIGOS Y ACCESOS]
-- Puerta garaje: #9201*
-- Alarma de casa: 5821
-- Wi-Fi invitados: ClaveSegura2026
-
-[NOTAS RÁPIDAS]
-- Cita ITV: 15 de Noviembre
-- Repuesto en guantera: Fusibles y linterna`;
-      updateStats();
-      showToast('Plantilla cargada.', 'success');
+    // DESCARGAR ARCHIVO HTML LISTO CON LOS DATOS INCRUSTADOS (OPCIÓN MANUAL)
+    document.getElementById('btn-download-html').onclick = () => {
+      let fullHtml = document.documentElement.outerHTML;
+      const safeText = editor.value.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      fullHtml = fullHtml.replace(
+        /<article id="grok-article-display"[\s\S]*?<\/article>/,
+        `<article id="grok-article-display" class="prose dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 font-mono text-[11px] whitespace-pre-wrap leading-relaxed">\n${safeText}\n      </article>`
+      );
+      const blob = new Blob(['<!DOCTYPE html>\n' + fullHtml], { type: 'text/html;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = ghConfig.path || 'repositorio.html';
+      a.click();
+      showToast('Archivo descargado con tus datos listos para GitHub.', 'success');
     };
 
     // MODO NOCHE TESLA
