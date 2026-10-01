@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<html lang="es"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Base de Datos Tesla — BoardingGate</title>
-  <meta name="description" content="Base de datos de notas del vehículo accesible para el asistente Grok en Tesla." />
+  <meta name="description" content="Base de datos de notas del vehículo accesible para el asistente Grok en Tesla.">
   
   <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script><link type="text/css" rel="stylesheet" id="dark-mode-custom-link"><link type="text/css" rel="stylesheet" id="dark-mode-general-link"><style lang="en" type="text/css" id="dark-mode-custom-style"></style><style lang="en" type="text/css" id="dark-mode-native-style"></style><style lang="en" type="text/css" id="dark-mode-native-sheet"></style>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -34,12 +33,12 @@
     }
     textarea:focus { outline: none; }
   </style>
-</head>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.fixed{position:fixed}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.right-2{right:0.5rem}.top-0{top:0px}.top-2{top:0.5rem}.z-30{z-index:30}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mb-0\.5{margin-bottom:0.125rem}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mt-0\.5{margin-top:0.125rem}.mt-4{margin-top:1rem}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.hidden{display:none}.h-3\.5{height:0.875rem}.h-6{height:1.5rem}.min-h-\[60vh\]{min-height:60vh}.min-h-screen{min-height:100vh}.w-3\.5{width:0.875rem}.w-6{width:1.5rem}.w-full{width:100%}.max-w-5xl{max-width:64rem}.max-w-7xl{max-width:80rem}.max-w-md{max-width:28rem}.max-w-none{max-width:none}.max-w-sm{max-width:24rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.resize-none{resize:none}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.whitespace-pre-wrap{white-space:pre-wrap}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-none{border-style:none}.border-blue-200{--tw-border-opacity:1;border-color:rgb(191 219 254 / var(--tw-border-opacity, 1))}.border-zinc-200{--tw-border-opacity:1;border-color:rgb(228 228 231 / var(--tw-border-opacity, 1))}.border-zinc-300{--tw-border-opacity:1;border-color:rgb(212 212 216 / var(--tw-border-opacity, 1))}.border-blue-300{--tw-border-opacity:1;border-color:rgb(147 197 253 / var(--tw-border-opacity, 1))}.border-emerald-300{--tw-border-opacity:1;border-color:rgb(110 231 183 / var(--tw-border-opacity, 1))}.bg-black\/70{background-color:rgb(0 0 0 / 0.7)}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-blue-600{--tw-bg-opacity:1;background-color:rgb(37 99 235 / var(--tw-bg-opacity, 1))}.bg-emerald-100{--tw-bg-opacity:1;background-color:rgb(209 250 229 / var(--tw-bg-opacity, 1))}.bg-transparent{background-color:transparent}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/95{background-color:rgb(255 255 255 / 0.95)}.bg-zinc-100{--tw-bg-opacity:1;background-color:rgb(244 244 245 / var(--tw-bg-opacity, 1))}.bg-zinc-50{--tw-bg-opacity:1;background-color:rgb(250 250 250 / var(--tw-bg-opacity, 1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245 / var(--tw-bg-opacity, 1))}.p-0{padding:0px}.p-1{padding:0.25rem}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.px-1\.5{padding-left:0.375rem;padding-right:0.375rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.pb-2{padding-bottom:0.5rem}.pt-2{padding-top:0.5rem}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace}.font-sans{font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[9px\]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-normal{font-weight:400}.font-semibold{font-weight:600}.leading-relaxed{line-height:1.625}.tracking-tight{letter-spacing:-0.025em}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-blue-900{--tw-text-opacity:1;color:rgb(30 58 138 / var(--tw-text-opacity, 1))}.text-emerald-700{--tw-text-opacity:1;color:rgb(4 120 87 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-zinc-400{--tw-text-opacity:1;color:rgb(161 161 170 / var(--tw-text-opacity, 1))}.text-zinc-500{--tw-text-opacity:1;color:rgb(113 113 122 / var(--tw-text-opacity, 1))}.text-zinc-600{--tw-text-opacity:1;color:rgb(82 82 91 / var(--tw-text-opacity, 1))}.text-zinc-700{--tw-text-opacity:1;color:rgb(63 63 70 / var(--tw-text-opacity, 1))}.text-zinc-800{--tw-text-opacity:1;color:rgb(39 39 42 / var(--tw-text-opacity, 1))}.text-zinc-900{--tw-text-opacity:1;color:rgb(24 24 27 / var(--tw-text-opacity, 1))}.text-emerald-950{--tw-text-opacity:1;color:rgb(2 44 34 / var(--tw-text-opacity, 1))}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-200{transition-duration:200ms}.hover\:bg-blue-700:hover{--tw-bg-opacity:1;background-color:rgb(29 78 216 / var(--tw-bg-opacity, 1))}.hover\:bg-zinc-100:hover{--tw-bg-opacity:1;background-color:rgb(244 244 245 / var(--tw-bg-opacity, 1))}.hover\:text-zinc-600:hover{--tw-text-opacity:1;color:rgb(82 82 91 / var(--tw-text-opacity, 1))}.active\:scale-95:active{--tw-scale-x:.95;--tw-scale-y:.95;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.dark\:border-blue-900:is(.dark *){--tw-border-opacity:1;border-color:rgb(30 58 138 / var(--tw-border-opacity, 1))}.dark\:border-zinc-700:is(.dark *){--tw-border-opacity:1;border-color:rgb(63 63 70 / var(--tw-border-opacity, 1))}.dark\:border-zinc-800:is(.dark *){--tw-border-opacity:1;border-color:rgb(39 39 42 / var(--tw-border-opacity, 1))}.dark\:bg-blue-950\/40:is(.dark *){background-color:rgb(23 37 84 / 0.4)}.dark\:bg-emerald-950:is(.dark *){--tw-bg-opacity:1;background-color:rgb(2 44 34 / var(--tw-bg-opacity, 1))}.dark\:bg-zinc-800:is(.dark *){--tw-bg-opacity:1;background-color:rgb(39 39 42 / var(--tw-bg-opacity, 1))}.dark\:bg-zinc-900:is(.dark *){--tw-bg-opacity:1;background-color:rgb(24 24 27 / var(--tw-bg-opacity, 1))}.dark\:bg-zinc-900\/60:is(.dark *){background-color:rgb(24 24 27 / 0.6)}.dark\:bg-zinc-900\/95:is(.dark *){background-color:rgb(24 24 27 / 0.95)}.dark\:bg-zinc-950:is(.dark *){--tw-bg-opacity:1;background-color:rgb(9 9 11 / var(--tw-bg-opacity, 1))}.dark\:bg-blue-950:is(.dark *){--tw-bg-opacity:1;background-color:rgb(23 37 84 / var(--tw-bg-opacity, 1))}.dark\:text-blue-200:is(.dark *){--tw-text-opacity:1;color:rgb(191 219 254 / var(--tw-text-opacity, 1))}.dark\:text-emerald-300:is(.dark *){--tw-text-opacity:1;color:rgb(110 231 183 / var(--tw-text-opacity, 1))}.dark\:text-zinc-100:is(.dark *){--tw-text-opacity:1;color:rgb(244 244 245 / var(--tw-text-opacity, 1))}.dark\:text-zinc-200:is(.dark *){--tw-text-opacity:1;color:rgb(228 228 231 / var(--tw-text-opacity, 1))}.dark\:text-zinc-300:is(.dark *){--tw-text-opacity:1;color:rgb(212 212 216 / var(--tw-text-opacity, 1))}.dark\:text-zinc-400:is(.dark *){--tw-text-opacity:1;color:rgb(161 161 170 / var(--tw-text-opacity, 1))}.dark\:text-emerald-200:is(.dark *){--tw-text-opacity:1;color:rgb(167 243 208 / var(--tw-text-opacity, 1))}@media (min-width: 640px){.sm\:right-4{right:1rem}.sm\:top-4{top:1rem}.sm\:gap-1\.5{gap:0.375rem}.sm\:gap-2{gap:0.5rem}.sm\:p-4{padding:1rem}.sm\:p-6{padding:1.5rem}.sm\:px-4{padding-left:1rem;padding-right:1rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}}</style></head>
 <body class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
 
   <!-- AVISO TOAST FLOTANTE -->
-  <div id="toast" class="fixed top-2 right-2 sm:top-4 sm:right-4 z-50 hidden items-center gap-2 px-3 py-2 rounded-xl shadow-2xl text-xs sm:text-sm font-medium border transition-all duration-200">
-    <span id="toast-message"></span>
+  <div id="toast" class="fixed top-2 right-2 sm:top-4 sm:right-4 z-50 flex items-center gap-2 px-3 py-2 rounded-xl shadow-2xl text-xs sm:text-sm font-medium border max-w-sm bg-emerald-50 text-emerald-950 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-200">
+    <span id="toast-message">Configuración de GitHub guardada.</span>
   </div>
 
   <!-- CABECERA ULTRA COMPACTA (Auto-ocultable en Tesla) -->
@@ -60,7 +59,7 @@
         <!-- BOTÓN GUARDAR DIRECTO EN GITHUB -->
         <button id="btn-save-github" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition-all" title="Guardar cambios directamente en GitHub para que Grok los lea">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-          <span id="btn-save-text">Guardar en GitHub</span>
+          <span id="btn-save-text">Actualizando GitHub...</span>
         </button>
 
         <!-- BOTÓN CONFIGURAR CONEXIÓN GITHUB -->
@@ -88,15 +87,12 @@
     <!-- AVISO VISUAL DE FUNCIONAMIENTO -->
     <div class="mb-2 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-[11px] text-blue-900 dark:text-blue-200 flex items-center justify-between">
       <span>📖 <strong>Modo Lectura para Grok:</strong> Todo el texto que escribas abajo se guarda en el código HTML para que Grok lo lea al instante en el coche.</span>
-      <span id="stat-words" class="font-mono text-zinc-500">0 palabras</span>
+      <span id="stat-words" class="font-mono text-zinc-500">141 palabras</span>
     </div>
 
     <!-- ÁREA DE EDICIÓN ESTILO WORD (DONDE TÚ ESCRIBES EN LA PANTALLA) -->
     <div class="flex-1 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col p-4 sm:p-6">
-      <textarea
-        id="editor"
-        class="w-full flex-1 resize-none bg-transparent outline-none border-none p-0 leading-relaxed text-base sm:text-lg min-h-[60vh] text-zinc-900 dark:text-zinc-100 font-sans"
-        placeholder="Escribe aquí los datos para que Grok te los responda por voz en el Tesla...
+      <textarea id="editor" class="w-full flex-1 resize-none bg-transparent outline-none border-none p-0 leading-relaxed text-base sm:text-lg min-h-[60vh] text-zinc-900 dark:text-zinc-100 font-sans" placeholder="Escribe aquí los datos para que Grok te los responda por voz en el Tesla...
 
 Ejemplo:
 [VEHÍCULO]
@@ -107,8 +103,7 @@ Ejemplo:
 [GARAGE Y CLAVES]
 - Código portón garaje: #8821*
 - Alarma de casa: 5821
-- Wi-Fi invitados: ClaveSegura2026"
-      ></textarea>
+- Wi-Fi invitados: ClaveSegura2026"></textarea>
     </div>
 
     <!-- SECCIÓN DE TEXTO HTML ESTÁTICO (ESTO ES LO QUE GROK LEE FÍSICAMENTE AL ENTRAR A GITHUB, IGUAL QUE EN EL MARCA) -->
@@ -117,21 +112,40 @@ Ejemplo:
         <span>📄</span> Vista previa del contenido HTML que Grok lee:
       </h2>
       <article id="grok-article-display" class="prose dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 font-mono text-[11px] whitespace-pre-wrap leading-relaxed">
-[VEHÍCULO]
-- Matrícula: 1234-XYZ
-- Presión de neumáticos recomendada: 2.9 bar (42 psi)
-- Teléfono de asistencia 24h: 900 123 456
+🚗 BASE DE DATOS PERSONAL PARA TESLA & GROK
+=====================================================
 
-[GARAGE Y CLAVES]
-- Código portón garaje: #8821*
-- Alarma de casa: 5821
-- Wi-Fi invitados: ClaveSegura2026
+[DATOS DEL VEHÍCULO]
+- Modelo: Model 3 Highland
+- Matrícula: 5172 MPM
+- Presión recomendada: 2.9 bar (42 psi)
+- Asistencia Grúa Axa: 900 300 188  y  900 909 014 
+- Póliza seguro en AXA SEGUROS Nº póliza 88970079   vencimiento: 08 de abril 
+- Fecha compra: 01-05-2024
+
+[CÓDIGOS Y ACCESOS]
+- Wifi casa: teléfono suegros dos veces y un 1
+
+[NOTAS RÁPIDAS]
+- Llaves auxiliares:  debajo del asiento tarjeta, en salón otra y en el morro del coche un anillo NFT
+- Si falla actualización desconectar el USB, la guantera se abre de emergencia con palanqueta
+
+[TELÉFONOS]
+Gerardo : 649930389
+Noa  : 644314680  
+Email de NOA : noamartinez@gmail.com
+
+[CLAVES ACCESO A WEBS al dictarme las claves indica las letras si están en mayúsculas/minúsculas]
+Google:  suegro11Noa732611
+Amazon: YELTOROsuegroNoA  
+Apple:  NoaTelefonoardiaCarlos
+Bitwarden:  986suegroNoa
       </article>
     </section>
   </main>
 
   <!-- MODAL DE CONFIGURACIÓN GITHUB API (GUARDADO AUTOMÁTICO DESDE EL TESLA) -->
-  <div id="modal-gh" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
+  <div id="modal-gh" class="fixed inset-0 z-50 items-center justify-center p-3 bg-black/70 backdrop-blur-xs hidden">
     <div class="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3 text-zinc-900 dark:text-zinc-100 text-xs">
       
       <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
@@ -148,22 +162,22 @@ Ejemplo:
       <div class="space-y-2">
         <div>
           <label class="block font-semibold mb-0.5">Usuario de GitHub:</label>
-          <input id="gh-user" type="text" placeholder="Ej: tu-usuario" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
+          <input id="gh-user" type="text" placeholder="Ej: tu-usuario" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs">
         </div>
 
         <div>
           <label class="block font-semibold mb-0.5">Repositorio:</label>
-          <input id="gh-repo" type="text" value="BoardingGate" placeholder="BoardingGate" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
+          <input id="gh-repo" type="text" value="BoardingGate" placeholder="BoardingGate" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs">
         </div>
 
         <div>
           <label class="block font-semibold mb-0.5">Ruta del archivo en el repositorio:</label>
-          <input id="gh-path" type="text" value="repositorio.html" placeholder="repositorio.html o index.html" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
+          <input id="gh-path" type="text" value="repositorio.html" placeholder="repositorio.html o index.html" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs">
         </div>
 
         <div>
           <label class="block font-semibold mb-0.5">GitHub Personal Access Token (Classic o Fine-grained con permiso de Repo):</label>
-          <input id="gh-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
+          <input id="gh-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs">
           <p class="text-[10px] text-zinc-500 mt-0.5">Se crea gratis en GitHub &gt; Settings &gt; Developer settings &gt; Personal access tokens.</p>
         </div>
       </div>
@@ -358,5 +372,6 @@ Ejemplo:
       document.getElementById('theme-icon').textContent = '☀️';
     }
   </script>
-</body>
-</html>
+
+
+<div id="buffer-extension-hover-container" style="font-family: &quot;Roboto&quot;, sans-serif; display: none; position: absolute; z-index: 8675309; cursor: pointer; width: 67px;"><div id="buffer-extension-button-hover-container" style="position: relative; z-index: 8675309; width: 67px; height: 24px;"><span id="buffer-extension-hover-button" style="width: 67px; height: 24px; background-image: url(&quot;moz-extension://acdb2280-2de3-4c76-9e8c-a934e70d0bb0/buffer-hover-button.svg&quot;); background-size: 67px 24px; cursor: pointer; opacity: 0.9; display: block; position: relative; z-index: 8675309;"></span><div id="buffer-extension-button-menu" style="position: relative; z-index: 8675308; width: 140px; height: 94px; display: none; bottom: 94px; right: 75px;"><div style="font-size: 14px; width: 140px; display: block; cursor: pointer; padding: 0px 4px; color: rgb(61, 61, 61); line-height: 28px; background-color: rgba(255, 255, 255, 0.8); border-top-left-radius: 4px; border-top-right-radius: 4px; height: 4px;"></div><div id="buffer-extension-create" class="buffer-extension-hover-button" style="font-size: 14px; width: 140px; height: 28px; display: block; cursor: pointer; padding: 0px 4px; color: rgb(61, 61, 61); line-height: 28px;"><span>Create Post</span></div><div id="buffer-extension-save" class="buffer-extension-hover-button" style="font-size: 14px; width: 140px; height: 28px; display: block; cursor: pointer; padding: 0px 4px; color: rgb(61, 61, 61); line-height: 28px;"><span>Save Idea</span></div><div style="font-size: 14px; width: 140px; display: block; cursor: pointer; padding: 0px 4px; color: rgb(61, 61, 61); line-height: 28px; background-color: rgba(255, 255, 255, 0.8); border-bottom-right-radius: 4px; border-bottom-left-radius: 4px; height: 4px;"></div><style>.buffer-extension-hover-button { background-color:rgba(255, 255, 255, 0.8); } .buffer-extension-hover-button span { display:block; padding: 0 4px; border-radius: 4px 4px 4px 4px; -webkit-border-radius: 4px 4px 4px 4px; -moz-border-radius: 4px 4px 4px 4px; } .buffer-extension-hover-button:hover span { background-color:#F5F5F5; }</style></div></div></div><bit-notification-bar-root></bit-notification-bar-root></body></html>
