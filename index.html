@@ -376,28 +376,51 @@ Ejemplo:
     };
 
     // Probar conexión
+// Probar conexión con diagnóstico detallado
     document.getElementById('btn-test-drive').onclick = async () => {
       const url = inputDriveUrl.value.trim();
       const msg = document.getElementById('drive-test-msg');
       if (!url) return;
-      msg.textContent = 'Probando conexión...';
+      
+      if (!url.endsWith('/exec')) {
+        msg.textContent = 'Aviso: La URL debe terminar en /exec, no en /edit';
+        msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-amber-50 text-amber-700';
+        return;
+      }
+
+      msg.textContent = 'Contactando con Google Apps Script...';
       msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-blue-50 text-blue-700';
+      
       try {
         const res = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'save', filename: 'Tesla_Grok_Knowledge_Base.txt', content: editor.value || 'Prueba de conexión Tesla & Grok OK.' })
+          body: JSON.stringify({ 
+            action: 'save', 
+            filename: 'Tesla_Grok_Knowledge_Base.txt', 
+            content: editor.value || 'Prueba de conexión Tesla & Grok OK.' 
+          })
         });
-        const data = await res.json();
+        
+        const rawText = await res.text();
+        
+        // Comprobar si Google respondió con HTML (página de error/login)
+        if (rawText.trim().startsWith('<') || rawText.includes('<!DOCTYPE') || rawText.includes('ServiceLogin')) {
+          msg.innerHTML = '<strong>Error de permisos en Google:</strong> Google pide inicio de sesión.<br>En script.google.com ve a <em>Implementar > Administrar implementaciones > Editar > Quién tiene acceso</em> y pon <strong>"Cualquier usuario"</strong> (Nueva versión).';
+          msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 text-red-700 border border-red-200';
+          return;
+        }
+
+        const data = JSON.parse(rawText);
         if (data.status === 'success') {
-          msg.textContent = '¡Conexión verificada con éxito!';
+          msg.textContent = '¡Conexión verificada con éxito! Archivo creado en tu Google Drive.';
           msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-emerald-50 text-emerald-700';
         } else {
-          msg.textContent = 'Error: ' + data.message;
+          msg.textContent = 'Error devuelto por el script: ' + (data.message || 'Error desconocido');
           msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 text-red-700';
         }
       } catch (err) {
-        msg.textContent = 'Fallo de conexión: ' + err.message;
+        msg.textContent = 'Fallo de conexión de red: ' + err.message;
         msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 text-red-700';
       }
     };
