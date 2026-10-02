@@ -191,7 +191,7 @@
             <span id="stat-words">0 palabras</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="hidden sm:inline text-zinc-400">Ctrl+F para buscar · Toca un enlace para abrirlo</span>
+            <span class="hidden sm:inline text-zinc-400">Ctrl+F para buscar · Toca cualquier enlace o dominio para abrirlo</span>
             <span id="stat-chars" class="font-mono">0 car</span>
           </div>
         </div>
@@ -199,7 +199,7 @@
         <!-- Contenedor sincronizado (Fondo con enlaces y marcas + Textarea interactivo) -->
         <div class="relative flex-1 flex flex-col min-h-[70vh]">
           
-          <!-- CAPA INFERIOR: Subrayado azul de URLs y resaltado amarillo de búsquedas -->
+          <!-- CAPA INFERIOR: Subrayado azul de URLs/dominios y resaltado amarillo de búsquedas -->
           <div
             id="editor-backdrop"
             aria-hidden="true"
@@ -220,9 +220,10 @@ Ejemplo:
 - Presión recomendada: 2.9 bar (42 psi)
 - Asistencia 24h: 900 123 456
 
-[ENLACES ÚTILES]
-- Superchargers: https://www.tesla.com/findus
-- Rutas: https://maps.google.com"
+[ENLACES ÚTILES (DETECTA DOMINIOS DIRECTOS)]
+- Superchargers: tesla.com/findus
+- Rutas: google.com/maps
+- Atajo: tinyurl.com/mitesla"
           ></textarea>
 
         </div>
@@ -458,6 +459,10 @@ function doGet(e) {
     const urlLauncherClose = document.getElementById('url-launcher-close');
     const urlLauncherArrow = document.getElementById('url-launcher-arrow');
 
+    // REGEX MEJORADO: DETECTA URLs COMPLETAS Y DOMINIOS DIRECTOS SIN http://, https:// NI www.
+    // Ejemplos: tesla.com, google.es/maps, tinyurl.com/mitesla, bit.ly/abc, x.com
+    const COMPREHENSIVE_URL_REGEX = /(?:https?:\/\/|www\.)[^\s]+|(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,12}(?::[0-9]{1,5})?(?:\/[^\s]*)?/gi;
+
     saveModeSelect.value = localStorage.getItem(SAVE_MODE_KEY) || 'append';
     saveModeSelect.addEventListener('change', () => {
       localStorage.setItem(SAVE_MODE_KEY, saveModeSelect.value);
@@ -466,7 +471,7 @@ function doGet(e) {
     editor.addEventListener('scroll', () => {
       editorBackdrop.scrollTop = editor.scrollTop;
       editorBackdrop.scrollLeft = editor.scrollLeft;
-      hideUrlLauncher(); // Ocultar al hacer scroll para evitar desalineaciones
+      hideUrlLauncher();
     });
 
     let lastScrollY = window.scrollY;
@@ -543,7 +548,7 @@ function doGet(e) {
 
     function getUrlAtPosition(text, pos) {
       if (!text) return null;
-      const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+      const urlRegex = new RegExp(COMPREHENSIVE_URL_REGEX.source, 'gi');
       let match;
       while ((match = urlRegex.exec(text)) !== null) {
         let url = match[0];
@@ -552,6 +557,7 @@ function doGet(e) {
         let end = start + url.length;
 
         if (pos >= start && pos <= end) {
+          // Si no tiene protocolo, anteponer https:// automáticamente
           let fullUrl = url.startsWith('http://') || url.startsWith('https://') ? url : ('https://' + url);
           return { url: fullUrl, display: url, start, end };
         }
@@ -572,7 +578,6 @@ function doGet(e) {
         targetX = coords.x;
         targetY = coords.y;
       } else {
-        // Cálculo basado en la línea de texto si no hubo evento táctil directo
         const rect = editor.getBoundingClientRect();
         const textBefore = editor.value.substring(0, detected.start);
         const lineIndex = textBefore.split('\n').length - 1;
@@ -584,17 +589,14 @@ function doGet(e) {
         targetX = rect.left + (rect.width / 2);
       }
 
-      // Situar 18px por ENCIMA de la línea pulsada
       let popupY = targetY - 18;
       let showBelow = false;
 
-      // Si choca con la cabecera superior, situar justo debajo de la línea
       if (popupY - 45 < topBarHeight) {
         popupY = targetY + 30;
         showBelow = true;
       }
 
-      // Limitar coordenadas X para que el bocadillo nunca se salga de la pantalla
       const halfWidth = 140;
       let popupX = Math.max(halfWidth + 10, Math.min(window.innerWidth - halfWidth - 10, targetX));
 
@@ -620,7 +622,6 @@ function doGet(e) {
       const text = editor.value;
       const detected = getUrlAtPosition(text, pos);
 
-      // Si hace Ctrl+Clic o Cmd+Clic en PC, abre al instante
       if (e && (e.ctrlKey || e.metaKey) && e.type === 'click' && detected) {
         window.open(detected.url, '_blank');
         return;
@@ -757,6 +758,7 @@ function doGet(e) {
         return;
       }
 
+      // Si hay coincidencias de búsqueda, se da prioridad al amarillo
       if (searchMatches.length > 0) {
         let lastIndex = 0;
         let html = '';
@@ -782,7 +784,8 @@ function doGet(e) {
         return;
       }
 
-      const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+      // Detección automática y subrayado azul para dominios y enlaces sin http
+      const urlRegex = new RegExp(COMPREHENSIVE_URL_REGEX.source, 'gi');
       let lastIndex = 0;
       let html = '';
       let match;
