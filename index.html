@@ -40,7 +40,7 @@
     }
     textarea:focus { outline: none; }
 
-    /* Alineación idéntica entre el lienzo de marcas/enlaces y el textarea */
+    /* Alineación idéntica entre el lienzo de marcas y el textarea */
     .editor-typography {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       font-size: 1.05rem;
@@ -61,29 +61,30 @@
     <span id="toast-message"></span>
   </div>
 
-  <!-- BOCADILLO FLOTANTE SITUADO EXACTAMENTE ENCIMA DE LA LÍNEA PULSADA -->
+  <!-- BOCADILLO FLOTANTE MULTIACCIÓN (WEB, TELÉFONO, EMAIL) -->
   <div
     id="url-launcher"
     class="fixed z-50 hidden items-center gap-2 px-3 py-1.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 rounded-xl shadow-2xl border border-zinc-700/80 dark:border-zinc-300 text-xs font-semibold transition-all duration-150 pointer-events-auto"
     style="top: 0px; left: 0px;"
   >
-    <!-- Flecha indicadora que apunta a la línea -->
     <div id="url-launcher-arrow" class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 dark:bg-zinc-100 rotate-45 border-r border-b border-zinc-700/80 dark:border-zinc-300 pointer-events-none"></div>
 
-    <span class="text-blue-400 dark:text-blue-600 text-sm">🔗</span>
+    <span id="url-launcher-icon" class="text-sm">🔗</span>
     <span id="url-launcher-label" class="max-w-[140px] sm:max-w-[220px] truncate font-mono text-[11px]"></span>
+    
     <a id="url-launcher-btn" href="#" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold text-xs flex items-center gap-1 active:scale-95 transition-transform shrink-0 shadow-xs">
-      <span>Abrir</span>
-      <span>↗</span>
+      <span id="url-launcher-btn-text">Abrir</span>
+      <span id="url-launcher-btn-icon">↗</span>
     </a>
+    
     <button id="url-launcher-close" class="text-zinc-400 hover:text-white dark:hover:text-zinc-900 px-1 text-xs">✕</button>
   </div>
 
-  <!-- BARRA SUPERIOR ULTRA COMPACTA (UNA SOLA LÍNEA GARANTIZADA) -->
+  <!-- BARRA SUPERIOR ULTRA COMPACTA (UNA SOLA LÍNEA) -->
   <header id="top-bar" class="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/95 border-b border-zinc-200 dark:border-zinc-800 backdrop-blur-md shadow-xs">
     <div class="max-w-7xl mx-auto px-2 sm:px-3 py-1.5 flex flex-nowrap items-center justify-between gap-1.5 sm:gap-2">
       
-      <!-- Lado Izquierdo: Identificador con autor reducido y Estado simplificado -->
+      <!-- Lado Izquierdo -->
       <div class="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
         <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-xs">
           ⚡
@@ -95,7 +96,7 @@
         <span id="badge-drive" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">Offline</span>
       </div>
 
-      <!-- Centro: Buscador táctil multi-palabra -->
+      <!-- Centro: Buscador -->
       <div class="flex-1 max-w-xs sm:max-w-md mx-1 min-w-[150px]">
         <div class="relative flex items-center">
           <span class="absolute left-2 text-zinc-400 pointer-events-none text-xs">🔍</span>
@@ -109,7 +110,6 @@
             class="w-full pl-6 pr-28 sm:pr-32 py-1 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           />
 
-          <!-- Botones interiores del buscador -->
           <div class="absolute right-1 flex items-center gap-0.5">
             <button
               id="btn-search-clear"
@@ -139,37 +139,30 @@
         </div>
       </div>
 
-      <!-- Lado Derecho: Acciones compactas -->
+      <!-- Lado Derecho: Acciones -->
       <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 whitespace-nowrap">
-        
-        <!-- BOTÓN GUARDAR EN GOOGLE DRIVE -->
         <button id="btn-save" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition-all" title="Guardar en Google Drive (Ctrl+S)">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
           <span id="btn-save-text">Guardar</span>
         </button>
 
-        <!-- BOTÓN CONFIGURAR DRIVE -->
         <button id="btn-config-drive" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all" title="Configuración de Google Drive">
           <span>☁️</span>
           <span id="btn-config-text">Drive</span>
         </button>
 
-        <!-- BOTÓN GROK -->
         <button id="btn-grok-help" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all" title="Ver cómo preguntar a Grok en el Tesla">
           <span>⚡ Grok</span>
         </button>
 
-        <!-- BOTÓN COPIAR (ICONO) -->
         <button id="btn-copy-all" class="w-7 h-7 flex items-center justify-center rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white transition-all active:scale-95" title="Copiar todo al portapapeles">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
         </button>
 
-        <!-- BOTÓN LIMPIAR (ICONO) -->
         <button id="btn-clear" class="w-7 h-7 flex items-center justify-center rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50/50 dark:bg-red-950/30 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/50 transition-all active:scale-95" title="Vaciar hoja de notas">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
         </button>
 
-        <!-- MODO DÍA / NOCHE TESLA -->
         <button id="btn-theme" class="w-7 h-7 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300" title="Cambiar tema">
           <span id="theme-icon">🌙</span>
         </button>
@@ -178,12 +171,12 @@
     </div>
   </header>
 
-  <!-- LIENZO DE ESCRITURA CON CAPA DE ENLACES Y MARCAS -->
+  <!-- LIENZO DE ESCRITURA -->
   <main class="flex-1 flex flex-col p-1.5 sm:p-3">
     <div class="flex-1 flex justify-center w-full">
       <div class="word-sheet w-full max-w-5xl bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 flex flex-col transition-colors">
         
-        <!-- Estado interno de la hoja -->
+        <!-- Estado interno -->
         <div class="flex items-center justify-between px-3 py-1 text-[11px] text-zinc-400 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50 select-none">
           <div class="flex items-center gap-2">
             <span id="sync-status">Listo</span>
@@ -191,15 +184,15 @@
             <span id="stat-words">0 palabras</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="hidden sm:inline text-zinc-400">Ctrl+F para buscar · Toca cualquier enlace o dominio para abrirlo</span>
+            <span class="hidden sm:inline text-zinc-400">Toca un enlace, teléfono o email para interactuar</span>
             <span id="stat-chars" class="font-mono">0 car</span>
           </div>
         </div>
 
-        <!-- Contenedor sincronizado (Fondo con enlaces y marcas + Textarea interactivo) -->
+        <!-- Contenedor sincronizado -->
         <div class="relative flex-1 flex flex-col min-h-[70vh]">
           
-          <!-- CAPA INFERIOR: Subrayado azul de URLs/dominios y resaltado amarillo de búsquedas -->
+          <!-- CAPA INFERIOR DE MARCAS -->
           <div
             id="editor-backdrop"
             aria-hidden="true"
@@ -219,11 +212,12 @@ Ejemplo:
 - Matrícula: 1234-XYZ
 - Presión recomendada: 2.9 bar (42 psi)
 - Asistencia 24h: 900 123 456
+- Móvil grúa: +34 612 34 56 78
+- Seguro: siniestros@segurotesla.com
 
-[ENLACES ÚTILES (DETECTA DOMINIOS DIRECTOS)]
+[ENLACES ÚTILES]
 - Superchargers: tesla.com/findus
-- Rutas: google.com/maps
-- Atajo: tinyurl.com/mitesla"
+- Rutas: google.com/maps"
           ></textarea>
 
         </div>
@@ -452,16 +446,15 @@ function doGet(e) {
     const grokUrlInput = document.getElementById('grok-url-input');
     const saveModeSelect = document.getElementById('save-mode');
 
-    // Bocadillo flotante sobre la línea
+    // Elementos del bocadillo
     const urlLauncher = document.getElementById('url-launcher');
+    const urlLauncherIcon = document.getElementById('url-launcher-icon');
     const urlLauncherLabel = document.getElementById('url-launcher-label');
     const urlLauncherBtn = document.getElementById('url-launcher-btn');
+    const urlLauncherBtnText = document.getElementById('url-launcher-btn-text');
+    const urlLauncherBtnIcon = document.getElementById('url-launcher-btn-icon');
     const urlLauncherClose = document.getElementById('url-launcher-close');
     const urlLauncherArrow = document.getElementById('url-launcher-arrow');
-
-    // REGEX MEJORADO: DETECTA URLs COMPLETAS Y DOMINIOS DIRECTOS SIN http://, https:// NI www.
-    // Ejemplos: tesla.com, google.es/maps, tinyurl.com/mitesla, bit.ly/abc, x.com
-    const COMPREHENSIVE_URL_REGEX = /(?:https?:\/\/|www\.)[^\s]+|(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,12}(?::[0-9]{1,5})?(?:\/[^\s]*)?/gi;
 
     saveModeSelect.value = localStorage.getItem(SAVE_MODE_KEY) || 'append';
     saveModeSelect.addEventListener('change', () => {
@@ -530,7 +523,7 @@ function doGet(e) {
     updateStats();
 
     // ========================================================
-    // DETECCIÓN Y POSICIONAMIENTO JUSTO SOBRE LA LÍNEA PULSADA
+    // DETECTOR INTELIGENTE TRIPLE (WEB, TELÉFONO, EMAIL)
     // ========================================================
     let lastTapCoords = null;
 
@@ -546,20 +539,88 @@ function doGet(e) {
     editor.addEventListener('touchstart', recordTouchPosition, { passive: true });
     editor.addEventListener('mousedown', recordTouchPosition);
 
-    function getUrlAtPosition(text, pos) {
-      if (!text) return null;
-      const urlRegex = new RegExp(COMPREHENSIVE_URL_REGEX.source, 'gi');
-      let match;
-      while ((match = urlRegex.exec(text)) !== null) {
-        let url = match[0];
-        let start = match.index;
-        url = url.replace(/[.,;:!?)\]}>"']+$/, '');
-        let end = start + url.length;
+    // Encuentra todos los elementos interactivos en el texto
+    function extractAllActionables(text) {
+      if (!text) return [];
+      const results = [];
 
-        if (pos >= start && pos <= end) {
-          // Si no tiene protocolo, anteponer https:// automáticamente
-          let fullUrl = url.startsWith('http://') || url.startsWith('https://') ? url : ('https://' + url);
-          return { url: fullUrl, display: url, start, end };
+      // 1. EMAILS
+      const emailRegex = /\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b/gi;
+      let m;
+      while ((m = emailRegex.exec(text)) !== null) {
+        results.push({
+          type: 'email',
+          start: m.index,
+          end: m.index + m[0].length,
+          display: m[0],
+          href: `mailto:${m[0]}`,
+          icon: '✉️',
+          btnText: 'Redactar',
+          btnIcon: '↗',
+          colorClass: 'bg-purple-600 hover:bg-purple-500',
+          underlineClass: 'underline decoration-purple-500/80 dark:decoration-purple-400/80'
+        });
+      }
+
+      // 2. TELÉFONOS (Móviles, fijos e internacionales: 9 a 15 dígitos o con prefijo +)
+      const phoneRegex = /(?:\+[\d\s.-]{7,20}|\b(?:\d[\s.-]?){9,14}\b)/gi;
+      while ((m = phoneRegex.exec(text)) !== null) {
+        let raw = m[0].replace(/[.,;:!?)\]}>"']+$/, '');
+        const digits = raw.replace(/\D/g, '');
+        
+        // Validación: debe tener aspecto real de teléfono (9 a 15 dígitos)
+        if ((digits.length >= 9 && digits.length <= 15) || (raw.startsWith('+') && digits.length >= 8)) {
+          // Asegurar que no solapa con un email ya detectado
+          const overlaps = results.some(r => m.index >= r.start && m.index < r.end);
+          if (!overlaps) {
+            const cleanPhone = raw.replace(/[\s.-]/g, '');
+            results.push({
+              type: 'tel',
+              start: m.index,
+              end: m.index + raw.length,
+              display: raw,
+              href: `tel:${cleanPhone}`,
+              icon: '📞',
+              btnText: 'Llamar',
+              btnIcon: '📞',
+              colorClass: 'bg-emerald-600 hover:bg-emerald-500',
+              underlineClass: 'underline decoration-emerald-500/80 dark:decoration-emerald-400/80'
+            });
+          }
+        }
+      }
+
+      // 3. WEBS Y DOMINIOS DIRECTOS (incluso sin http o www)
+      const urlRegex = /(?:https?:\/\/|www\.)[^\s]+|(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,12}(?::[0-9]{1,5})?(?:\/[^\s]*)?/gi;
+      while ((m = urlRegex.exec(text)) !== null) {
+        let raw = m[0].replace(/[.,;:!?)\]}>"']+$/, '');
+        const overlaps = results.some(r => m.index >= r.start && m.index < r.end);
+        
+        if (!overlaps) {
+          let fullUrl = raw.startsWith('http://') || raw.startsWith('https://') ? raw : ('https://' + raw);
+          results.push({
+            type: 'url',
+            start: m.index,
+            end: m.index + raw.length,
+            display: raw,
+            href: fullUrl,
+            icon: '🔗',
+            btnText: 'Abrir',
+            btnIcon: '↗',
+            colorClass: 'bg-blue-600 hover:bg-blue-500',
+            underlineClass: 'underline decoration-blue-500/80 dark:decoration-blue-400/80'
+          });
+        }
+      }
+
+      return results.sort((a, b) => a.start - b.start);
+    }
+
+    function getActionableAtPosition(text, pos) {
+      const items = extractAllActionables(text);
+      for (const item of items) {
+        if (pos >= item.start && pos <= item.end) {
+          return item;
         }
       }
       return null;
@@ -567,7 +628,14 @@ function doGet(e) {
 
     function showUrlLauncher(detected, coords) {
       urlLauncherLabel.textContent = detected.display;
-      urlLauncherBtn.href = detected.url;
+      urlLauncherBtn.href = detected.href;
+      urlLauncherIcon.textContent = detected.icon;
+      urlLauncherBtnText.textContent = detected.btnText;
+      urlLauncherBtnIcon.textContent = detected.btnIcon;
+      
+      // Aplicar color específico (azul = web, verde = teléfono, morado = email)
+      urlLauncherBtn.className = `px-2.5 py-1 ${detected.colorClass} text-white rounded-lg font-bold text-xs flex items-center gap-1 active:scale-95 transition-transform shrink-0 shadow-xs`;
+
       urlLauncher.classList.remove('hidden');
       urlLauncher.classList.add('flex');
 
@@ -597,7 +665,7 @@ function doGet(e) {
         showBelow = true;
       }
 
-      const halfWidth = 140;
+      const halfWidth = 145;
       let popupX = Math.max(halfWidth + 10, Math.min(window.innerWidth - halfWidth - 10, targetX));
 
       urlLauncher.style.left = `${popupX}px`;
@@ -620,10 +688,11 @@ function doGet(e) {
     function checkUrlUnderCursor(e) {
       const pos = editor.selectionStart;
       const text = editor.value;
-      const detected = getUrlAtPosition(text, pos);
+      const detected = getActionableAtPosition(text, pos);
 
+      // Si hace Ctrl+Clic en PC, abre la acción directamente
       if (e && (e.ctrlKey || e.metaKey) && e.type === 'click' && detected) {
-        window.open(detected.url, '_blank');
+        window.open(detected.href, '_blank');
         return;
       }
 
@@ -731,7 +800,7 @@ function doGet(e) {
     });
 
     // ========================================================
-    // BUSCADOR Y RESALTADO DE TEXTO + ENLACES AZULES
+    // BUSCADOR Y RESALTADO DE TEXTO + ENLACES AZULES/VERDES/MORADOS
     // ========================================================
     const searchInput = document.getElementById('search-input');
     const searchCount = document.getElementById('search-count');
@@ -758,7 +827,6 @@ function doGet(e) {
         return;
       }
 
-      // Si hay coincidencias de búsqueda, se da prioridad al amarillo
       if (searchMatches.length > 0) {
         let lastIndex = 0;
         let html = '';
@@ -784,26 +852,18 @@ function doGet(e) {
         return;
       }
 
-      // Detección automática y subrayado azul para dominios y enlaces sin http
-      const urlRegex = new RegExp(COMPREHENSIVE_URL_REGEX.source, 'gi');
-      let lastIndex = 0;
-      let html = '';
-      let match;
-      let foundUrls = false;
+      // Si no hay búsqueda, subrayar elementos interactivos con sus colores respectivos
+      const actionables = extractAllActionables(text);
+      if (actionables.length > 0) {
+        let lastIndex = 0;
+        let html = '';
 
-      while ((match = urlRegex.exec(text)) !== null) {
-        foundUrls = true;
-        let raw = match[0];
-        let start = match.index;
-        let clean = raw.replace(/[.,;:!?)\]}>"']+$/, '');
-        let end = start + clean.length;
+        actionables.forEach(act => {
+          html += escapeHtml(text.substring(lastIndex, act.start));
+          html += `<span class="${act.underlineClass} underline-offset-4 decoration-2 text-transparent">${escapeHtml(act.display)}</span>`;
+          lastIndex = act.end;
+        });
 
-        html += escapeHtml(text.substring(lastIndex, start));
-        html += `<span class="underline decoration-blue-500/80 dark:decoration-blue-400/80 underline-offset-4 decoration-2 text-transparent">${escapeHtml(clean)}</span>`;
-        lastIndex = end;
-      }
-
-      if (foundUrls) {
         html += escapeHtml(text.substring(lastIndex));
         if (text.endsWith('\n')) html += '<br/>&nbsp;';
         editorHighlights.innerHTML = html;
