@@ -48,21 +48,45 @@
     <span id="toast-message"></span>
   </div>
 
-  <!-- BARRA SUPERIOR ULTRA COMPACTA (Auto-ocultable en Tesla) -->
+  <!-- BARRA SUPERIOR CON BUSCADOR Y ACCIONES -->
   <header id="top-bar" class="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/95 border-b border-zinc-200 dark:border-zinc-800 backdrop-blur-md shadow-xs">
-    <div class="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-1 sm:gap-2">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
       
       <!-- Lado Izquierdo: Identificador y Estado -->
       <div class="flex items-center gap-1.5 shrink-0">
         <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-xs">
           ⚡
         </div>
-        <span class="font-bold text-xs">Tesla <span class="text-blue-600 font-normal">Drive</span></span>
+        <span class="font-bold text-xs hidden xs:inline">Tesla <span class="text-blue-600 font-normal">Drive</span></span>
         <span id="badge-drive" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">Offline</span>
       </div>
 
-      <!-- Lado Derecho: Acciones Rápidas -->
-      <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap">
+      <!-- Centro: Buscador integrado en cabecera -->
+      <div class="flex-1 max-w-xs sm:max-w-sm mx-1 sm:mx-2 min-w-[170px]">
+        <div class="relative flex items-center">
+          <span class="absolute left-2 text-zinc-400 pointer-events-none text-xs">🔍</span>
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Buscar..."
+            class="w-full pl-6 pr-14 py-1 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+          />
+          <div class="absolute right-1 flex items-center gap-0.5">
+            <span id="search-count" class="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 mr-0.5 hidden">0/0</span>
+            <button id="btn-search-prev" title="Anterior (Shift+Enter)" class="p-0.5 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded text-zinc-500 text-[10px] leading-none">▲</button>
+            <button id="btn-search-next" title="Siguiente (Enter)" class="p-0.5 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded text-zinc-500 text-[10px] leading-none">▼</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lado Derecho: Acciones -->
+      <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap shrink-0">
+        <!-- SELECTOR MODO DE GUARDADO (Añadir al final o Sobrescribir) -->
+        <select id="save-mode" class="px-1.5 py-1 text-[11px] font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 outline-none" title="Selecciona cómo guardar en Google Drive">
+          <option value="append" selected>➕ Añadir al final</option>
+          <option value="overwrite">🔄 Reemplazar todo</option>
+        </select>
+
         <!-- BOTÓN GUARDAR EN GOOGLE DRIVE -->
         <button id="btn-save" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition-all" title="Guardar en Google Drive (Ctrl+S)">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
@@ -70,19 +94,18 @@
         </button>
 
         <!-- BOTÓN CONFIGURAR DRIVE -->
-        <button id="btn-config-drive" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 transition-all">
+        <button id="btn-config-drive" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all">
           <span>☁️</span>
           <span id="btn-config-text">Conectar Drive</span>
         </button>
 
         <!-- BOTÓN ASISTENTE GROK -->
         <button id="btn-grok-help" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all" title="Ver cómo preguntar a Grok en el Tesla">
-          <span>⚡ Grok Tesla</span>
+          <span>⚡ Grok</span>
         </button>
 
         <!-- BOTONES SECUNDARIOS -->
-        <button id="btn-template" class="hidden md:inline-flex px-1.5 py-1 text-xs text-zinc-600 dark:text-zinc-400 hover:text-blue-600">Plantilla</button>
-        <button id="btn-copy-all" class="px-1.5 py-1 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900">Copiar</button>
+        <button id="btn-copy-all" class="px-1.5 py-1 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">Copiar</button>
         <button id="btn-clear" class="px-1.5 py-1 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded">Limpiar</button>
 
         <!-- MODO DÍA / NOCHE TESLA -->
@@ -107,7 +130,7 @@
             <span id="stat-words">0 palabras</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="hidden sm:inline text-zinc-400">Desplaza abajo para ocultar cabecera</span>
+            <span class="hidden sm:inline text-zinc-400">Ctrl+F para buscar · Desplaza abajo para pantalla completa</span>
             <span id="stat-chars" class="font-mono">0 car</span>
           </div>
         </div>
@@ -123,12 +146,11 @@ Ejemplo:
 [VEHÍCULO]
 - Matrícula: 1234-XYZ
 - Presión recomendada: 2.9 bar (42 psi)
-- Seguro y asistencia 24h: 900 123 456
+- Asistencia 24h: 900 123 456
 
 [GARAGE Y CLAVES]
 - Código portón: #8821*
-- Alarma de casa: 5821
-- Wi-Fi invitados: ClaveSegura2026"
+- Alarma de casa: 5821"
           ></textarea>
         </div>
 
@@ -136,46 +158,48 @@ Ejemplo:
     </div>
   </main>
 
-  <!-- MODAL DE CONFIGURACIÓN GOOGLE DRIVE CON INSTRUCCIONES Y CÓDIGO COPIABLE -->
+  <!-- MODAL DE CONFIGURACIÓN GOOGLE DRIVE CON PROTECCIÓN CONTRA SOBREESCRITURA -->
   <div id="modal-drive" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
     <div class="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-4 text-zinc-900 dark:text-zinc-100 text-xs max-h-[92vh] overflow-y-auto">
       
       <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
         <h3 class="text-sm font-bold flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
-          <span>☁️</span> Conectar Google Apps Script con tu Google Drive
+          <span>☁️</span> Conectar Google Apps Script (Seguro Multi-Dispositivo)
         </h3>
         <button id="modal-drive-close" class="text-zinc-400 hover:text-zinc-600 p-1">✕</button>
       </div>
 
       <!-- Campo URL -->
       <div>
-        <label class="block font-semibold mb-1 text-zinc-800 dark:text-zinc-200">1. Pega aquí la URL de tu aplicación web (Apps Script):</label>
+        <label class="block font-semibold mb-1 text-zinc-800 dark:text-zinc-200">1. Pega la URL de tu aplicación web (Apps Script):</label>
         <div class="flex gap-1.5">
           <input id="input-drive-url" type="url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="flex-1 px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
-          <button id="btn-test-drive" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shrink-0">Probar</button>
+          <button id="btn-test-drive" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shrink-0">Probar sin borrar</button>
         </div>
         <div id="drive-test-msg" class="text-[11px] mt-1.5 font-medium hidden p-2 rounded-lg"></div>
       </div>
 
-      <!-- Instrucciones paso a paso para crearlo -->
+      <!-- Instrucciones paso a paso -->
       <div class="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-2">
         <p class="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1">
-          <span>📝</span> ¿Cómo crearlo en Google en 1 minuto? (Paso a paso):
+          <span>🛡️</span> Código protegido contra sobreescrituras accidentales:
+        </p>
+        <p class="text-zinc-600 dark:text-zinc-300 text-[11px] leading-relaxed">
+          Este script garantiza que si configuras la web desde otro teléfono, PC o la pantalla del coche, <strong>el fichero existente en Google Drive nunca se destruirá ni se sobreescribirá</strong> al probar o guardar.
         </p>
         <ol class="list-decimal list-inside space-y-1.5 text-zinc-600 dark:text-zinc-300 text-[11px] leading-relaxed">
-          <li>Abre <a href="https://script.google.com" target="_blank" class="text-blue-600 underline font-bold">script.google.com</a> e inicia sesión con tu cuenta de Google.</li>
-          <li>Pulsa arriba a la izquierda en <strong>"Nuevo proyecto"</strong>.</li>
-          <li>Borra lo que aparezca y pega el código usando el botón de abajo.</li>
-          <li>Pulsa arriba a la derecha en <strong>Implementar &gt; Nueva implementación</strong>.</li>
+          <li>Abre <a href="https://script.google.com" target="_blank" class="text-blue-600 underline font-bold">script.google.com</a> y crea un <strong>"Nuevo proyecto"</strong>.</li>
+          <li>Borra lo que aparezca y pega el código usando el botón verde de abajo.</li>
+          <li>Pulsa arriba en <strong>Implementar &gt; Nueva implementación</strong>.</li>
           <li>En tipo (⚙️) elige <strong>Aplicación web</strong>.</li>
-          <li>Configura: <strong>Ejecutar como:</strong> <em>Yo</em> | <strong>Quién tiene acceso:</strong> <em>Cualquier usuario</em> (para que Grok pueda leerlo sin login).</li>
-          <li>Pulsa <strong>Implementar</strong>, autoriza los permisos y copia la URL terminada en <code class="bg-zinc-200 dark:bg-zinc-700 px-1 py-0.5 rounded font-mono">/exec</code>.</li>
+          <li>Configura: <strong>Ejecutar como:</strong> <em>Yo</em> | <strong>Quién tiene acceso:</strong> <em>Cualquier usuario</em>.</li>
+          <li>Pulsa <strong>Implementar</strong>, autoriza permisos y copia la URL terminada en <code class="bg-zinc-200 dark:bg-zinc-700 px-1 py-0.5 rounded font-mono">/exec</code>.</li>
         </ol>
 
-        <!-- Botón copiar código -->
+        <!-- Botones de código -->
         <div class="pt-1 flex flex-wrap gap-2">
           <button id="btn-copy-script" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5">
-            <span>📋</span> Copiar Código de Apps Script al Portapapeles
+            <span>📋</span> Copiar Código Actualizado
           </button>
           <button id="btn-toggle-code-view" class="px-3 py-1.5 bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg font-medium text-xs">
             Ver código
@@ -188,7 +212,7 @@ Ejemplo:
 
       <div class="pt-2 flex justify-between items-center border-t dark:border-zinc-800">
         <button id="btn-drive-cancel" class="text-zinc-500">Cancelar</button>
-        <button id="btn-drive-save-url" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold">Guardar Configuración</button>
+        <button id="btn-drive-save-url" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold">Guardar y Sincronizar</button>
       </div>
     </div>
   </div>
@@ -206,7 +230,7 @@ Ejemplo:
 
       <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 space-y-1.5">
         <p class="font-bold text-blue-950 dark:text-blue-200">1. Tu URL directa de texto (sin JavaScript):</p>
-        <p class="text-zinc-600 dark:text-zinc-300">Grok lee esta URL directamente porque Google le devuelve texto puro al instante:</p>
+        <p class="text-zinc-600 dark:text-zinc-300">Grok lee esta URL directamente porque Google Apps Script le entrega texto plano puro:</p>
         <div class="flex gap-1">
           <input id="grok-url-input" readonly type="text" class="flex-1 px-2 py-1 bg-white dark:bg-zinc-800 border rounded font-mono text-[11px]" value="" />
           <button id="btn-copy-grok-url" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold shrink-0">Copiar</button>
@@ -214,13 +238,13 @@ Ejemplo:
       </div>
 
       <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1.5">
-        <p class="font-bold text-emerald-950 dark:text-emerald-200">2. Crea un nombre corto (para decírselo a Grok fácil):</p>
+        <p class="font-bold text-emerald-950 dark:text-emerald-200">2. Enlace corto recomendado:</p>
         <p class="text-zinc-600 dark:text-zinc-300">
-          Entra en <a href="https://tinyurl.com" target="_blank" class="text-blue-600 underline font-bold">tinyurl.com</a>, pega la URL de arriba y ponle un apodo como <code class="bg-emerald-100 dark:bg-emerald-900 px-1 py-0.5 rounded font-mono">mistesla</code>.
+          Usa <a href="https://tinyurl.com" target="_blank" class="text-blue-600 underline font-bold">tinyurl.com</a> para crear un alias como <code class="bg-emerald-100 dark:bg-emerald-900 px-1 py-0.5 rounded font-mono">mistesla</code>.
         </p>
         <p class="font-semibold text-zinc-700 dark:text-zinc-300 pt-1">3. Orden de voz en el Tesla:</p>
         <div class="p-2 bg-white dark:bg-zinc-800 rounded border border-emerald-200 dark:border-emerald-900 font-mono text-[11px] text-emerald-800 dark:text-emerald-300">
-          "Grok, abre la web tinyurl.com/mistesla y dime cuál es la presión de los neumáticos"
+          "Grok, consulta la web tinyurl.com/mistesla y dime el código del garaje"
         </div>
       </div>
 
@@ -230,11 +254,11 @@ Ejemplo:
     </div>
   </div>
 
-  <!-- MODAL DE CONFIRMACIÓN TRIPLE (LIMPIAR DATOS) -->
+  <!-- MODAL DE CONFIRMACIÓN (LIMPIAR DATOS LOCALES) -->
   <div id="modal-clear" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
     <div class="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-red-200 dark:border-red-900/40 p-4 text-zinc-900 dark:text-zinc-100 space-y-3">
       <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
-        <h3 class="text-sm font-bold text-red-600">⚠️ Vaciar hoja</h3>
+        <h3 class="text-sm font-bold text-red-600">⚠️ Vaciar hoja de este dispositivo</h3>
         <button id="modal-clear-close" class="text-zinc-400">✕</button>
       </div>
       <p class="text-xs text-zinc-600 dark:text-zinc-300">Escribe <strong class="text-red-600 font-mono">BORRAR</strong> para confirmar:</p>
@@ -251,38 +275,70 @@ Ejemplo:
     const STORAGE_KEY = 'tesla_grok_doc_content';
     const SCRIPT_URL_KEY = 'tesla_drive_script_url';
 
-    // CÓDIGO COMPLETO DE GOOGLE APPS SCRIPT PARA COPIAR CON 1 CLIC
+    // CÓDIGO DE GOOGLE APPS SCRIPT CON TEST INOCUO Y MODO APPEND SEGURO
     const APPS_SCRIPT_SOURCE = `function doPost(e) {
   try {
     var fileName = "Tesla_Grok_Knowledge_Base.txt";
     var content = "";
+    var action = "append"; // Seguro por defecto: nunca sobreescribe sin pedirlo explícitamente
+
     if (e && e.postData && e.postData.contents) {
       try {
         var parsed = JSON.parse(e.postData.contents);
         if (parsed.filename) fileName = parsed.filename;
         if (parsed.content !== undefined) content = parsed.content;
+        if (parsed.action) action = parsed.action;
       } catch (err) {
         content = e.postData.contents;
       }
     }
+
     var files = DriveApp.getRootFolder().getFilesByName(fileName);
     var file = null;
     while (files.hasNext()) {
       var candidate = files.next();
       if (!candidate.isTrashed()) { file = candidate; break; }
     }
-    if (file) {
-      file.setContent(content);
-    } else {
-      file = DriveApp.getRootFolder().createFile(fileName, content, MimeType.PLAIN_TEXT);
+
+    // ACCIÓN TEST: NO MODIFICA NI BORRA NADA
+    if (action === "test") {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Conexión correcta con Google Drive.",
+        fileExists: (file !== null),
+        charCount: file ? file.getBlob().getDataAsString().length : 0
+      })).setMimeType(ContentService.MimeType.JSON);
     }
+
+    // MODO APPEND (AÑADIR AL FINAL SIN SOBREESCRIBIR)
+    if (action === "append") {
+      if (file) {
+        var existing = file.getBlob().getDataAsString();
+        // Si el archivo ya tiene datos, anexamos con doble salto de línea
+        var newText = existing.trim().length > 0 ? (existing.trim() + "\\n\\n" + content.trim()) : content;
+        file.setContent(newText);
+      } else {
+        file = DriveApp.getRootFolder().createFile(fileName, content, MimeType.PLAIN_TEXT);
+      }
+    } else {
+      // MODO OVERWRITE (Solo si se pide explícitamente reemplazar todo)
+      if (file) {
+        file.setContent(content);
+      } else {
+        file = DriveApp.getRootFolder().createFile(fileName, content, MimeType.PLAIN_TEXT);
+      }
+    }
+
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
+      action: action,
       id: file.getId(),
       url: file.getUrl()
     })).setMimeType(ContentService.MimeType.JSON);
+
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
@@ -297,17 +353,17 @@ function doGet(e) {
     }
     var content = target ? target.getBlob().getDataAsString() : "No hay datos guardados todavía en tu Google Drive.";
     
-    // Si la web pide formato JSON para el editor
     if (e && e.parameter && e.parameter.format === "json") {
       return ContentService.createTextOutput(JSON.stringify({ status: "success", content: content }))
         .setMimeType(ContentService.MimeType.JSON);
     }
     
-    // Para Grok o navegador: TEXTO PLANO DIRECTO SIN JAVASCRIPT
+    // Entrega texto directo para que Grok lo lea al instante en el Tesla
     return ContentService.createTextOutput(content)
       .setMimeType(ContentService.MimeType.TEXT);
   } catch (err) {
-    return ContentService.createTextOutput("Error: " + err.toString()).setMimeType(ContentService.MimeType.TEXT);
+    return ContentService.createTextOutput("Error: " + err.toString())
+      .setMimeType(ContentService.MimeType.TEXT);
   }
 }`;
 
@@ -319,12 +375,13 @@ function doGet(e) {
     const btnConfigText = document.getElementById('btn-config-text');
     const topBar = document.getElementById('top-bar');
     const grokUrlInput = document.getElementById('grok-url-input');
+    const saveModeSelect = document.getElementById('save-mode');
 
     // Auto-ocultar cabecera al hacer scroll en Tesla
     let lastScrollY = window.scrollY;
     window.addEventListener('scroll', () => {
       const currentScrollY = window.scrollY;
-      if (currentScrollY > 40 && currentScrollY > lastScrollY) {
+      if (currentScrollY > 50 && currentScrollY > lastScrollY) {
         topBar.classList.add('hide-header');
       } else {
         topBar.classList.remove('hide-header');
@@ -349,7 +406,7 @@ function doGet(e) {
     }
     updateDriveStatus();
 
-    // Contenido inicial
+    // Contenido inicial local
     editor.value = localStorage.getItem(STORAGE_KEY) || '';
 
     function showToast(msg, type = 'info') {
@@ -370,21 +427,36 @@ function doGet(e) {
       statChars.textContent = text.length + ' car';
       localStorage.setItem(STORAGE_KEY, text);
     }
-    editor.addEventListener('input', updateStats);
+    editor.addEventListener('input', () => {
+      updateStats();
+      runSearch();
+    });
     updateStats();
 
-    // Cargar automáticamente de Google Drive al abrir
+    // Cargar automáticamente de Google Drive al inicio sin perder datos locales
     async function autoLoadFromDrive() {
       if (!driveScriptUrl) return;
-      syncStatus.textContent = 'Cargando de Drive...';
+      syncStatus.textContent = 'Sincronizando con Drive...';
       try {
         const res = await fetch(driveScriptUrl + '?format=json');
         if (res.ok) {
           const data = await res.json();
-          if (data && data.status === 'success' && data.content !== undefined) {
-            editor.value = data.content;
+          if (data && data.status === 'success' && typeof data.content === 'string') {
+            const remoteContent = data.content;
+            const localContent = editor.value.trim();
+
+            // Si el editor local está vacío, cargamos lo de Drive directamente
+            if (!localContent) {
+              editor.value = remoteContent;
+            } else if (remoteContent && !localContent.includes(remoteContent) && !remoteContent.includes(localContent)) {
+              // Si hay datos locales y remotos diferentes, fusionamos al final de forma segura
+              editor.value = remoteContent.trim() + '\n\n' + localContent;
+              showToast('Datos de Drive y locales combinados para no perder nada.', 'info');
+            } else if (remoteContent.includes(localContent)) {
+              editor.value = remoteContent;
+            }
             updateStats();
-            syncStatus.textContent = 'Drive OK (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
+            syncStatus.textContent = 'Sincronizado (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
           }
         }
       } catch (err) {
@@ -393,7 +465,7 @@ function doGet(e) {
     }
     autoLoadFromDrive();
 
-    // Guardar en Google Drive
+    // Guardar en Google Drive con opción Segura de Añadir o Reemplazar
     async function saveToDrive() {
       localStorage.setItem(STORAGE_KEY, editor.value);
 
@@ -405,9 +477,11 @@ function doGet(e) {
 
       const btnSaveText = document.getElementById('btn-save-text');
       btnSaveText.textContent = '...';
+      const mode = saveModeSelect.value; // 'append' o 'overwrite'
+
       try {
         const payload = {
-          action: 'save',
+          action: mode,
           filename: 'Tesla_Grok_Knowledge_Base.txt',
           content: editor.value
         };
@@ -417,28 +491,123 @@ function doGet(e) {
           body: JSON.stringify(payload)
         });
         if (res.ok) {
-          syncStatus.textContent = 'Guardado ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-          showToast('Guardado en Google Drive con éxito.', 'success');
+          const data = await res.json();
+          if (data.status === 'success') {
+            syncStatus.textContent = 'Guardado ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            const msg = mode === 'append' ? 'Añadido al archivo en Drive con éxito.' : 'Archivo actualizado en Drive.';
+            showToast(msg, 'success');
+            // Si fue append, recargamos el archivo completo para que el editor local refleje el contenido combinado
+            if (mode === 'append') {
+              autoLoadFromDrive();
+            }
+          } else {
+            showToast('Error: ' + data.message, 'error');
+          }
         } else {
-          showToast('Error en la respuesta de Google Drive.', 'error');
+          showToast('Error de comunicación con Google Drive.', 'error');
         }
       } catch (e) {
-        showToast('Error de conexión al guardar.', 'error');
+        showToast('Error de red al guardar en Google Drive.', 'error');
       } finally {
         btnSaveText.textContent = 'Guardar';
       }
     }
     document.getElementById('btn-save').addEventListener('click', saveToDrive);
 
-    // Atajo Ctrl+S
+    // Atajo Ctrl+S para guardar y Ctrl+F para buscar
     window.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
         e.preventDefault();
         saveToDrive();
       }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+      }
     });
 
+    // ==========================================
+    // SISTEMA DE BÚSQUEDA INTEGRADO EN CABECERA
+    // ==========================================
+    const searchInput = document.getElementById('search-input');
+    const searchCount = document.getElementById('search-count');
+    const btnSearchPrev = document.getElementById('btn-search-prev');
+    const btnSearchNext = document.getElementById('btn-search-next');
+    let searchMatches = [];
+    let currentMatchIndex = -1;
+
+    function runSearch() {
+      const term = searchInput.value;
+      searchMatches = [];
+      currentMatchIndex = -1;
+
+      if (!term.trim()) {
+        searchCount.classList.add('hidden');
+        return;
+      }
+
+      const text = editor.value;
+      const lowerText = text.toLowerCase();
+      const lowerTerm = term.toLowerCase();
+      let pos = lowerText.indexOf(lowerTerm);
+
+      while (pos !== -1) {
+        searchMatches.push({ start: pos, end: pos + term.length });
+        pos = lowerText.indexOf(lowerTerm, pos + 1);
+      }
+
+      if (searchMatches.length > 0) {
+        searchCount.classList.remove('hidden');
+        currentMatchIndex = 0;
+        goToMatch(currentMatchIndex);
+      } else {
+        searchCount.classList.remove('hidden');
+        searchCount.textContent = '0/0';
+      }
+    }
+
+    function goToMatch(index) {
+      if (searchMatches.length === 0) return;
+      if (index >= searchMatches.length) index = 0;
+      if (index < 0) index = searchMatches.length - 1;
+
+      currentMatchIndex = index;
+      searchCount.textContent = `${currentMatchIndex + 1}/${searchMatches.length}`;
+
+      const match = searchMatches[currentMatchIndex];
+      editor.focus();
+      editor.setSelectionRange(match.start, match.end);
+
+      // Calcular y desplazar verticalmente la vista si es necesario
+      const linesBefore = editor.value.substring(0, match.start).split('\n').length;
+      const totalLines = editor.value.split('\n').length;
+      const scrollFraction = linesBefore / totalLines;
+      editor.scrollTop = scrollFraction * editor.scrollHeight - (editor.clientHeight / 2);
+    }
+
+    searchInput.addEventListener('input', runSearch);
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          goToMatch(currentMatchIndex - 1);
+        } else {
+          goToMatch(currentMatchIndex + 1);
+        }
+      }
+      if (e.key === 'Escape') {
+        searchInput.value = '';
+        runSearch();
+        editor.focus();
+      }
+    });
+    btnSearchNext.addEventListener('click', () => goToMatch(currentMatchIndex + 1));
+    btnSearchPrev.addEventListener('click', () => goToMatch(currentMatchIndex - 1));
+
+    // ==========================================
     // MODAL DE CONFIGURACIÓN DRIVE
+    // ==========================================
     const modalDrive = document.getElementById('modal-drive');
     const inputDriveUrl = document.getElementById('input-drive-url');
     function openDriveModal() {
@@ -478,34 +647,40 @@ function doGet(e) {
       closeDriveModal();
     };
 
-    // Probar conexión
+    // PROBAR CONEXIÓN DE FORMA SEGURA (SIN MODIFICAR EL ARCHIVO EXISTENTE)
     document.getElementById('btn-test-drive').onclick = async () => {
       const url = inputDriveUrl.value.trim();
       const msg = document.getElementById('drive-test-msg');
-      if (!url) return;
-      msg.textContent = 'Probando conexión...';
-      msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-blue-50 text-blue-700';
+      if (!url) {
+        showToast('Introduce primero la URL del script', 'info');
+        return;
+      }
+      msg.textContent = 'Comprobando acceso a Google Drive...';
+      msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300';
       try {
         const res = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'save', filename: 'Tesla_Grok_Knowledge_Base.txt', content: editor.value || 'Prueba de conexión Tesla & Grok OK.' })
+          body: JSON.stringify({ action: 'test' }) // Orden inofensiva de test
         });
         const data = await res.json();
         if (data.status === 'success') {
-          msg.textContent = '¡Conexión verificada con éxito!';
-          msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-emerald-50 text-emerald-700';
+          const detail = data.fileExists ? ` (Archivo detectado con ${data.charCount} caracteres - Intacto ✓)` : ' (Archivo nuevo listo para crear)';
+          msg.textContent = '¡Conexión verificada con éxito!' + detail;
+          msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300';
         } else {
           msg.textContent = 'Error: ' + data.message;
-          msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 text-red-700';
+          msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300';
         }
       } catch (err) {
-        msg.textContent = 'Fallo de conexión: ' + err.message;
-        msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 text-red-700';
+        msg.textContent = 'Fallo de conexión: Verifica que diste acceso a "Cualquier usuario" en Apps Script.';
+        msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300';
       }
     };
 
+    // ==========================================
     // MODAL GROK
+    // ==========================================
     const modalGrok = document.getElementById('modal-grok');
     document.getElementById('btn-grok-help').onclick = () => {
       updateDriveStatus();
@@ -529,7 +704,9 @@ function doGet(e) {
       }
     };
 
-    // VACIAR DATOS
+    // ==========================================
+    // VACIAR DATOS LOCALES
+    // ==========================================
     const modalClear = document.getElementById('modal-clear');
     const clearInput = document.getElementById('clear-input');
     const clearConfirm = document.getElementById('clear-confirm');
@@ -548,39 +725,13 @@ function doGet(e) {
       editor.value = '';
       updateStats();
       modalClear.classList.add('hidden');
-      showToast('Hoja vaciada.', 'info');
+      showToast('Hoja local vaciada.', 'info');
     };
 
-    // BOTONES AUXILIARES
+    // BOTÓN COPIAR TODO
     document.getElementById('btn-copy-all').onclick = () => {
       navigator.clipboard.writeText(editor.value);
-      showToast('Texto copiado.', 'success');
-    };
-
-    document.getElementById('btn-template').onclick = () => {
-      editor.value = `🚗 BASE DE DATOS PERSONAL PARA TESLA & GROK
-=====================================================
-[DATOS DEL VEHÍCULO]
-- Modelo: Tesla Model 3 / Model Y
-- Matrícula: 1234-XYZ
-- Presión recomendada neumáticos: 2.9 bar (42 psi)
-- Asistencia en carretera 24h: +34 900 123 456
-- Número de póliza de seguro: POL-889922
-
-[PUNTOS DE RECARGA]
-- Supercharger habitual: Área Km 45 (V3 250kW)
-- Clave de poste garaje: 4489
-
-[CÓDIGOS Y ACCESOS]
-- Puerta garaje: #9201*
-- Alarma de casa: 5821
-- Wi-Fi invitados: ClaveSegura2026
-
-[NOTAS RÁPIDAS]
-- Cita ITV: 15 de Noviembre
-- Repuesto en guantera: Fusibles y linterna`;
-      updateStats();
-      showToast('Plantilla cargada.', 'success');
+      showToast('Texto copiado al portapapeles.', 'success');
     };
 
     // MODO NOCHE TESLA
