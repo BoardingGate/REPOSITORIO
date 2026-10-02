@@ -244,15 +244,15 @@ Ejemplo:
     </div>
   </main>
 
-  <!-- MODAL DE CONFIGURACIÓN DRIVE -->
-  <div id="modal-drive" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
+  <!-- MODAL DE CONFIGURACIÓN DRIVE (COMPLETO) -->
+  <div id="modal-drive" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-sm">
     <div class="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-4 text-zinc-900 dark:text-zinc-100 text-xs max-h-[92vh] overflow-y-auto">
       
       <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
         <h3 class="text-sm font-bold flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
           <span>☁️</span> Conectar Google Apps Script (Seguro Multi-Dispositivo)
         </h3>
-        <button id="modal-drive-close" class="text-zinc-400 hover:text-zinc-600 p-1">✕</button>
+        <button id="modal-drive-close" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1 text-sm font-bold">✕</button>
       </div>
 
       <div>
@@ -302,21 +302,21 @@ Ejemplo:
       </div>
 
       <div class="pt-2 flex justify-between items-center border-t dark:border-zinc-800">
-        <button id="btn-drive-cancel" class="text-zinc-500">Cancelar</button>
+        <button id="btn-drive-cancel" class="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-medium">Cancelar</button>
         <button id="btn-drive-save-url" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold">Guardar y Sincronizar</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: GROK TESLA -->
-  <div id="modal-grok" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
+  <!-- MODAL: GROK TESLA (COMPLETO) -->
+  <div id="modal-grok" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-sm">
     <div class="relative w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3.5 text-zinc-900 dark:text-zinc-100 text-xs">
       
       <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
         <h3 class="text-sm font-bold flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
           <span>⚡</span> Cómo preguntarle a Grok por voz en tu Tesla
         </h3>
-        <button id="modal-grok-close" class="text-zinc-400 hover:text-zinc-600 p-1">✕</button>
+        <button id="modal-grok-close" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1 text-sm font-bold">✕</button>
       </div>
 
       <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 space-y-1.5">
@@ -344,24 +344,25 @@ Ejemplo:
     </div>
   </div>
 
-  <!-- MODAL DE CONFIRMACIÓN -->
-  <div id="modal-clear" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
+  <!-- MODAL DE CONFIRMACIÓN (VACIAR) -->
+  <div id="modal-clear" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-sm">
     <div class="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-red-200 dark:border-red-900/40 p-4 text-zinc-900 dark:text-zinc-100 space-y-3">
       <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
         <h3 class="text-sm font-bold text-red-600">⚠️ Vaciar hoja</h3>
-        <button id="modal-clear-close" class="text-zinc-400">✕</button>
+        <button id="modal-clear-close" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1 text-sm font-bold">✕</button>
       </div>
       <p class="text-xs text-zinc-600 dark:text-zinc-300">Escribe <strong class="text-red-600 font-mono">BORRAR</strong> para confirmar:</p>
       <input id="clear-input" type="text" placeholder="BORRAR" class="w-full px-2.5 py-1.5 border-2 border-red-300 dark:border-red-800 rounded-lg font-mono text-xs uppercase bg-white dark:bg-zinc-800" />
       <div class="flex justify-between items-center pt-1">
-        <button id="clear-cancel" class="text-xs text-zinc-500">Cancelar</button>
+        <button id="clear-cancel" class="text-xs text-zinc-500 hover:text-zinc-700">Cancelar</button>
         <button id="clear-confirm" disabled class="px-3.5 py-1.5 font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-40 rounded-lg text-xs">Borrar todo</button>
       </div>
     </div>
   </div>
 
-  <!-- JAVASCRIPT -->
+  <!-- JAVASCRIPT SIN ERRORES DE HOISTING / INICIALIZACIÓN -->
   <script>
+    // 1. CONSTANTES
     const STORAGE_KEY = 'tesla_grok_doc_content';
     const SCRIPT_URL_KEY = 'tesla_drive_script_url';
     const SAVE_MODE_KEY = 'tesla_drive_save_mode';
@@ -454,6 +455,15 @@ function doGet(e) {
   }
 }`;
 
+    // 2. VARIABLES DE ESTADO GLOBALES (DECLARADAS ANTES DE USARSE)
+    let searchMatches = [];
+    let currentMatchIndex = -1;
+    let lastTapCoords = null;
+    let driveScriptUrl = localStorage.getItem(SCRIPT_URL_KEY) || '';
+    let currentFontSize = parseInt(localStorage.getItem(FONT_SIZE_KEY), 10) || 17;
+    let currentFontFamily = localStorage.getItem(FONT_FAMILY_KEY) || 'mono';
+
+    // 3. REFERENCIAS DOM
     const editor = document.getElementById('editor');
     const editorBackdrop = document.getElementById('editor-backdrop');
     const editorHighlights = document.getElementById('editor-highlights');
@@ -466,7 +476,7 @@ function doGet(e) {
     const grokUrlInput = document.getElementById('grok-url-input');
     const saveModeSelect = document.getElementById('save-mode');
 
-    // Elementos del bocadillo
+    // Bocadillo flotante
     const urlLauncher = document.getElementById('url-launcher');
     const urlLauncherIcon = document.getElementById('url-launcher-icon');
     const urlLauncherLabel = document.getElementById('url-launcher-label');
@@ -476,104 +486,36 @@ function doGet(e) {
     const urlLauncherClose = document.getElementById('url-launcher-close');
     const urlLauncherArrow = document.getElementById('url-launcher-arrow');
 
-    // ========================================================
-    // GESTIÓN DE FUENTES Y TAMAÑO (POR DEFECTO MONO, HASTA 5PX)
-    // ========================================================
+    // Tipografía
     const btnFontDec = document.getElementById('btn-font-dec');
     const btnFontInc = document.getElementById('btn-font-inc');
     const fontSizeDisplay = document.getElementById('font-size-display');
     const fontFamilySelect = document.getElementById('font-family-select');
 
-    let currentFontSize = parseInt(localStorage.getItem(FONT_SIZE_KEY), 10) || 17;
-    // POR DEFECTO MONOESPACIADA
-    let currentFontFamily = localStorage.getItem(FONT_FAMILY_KEY) || 'mono';
+    // Buscador
+    const searchInput = document.getElementById('search-input');
+    const searchCount = document.getElementById('search-count');
+    const btnSearchClear = document.getElementById('btn-search-clear');
+    const btnSearchPrev = document.getElementById('btn-search-prev');
+    const btnSearchNext = document.getElementById('btn-search-next');
 
-    function applyTypography() {
-      // Límites ampliados: desde 5px hasta 28px
-      if (currentFontSize < 5) currentFontSize = 5;
-      if (currentFontSize > 28) currentFontSize = 28;
+    // Modales
+    const modalDrive = document.getElementById('modal-drive');
+    const inputDriveUrl = document.getElementById('input-drive-url');
+    const modalGrok = document.getElementById('modal-grok');
+    const modalClear = document.getElementById('modal-clear');
+    const clearInput = document.getElementById('clear-input');
+    const clearConfirm = document.getElementById('clear-confirm');
 
-      fontSizeDisplay.textContent = currentFontSize;
-      const sizePx = currentFontSize + 'px';
-
-      let fontStyleStr = "'ui-monospace', SFMono-Regular, Menlo, Monaco, Consolas, monospace";
-      if (currentFontFamily === 'sans') {
-        fontStyleStr = "'Inter', system-ui, -apple-system, sans-serif";
-      } else if (currentFontFamily === 'serif') {
-        fontStyleStr = "Georgia, Cambria, 'Times New Roman', serif";
-      }
-
-      // Sincronización exacta en ambos elementos
-      editor.style.fontSize = sizePx;
-      editorHighlights.style.fontSize = sizePx;
-
-      editor.style.fontFamily = fontStyleStr;
-      editorHighlights.style.fontFamily = fontStyleStr;
-
-      localStorage.setItem(FONT_SIZE_KEY, currentFontSize);
-      localStorage.setItem(FONT_FAMILY_KEY, currentFontFamily);
-
-      renderHighlights();
+    // 4. FUNCIONES AUXILIARES
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
-
-    btnFontDec.addEventListener('click', () => {
-      currentFontSize -= 1;
-      applyTypography();
-    });
-
-    btnFontInc.addEventListener('click', () => {
-      currentFontSize += 1;
-      applyTypography();
-    });
-
-    fontFamilySelect.value = currentFontFamily;
-    fontFamilySelect.addEventListener('change', (e) => {
-      currentFontFamily = e.target.value;
-      applyTypography();
-    });
-
-    // Inicializar tipografía con 'mono' por defecto
-    applyTypography();
-
-    saveModeSelect.value = localStorage.getItem(SAVE_MODE_KEY) || 'append';
-    saveModeSelect.addEventListener('change', () => {
-      localStorage.setItem(SAVE_MODE_KEY, saveModeSelect.value);
-    });
-
-    editor.addEventListener('scroll', () => {
-      editorBackdrop.scrollTop = editor.scrollTop;
-      editorBackdrop.scrollLeft = editor.scrollLeft;
-      hideUrlLauncher();
-    });
-
-    let lastScrollY = window.scrollY;
-    window.addEventListener('scroll', () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > 50 && currentScrollY > lastScrollY) {
-        topBar.classList.add('hide-header');
-      } else {
-        topBar.classList.remove('hide-header');
-      }
-      lastScrollY = currentScrollY;
-    }, { passive: true });
-
-    let driveScriptUrl = localStorage.getItem(SCRIPT_URL_KEY) || '';
-    function updateDriveStatus() {
-      if (driveScriptUrl) {
-        btnConfigText.textContent = 'Drive ✓';
-        badgeDrive.textContent = 'Conectado';
-        badgeDrive.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
-        grokUrlInput.value = driveScriptUrl;
-      } else {
-        btnConfigText.textContent = 'Drive';
-        badgeDrive.textContent = 'Offline';
-        badgeDrive.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400';
-        grokUrlInput.value = 'Configura primero tu enlace de Google Drive';
-      }
-    }
-    updateDriveStatus();
-
-    editor.value = localStorage.getItem(STORAGE_KEY) || '';
 
     function showToast(msg, type = 'info') {
       const toast = document.getElementById('toast');
@@ -587,42 +529,12 @@ function doGet(e) {
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
 
-    function updateStats() {
-      const text = editor.value;
-      statWords.textContent = (text.trim() ? text.trim().split(/\s+/).length : 0) + ' palabras';
-      statChars.textContent = text.length + ' car';
-      localStorage.setItem(STORAGE_KEY, text);
-    }
-
-    editor.addEventListener('input', () => {
-      updateStats();
-      runSearch(false);
-      checkUrlUnderCursor();
-    });
-    updateStats();
-
-    // ========================================================
-    // DETECTOR INTELIGENTE TRIPLE (WEB, TELÉFONO, EMAIL)
-    // ========================================================
-    let lastTapCoords = null;
-
-    function recordTouchPosition(e) {
-      if (e.touches && e.touches[0]) {
-        lastTapCoords = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      } else if (e.clientX !== undefined && e.clientY !== undefined) {
-        lastTapCoords = { x: e.clientX, y: e.clientY };
-      }
-    }
-
-    editor.addEventListener('pointerdown', recordTouchPosition);
-    editor.addEventListener('touchstart', recordTouchPosition, { passive: true });
-    editor.addEventListener('mousedown', recordTouchPosition);
-
+    // 5. PARSEO DE ELEMENTOS INTERACTIVOS (EMAIL, TELÉFONO, WEB)
     function extractAllActionables(text) {
       if (!text) return [];
       const results = [];
 
-      // 1. EMAILS
+      // Emails
       const emailRegex = /\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b/gi;
       let m;
       while ((m = emailRegex.exec(text)) !== null) {
@@ -640,7 +552,7 @@ function doGet(e) {
         });
       }
 
-      // 2. TELÉFONOS (9 a 15 dígitos o prefijo +)
+      // Teléfonos (9 a 15 dígitos o prefijo +)
       const phoneRegex = /(?:\+[\d\s.-]{7,20}|\b(?:\d[\s.-]?){9,14}\b)/gi;
       while ((m = phoneRegex.exec(text)) !== null) {
         let raw = m[0].replace(/[.,;:!?)\]}>"']+$/, '');
@@ -666,7 +578,7 @@ function doGet(e) {
         }
       }
 
-      // 3. WEBS Y DOMINIOS DIRECTOS (incluso sin http o www)
+      // Webs y dominios directos
       const urlRegex = /(?:https?:\/\/|www\.)[^\s]+|(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,12}(?::[0-9]{1,5})?(?:\/[^\s]*)?/gi;
       while ((m = urlRegex.exec(text)) !== null) {
         let raw = m[0].replace(/[.,;:!?)\]}>"']+$/, '');
@@ -701,6 +613,168 @@ function doGet(e) {
       }
       return null;
     }
+
+    // 6. RENDERIZADO DE MARCAS Y RESALTADO
+    function renderHighlights() {
+      const text = editor.value;
+      if (!text) {
+        editorHighlights.innerHTML = '';
+        return;
+      }
+
+      if (searchMatches && searchMatches.length > 0) {
+        let lastIndex = 0;
+        let html = '';
+
+        searchMatches.forEach((m, idx) => {
+          html += escapeHtml(text.substring(lastIndex, m.start));
+
+          const isCurrent = (idx === currentMatchIndex);
+          const highlightClass = isCurrent
+            ? 'bg-amber-400 dark:bg-yellow-400 text-transparent rounded-xs ring-2 ring-amber-600 dark:ring-yellow-200 shadow-sm'
+            : 'bg-yellow-300/85 dark:bg-yellow-500/60 text-transparent rounded-xs';
+
+          html += `<mark class="${highlightClass}">${escapeHtml(text.substring(m.start, m.end))}</mark>`;
+          lastIndex = m.end;
+        });
+
+        html += escapeHtml(text.substring(lastIndex));
+        if (text.endsWith('\n')) html += '<br/>&nbsp;';
+
+        editorHighlights.innerHTML = html;
+        editorBackdrop.scrollTop = editor.scrollTop;
+        editorBackdrop.scrollLeft = editor.scrollLeft;
+        return;
+      }
+
+      const actionables = extractAllActionables(text);
+      if (actionables.length > 0) {
+        let lastIndex = 0;
+        let html = '';
+
+        actionables.forEach(act => {
+          html += escapeHtml(text.substring(lastIndex, act.start));
+          html += `<span class="${act.underlineClass} underline-offset-4 decoration-2 text-transparent">${escapeHtml(act.display)}</span>`;
+          lastIndex = act.end;
+        });
+
+        html += escapeHtml(text.substring(lastIndex));
+        if (text.endsWith('\n')) html += '<br/>&nbsp;';
+        editorHighlights.innerHTML = html;
+      } else {
+        editorHighlights.innerHTML = '';
+      }
+
+      editorBackdrop.scrollTop = editor.scrollTop;
+      editorBackdrop.scrollLeft = editor.scrollLeft;
+    }
+
+    // 7. GESTIÓN DE FUENTES Y TAMAÑO
+    function applyTypography() {
+      if (currentFontSize < 5) currentFontSize = 5;
+      if (currentFontSize > 28) currentFontSize = 28;
+
+      fontSizeDisplay.textContent = currentFontSize;
+      const sizePx = currentFontSize + 'px';
+
+      let fontStyleStr = "'ui-monospace', SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+      if (currentFontFamily === 'sans') {
+        fontStyleStr = "'Inter', system-ui, -apple-system, sans-serif";
+      } else if (currentFontFamily === 'serif') {
+        fontStyleStr = "Georgia, Cambria, 'Times New Roman', serif";
+      }
+
+      editor.style.fontSize = sizePx;
+      editorHighlights.style.fontSize = sizePx;
+
+      editor.style.fontFamily = fontStyleStr;
+      editorHighlights.style.fontFamily = fontStyleStr;
+
+      localStorage.setItem(FONT_SIZE_KEY, currentFontSize);
+      localStorage.setItem(FONT_FAMILY_KEY, currentFontFamily);
+
+      renderHighlights();
+    }
+
+    btnFontDec.addEventListener('click', () => {
+      currentFontSize -= 1;
+      applyTypography();
+    });
+
+    btnFontInc.addEventListener('click', () => {
+      currentFontSize += 1;
+      applyTypography();
+    });
+
+    fontFamilySelect.value = currentFontFamily;
+    fontFamilySelect.addEventListener('change', (e) => {
+      currentFontFamily = e.target.value;
+      applyTypography();
+    });
+
+    // 8. ESTADO DE DRIVE Y ESTADÍSTICAS
+    function updateDriveStatus() {
+      if (driveScriptUrl) {
+        btnConfigText.textContent = 'Drive ✓';
+        badgeDrive.textContent = 'Conectado';
+        badgeDrive.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
+        grokUrlInput.value = driveScriptUrl;
+      } else {
+        btnConfigText.textContent = 'Drive';
+        badgeDrive.textContent = 'Offline';
+        badgeDrive.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400';
+        grokUrlInput.value = 'Configura primero tu enlace de Google Drive';
+      }
+    }
+
+    function updateStats() {
+      const text = editor.value;
+      statWords.textContent = (text.trim() ? text.trim().split(/\s+/).length : 0) + ' palabras';
+      statChars.textContent = text.length + ' car';
+      localStorage.setItem(STORAGE_KEY, text);
+    }
+
+    editor.value = localStorage.getItem(STORAGE_KEY) || '';
+
+    editor.addEventListener('input', () => {
+      updateStats();
+      runSearch(false);
+      checkUrlUnderCursor();
+    });
+
+    editor.addEventListener('scroll', () => {
+      editorBackdrop.scrollTop = editor.scrollTop;
+      editorBackdrop.scrollLeft = editor.scrollLeft;
+      hideUrlLauncher();
+    });
+
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > 50 && currentScrollY > lastScrollY) {
+        topBar.classList.add('hide-header');
+      } else {
+        topBar.classList.remove('hide-header');
+      }
+      lastScrollY = currentScrollY;
+    }, { passive: true });
+
+    saveModeSelect.value = localStorage.getItem(SAVE_MODE_KEY) || 'append';
+    saveModeSelect.addEventListener('change', () => {
+      localStorage.setItem(SAVE_MODE_KEY, saveModeSelect.value);
+    });
+
+    // 9. BOCADILLO FLOTANTE DE ACCIONES
+    function recordTouchPosition(e) {
+      if (e.touches && e.touches[0]) {
+        lastTapCoords = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.clientX !== undefined && e.clientY !== undefined) {
+        lastTapCoords = { x: e.clientX, y: e.clientY };
+      }
+    }
+    editor.addEventListener('pointerdown', recordTouchPosition);
+    editor.addEventListener('touchstart', recordTouchPosition, { passive: true });
+    editor.addEventListener('mousedown', recordTouchPosition);
 
     function showUrlLauncher(detected, coords) {
       urlLauncherLabel.textContent = detected.display;
@@ -779,12 +853,9 @@ function doGet(e) {
     editor.addEventListener('click', checkUrlUnderCursor);
     editor.addEventListener('keyup', checkUrlUnderCursor);
     editor.addEventListener('touchend', () => setTimeout(checkUrlUnderCursor, 80));
-
     urlLauncherClose.addEventListener('click', hideUrlLauncher);
 
-    // ========================================================
-    // SINCRONIZACIÓN Y GUARDADO DRIVE
-    // ========================================================
+    // 10. SINCRONIZACIÓN Y GUARDADO DRIVE
     async function autoLoadFromDrive() {
       if (!driveScriptUrl) return;
       syncStatus.textContent = 'Sincronizando con Drive...';
@@ -813,7 +884,6 @@ function doGet(e) {
         syncStatus.textContent = 'Modo local';
       }
     }
-    autoLoadFromDrive();
 
     async function saveToDrive() {
       localStorage.setItem(STORAGE_KEY, editor.value);
@@ -872,81 +942,7 @@ function doGet(e) {
       }
     });
 
-    // ========================================================
-    // BUSCADOR Y RESALTADO DE TEXTO
-    // ========================================================
-    const searchInput = document.getElementById('search-input');
-    const searchCount = document.getElementById('search-count');
-    const btnSearchClear = document.getElementById('btn-search-clear');
-    const btnSearchPrev = document.getElementById('btn-search-prev');
-    const btnSearchNext = document.getElementById('btn-search-next');
-    
-    let searchMatches = [];
-    let currentMatchIndex = -1;
-
-    function escapeHtml(str) {
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    function renderHighlights() {
-      const text = editor.value;
-      if (!text) {
-        editorHighlights.innerHTML = '';
-        return;
-      }
-
-      if (searchMatches.length > 0) {
-        let lastIndex = 0;
-        let html = '';
-
-        searchMatches.forEach((m, idx) => {
-          html += escapeHtml(text.substring(lastIndex, m.start));
-
-          const isCurrent = (idx === currentMatchIndex);
-          const highlightClass = isCurrent
-            ? 'bg-amber-400 dark:bg-yellow-400 text-transparent rounded-xs ring-2 ring-amber-600 dark:ring-yellow-200 shadow-sm'
-            : 'bg-yellow-300/85 dark:bg-yellow-500/60 text-transparent rounded-xs';
-
-          html += `<mark class="${highlightClass}">${escapeHtml(text.substring(m.start, m.end))}</mark>`;
-          lastIndex = m.end;
-        });
-
-        html += escapeHtml(text.substring(lastIndex));
-        if (text.endsWith('\n')) html += '<br/>&nbsp;';
-
-        editorHighlights.innerHTML = html;
-        editorBackdrop.scrollTop = editor.scrollTop;
-        editorBackdrop.scrollLeft = editor.scrollLeft;
-        return;
-      }
-
-      const actionables = extractAllActionables(text);
-      if (actionables.length > 0) {
-        let lastIndex = 0;
-        let html = '';
-
-        actionables.forEach(act => {
-          html += escapeHtml(text.substring(lastIndex, act.start));
-          html += `<span class="${act.underlineClass} underline-offset-4 decoration-2 text-transparent">${escapeHtml(act.display)}</span>`;
-          lastIndex = act.end;
-        });
-
-        html += escapeHtml(text.substring(lastIndex));
-        if (text.endsWith('\n')) html += '<br/>&nbsp;';
-        editorHighlights.innerHTML = html;
-      } else {
-        editorHighlights.innerHTML = '';
-      }
-
-      editorBackdrop.scrollTop = editor.scrollTop;
-      editorBackdrop.scrollLeft = editor.scrollLeft;
-    }
-
+    // 11. BUSCADOR
     function runSearch(autoScroll = true) {
       const rawTerm = searchInput.value;
       searchMatches = [];
@@ -1041,10 +1037,7 @@ function doGet(e) {
       editorBackdrop.scrollTop = targetScroll;
     }
 
-    searchInput.addEventListener('input', () => {
-      runSearch(true);
-    });
-
+    searchInput.addEventListener('input', () => runSearch(true));
     searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -1070,7 +1063,6 @@ function doGet(e) {
     }
 
     const preventFocusSteal = (e) => e.preventDefault();
-
     btnSearchClear.addEventListener('mousedown', preventFocusSteal);
     btnSearchClear.addEventListener('touchstart', preventFocusSteal, { passive: false });
     btnSearchClear.addEventListener('click', clearSearch);
@@ -1089,11 +1081,7 @@ function doGet(e) {
       searchInput.focus();
     });
 
-    // ==========================================
-    // MODAL DE CONFIGURACIÓN DRIVE
-    // ==========================================
-    const modalDrive = document.getElementById('modal-drive');
-    const inputDriveUrl = document.getElementById('input-drive-url');
+    // 12. GESTIÓN DE MODALES
     function openDriveModal() {
       inputDriveUrl.value = driveScriptUrl;
       modalDrive.classList.remove('hidden');
@@ -1160,10 +1148,7 @@ function doGet(e) {
       }
     };
 
-    // ==========================================
-    // MODAL GROK
-    // ==========================================
-    const modalGrok = document.getElementById('modal-grok');
+    // Modal Grok
     document.getElementById('btn-grok-help').onclick = () => {
       updateDriveStatus();
       modalGrok.classList.remove('hidden');
@@ -1186,12 +1171,7 @@ function doGet(e) {
       }
     };
 
-    // ==========================================
-    // VACIAR DATOS LOCALES
-    // ==========================================
-    const modalClear = document.getElementById('modal-clear');
-    const clearInput = document.getElementById('clear-input');
-    const clearConfirm = document.getElementById('clear-confirm');
+    // Modal Vaciar
     document.getElementById('btn-clear').onclick = () => {
       clearInput.value = '';
       clearConfirm.disabled = true;
@@ -1217,6 +1197,7 @@ function doGet(e) {
       showToast('Texto copiado al portapapeles.', 'success');
     };
 
+    // Tema día / noche
     const btnTheme = document.getElementById('btn-theme');
     function toggleTheme() {
       document.documentElement.classList.toggle('dark');
@@ -1229,6 +1210,12 @@ function doGet(e) {
       document.documentElement.classList.add('dark');
       document.getElementById('theme-icon').textContent = '☀️';
     }
+
+    // 13. INICIALIZACIÓN COMPLETA
+    updateDriveStatus();
+    updateStats();
+    applyTypography();
+    autoLoadFromDrive();
   </script>
 </body>
 </html>
