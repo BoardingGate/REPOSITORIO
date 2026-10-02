@@ -65,13 +65,14 @@
   <header id="top-bar" class="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/95 border-b border-zinc-200 dark:border-zinc-800 backdrop-blur-md shadow-xs">
     <div class="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
 
-    <!-- Lado Izquierdo: Identificador con enlace a X (@BoardingGate) y Estado -->
-      <div class="flex items-center gap-1.5 shrink-0">
+   <!-- Lado Izquierdo: Identificador con autor reducido y Estado -->
+      <div class="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
         <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-xs">
           ⚡
         </div>
-        <span class="font-bold text-xs hidden sm:inline">
-          Tesla <span class="text-blue-600 font-normal">Drive (by <a href="https://x.com/boardinggate" target="_blank" rel="noopener noreferrer" class="font-medium underline hover:text-blue-700 dark:hover:text-blue-400 transition-colors" title="Abrir perfil de @BoardingGate en X">@BoardingGate</a>)</span>
+        <span class="font-bold text-xs flex items-center gap-1">
+          <span>Tesla <span class="text-blue-600 font-normal">Drive</span></span>
+          <span class="text-[10px] text-zinc-400 font-normal">(by <a href="https://x.com/boardinggate" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-600 dark:text-blue-400 underline decoration-zinc-300 dark:decoration-zinc-700">@BoardingGate</a>)</span>
         </span>
         <span id="badge-drive" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">Offline</span>
       </div>
