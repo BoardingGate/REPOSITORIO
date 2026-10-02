@@ -61,11 +61,18 @@
     <span id="toast-message"></span>
   </div>
 
-  <!-- PASTILLA FLOTANTE PARA LANZAR ENLACES AL TOCARLOS EN EL TEXTO -->
-  <div id="url-launcher" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 hidden items-center gap-2 px-3.5 py-2 bg-zinc-900/95 text-white dark:bg-zinc-100/95 dark:text-zinc-900 rounded-full shadow-2xl border border-zinc-700/80 dark:border-zinc-300 text-xs font-semibold backdrop-blur-md transition-all">
-    <span class="text-blue-400 dark:text-blue-600">🔗</span>
-    <span id="url-launcher-label" class="max-w-[160px] sm:max-w-xs truncate font-mono text-[11px]"></span>
-    <a id="url-launcher-btn" href="#" target="_blank" rel="noopener noreferrer" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-xs flex items-center gap-1 active:scale-95 transition-transform shrink-0">
+  <!-- BOCADILLO FLOTANTE SITUADO EXACTAMENTE ENCIMA DE LA LÍNEA PULSADA -->
+  <div
+    id="url-launcher"
+    class="fixed z-50 hidden items-center gap-2 px-3 py-1.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 rounded-xl shadow-2xl border border-zinc-700/80 dark:border-zinc-300 text-xs font-semibold transition-all duration-150 pointer-events-auto"
+    style="top: 0px; left: 0px;"
+  >
+    <!-- Flecha indicadora que apunta a la línea -->
+    <div id="url-launcher-arrow" class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 dark:bg-zinc-100 rotate-45 border-r border-b border-zinc-700/80 dark:border-zinc-300 pointer-events-none"></div>
+
+    <span class="text-blue-400 dark:text-blue-600 text-sm">🔗</span>
+    <span id="url-launcher-label" class="max-w-[140px] sm:max-w-[220px] truncate font-mono text-[11px]"></span>
+    <a id="url-launcher-btn" href="#" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold text-xs flex items-center gap-1 active:scale-95 transition-transform shrink-0 shadow-xs">
       <span>Abrir</span>
       <span>↗</span>
     </a>
@@ -192,7 +199,7 @@
         <!-- Contenedor sincronizado (Fondo con enlaces y marcas + Textarea interactivo) -->
         <div class="relative flex-1 flex flex-col min-h-[70vh]">
           
-          <!-- CAPA INFERIOR: Dibuja subrayado azul de URLs y resaltado amarillo de búsquedas -->
+          <!-- CAPA INFERIOR: Subrayado azul de URLs y resaltado amarillo de búsquedas -->
           <div
             id="editor-backdrop"
             aria-hidden="true"
@@ -346,7 +353,6 @@ Ejemplo:
     const SCRIPT_URL_KEY = 'tesla_drive_script_url';
     const SAVE_MODE_KEY = 'tesla_drive_save_mode';
 
-    // CÓDIGO DE GOOGLE APPS SCRIPT (DEVUELVE TEXTO PLANO PURO A GROK)
     const APPS_SCRIPT_SOURCE = `function doPost(e) {
   try {
     var fileName = "Tesla_Grok_Knowledge_Base.txt";
@@ -425,7 +431,6 @@ function doGet(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
     
-    // TEXTO PLANO DIRECTO PARA QUE GROK LO LEA POR VOZ AL INSTANTE SIN JS
     return ContentService.createTextOutput(content)
       .setMimeType(ContentService.MimeType.TEXT);
   } catch (err) {
@@ -446,13 +451,13 @@ function doGet(e) {
     const grokUrlInput = document.getElementById('grok-url-input');
     const saveModeSelect = document.getElementById('save-mode');
 
-    // Elementos del lanzador flotante de URLs
+    // Bocadillo flotante sobre la línea
     const urlLauncher = document.getElementById('url-launcher');
     const urlLauncherLabel = document.getElementById('url-launcher-label');
     const urlLauncherBtn = document.getElementById('url-launcher-btn');
     const urlLauncherClose = document.getElementById('url-launcher-close');
+    const urlLauncherArrow = document.getElementById('url-launcher-arrow');
 
-    // Cargar preferencia de guardado
     saveModeSelect.value = localStorage.getItem(SAVE_MODE_KEY) || 'append';
     saveModeSelect.addEventListener('change', () => {
       localStorage.setItem(SAVE_MODE_KEY, saveModeSelect.value);
@@ -461,6 +466,7 @@ function doGet(e) {
     editor.addEventListener('scroll', () => {
       editorBackdrop.scrollTop = editor.scrollTop;
       editorBackdrop.scrollLeft = editor.scrollLeft;
+      hideUrlLauncher(); // Ocultar al hacer scroll para evitar desalineaciones
     });
 
     let lastScrollY = window.scrollY;
@@ -519,8 +525,22 @@ function doGet(e) {
     updateStats();
 
     // ========================================================
-    // DETECCIÓN Y LANZAMIENTO DE ENLACES WEB EN EL VISOR
+    // DETECCIÓN Y POSICIONAMIENTO JUSTO SOBRE LA LÍNEA PULSADA
     // ========================================================
+    let lastTapCoords = null;
+
+    function recordTouchPosition(e) {
+      if (e.touches && e.touches[0]) {
+        lastTapCoords = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.clientX !== undefined && e.clientY !== undefined) {
+        lastTapCoords = { x: e.clientX, y: e.clientY };
+      }
+    }
+
+    editor.addEventListener('pointerdown', recordTouchPosition);
+    editor.addEventListener('touchstart', recordTouchPosition, { passive: true });
+    editor.addEventListener('mousedown', recordTouchPosition);
+
     function getUrlAtPosition(text, pos) {
       if (!text) return null;
       const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
@@ -528,7 +548,6 @@ function doGet(e) {
       while ((match = urlRegex.exec(text)) !== null) {
         let url = match[0];
         let start = match.index;
-        // Limpiar puntuación típica al final de frase
         url = url.replace(/[.,;:!?)\]}>"']+$/, '');
         let end = start + url.length;
 
@@ -540,11 +559,55 @@ function doGet(e) {
       return null;
     }
 
-    function showUrlLauncher(detected) {
+    function showUrlLauncher(detected, coords) {
       urlLauncherLabel.textContent = detected.display;
       urlLauncherBtn.href = detected.url;
       urlLauncher.classList.remove('hidden');
       urlLauncher.classList.add('flex');
+
+      const topBarHeight = topBar.offsetHeight || 50;
+      let targetX, targetY;
+
+      if (coords && coords.y) {
+        targetX = coords.x;
+        targetY = coords.y;
+      } else {
+        // Cálculo basado en la línea de texto si no hubo evento táctil directo
+        const rect = editor.getBoundingClientRect();
+        const textBefore = editor.value.substring(0, detected.start);
+        const lineIndex = textBefore.split('\n').length - 1;
+        const style = window.getComputedStyle(editor);
+        const lineHeight = parseFloat(style.lineHeight) || 27;
+        const paddingTop = parseFloat(style.paddingTop) || 24;
+        
+        targetY = rect.top + paddingTop + (lineIndex * lineHeight) - editor.scrollTop + (lineHeight / 2);
+        targetX = rect.left + (rect.width / 2);
+      }
+
+      // Situar 18px por ENCIMA de la línea pulsada
+      let popupY = targetY - 18;
+      let showBelow = false;
+
+      // Si choca con la cabecera superior, situar justo debajo de la línea
+      if (popupY - 45 < topBarHeight) {
+        popupY = targetY + 30;
+        showBelow = true;
+      }
+
+      // Limitar coordenadas X para que el bocadillo nunca se salga de la pantalla
+      const halfWidth = 140;
+      let popupX = Math.max(halfWidth + 10, Math.min(window.innerWidth - halfWidth - 10, targetX));
+
+      urlLauncher.style.left = `${popupX}px`;
+      urlLauncher.style.top = `${popupY}px`;
+
+      if (showBelow) {
+        urlLauncher.style.transform = 'translate(-50%, 0)';
+        urlLauncherArrow.className = 'absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 dark:bg-zinc-100 rotate-45 border-l border-t border-zinc-700/80 dark:border-zinc-300 pointer-events-none';
+      } else {
+        urlLauncher.style.transform = 'translate(-50%, -100%)';
+        urlLauncherArrow.className = 'absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 dark:bg-zinc-100 rotate-45 border-r border-b border-zinc-700/80 dark:border-zinc-300 pointer-events-none';
+      }
     }
 
     function hideUrlLauncher() {
@@ -557,23 +620,22 @@ function doGet(e) {
       const text = editor.value;
       const detected = getUrlAtPosition(text, pos);
 
-      // Si hace Ctrl+Clic o Cmd+Clic en PC, abre directamente
+      // Si hace Ctrl+Clic o Cmd+Clic en PC, abre al instante
       if (e && (e.ctrlKey || e.metaKey) && e.type === 'click' && detected) {
         window.open(detected.url, '_blank');
         return;
       }
 
       if (detected) {
-        showUrlLauncher(detected);
+        showUrlLauncher(detected, lastTapCoords);
       } else {
         hideUrlLauncher();
       }
     }
 
-    // Detectar al tocar, hacer clic o mover el cursor
     editor.addEventListener('click', checkUrlUnderCursor);
     editor.addEventListener('keyup', checkUrlUnderCursor);
-    editor.addEventListener('touchend', () => setTimeout(checkUrlUnderCursor, 100));
+    editor.addEventListener('touchend', () => setTimeout(checkUrlUnderCursor, 80));
 
     urlLauncherClose.addEventListener('click', hideUrlLauncher);
 
@@ -688,7 +750,6 @@ function doGet(e) {
         .replace(/'/g, '&#039;');
     }
 
-    // Renderiza las marcas amarillas si hay búsqueda, o subraya los enlaces en azul si no hay búsqueda
     function renderHighlights() {
       const text = editor.value;
       if (!text) {
@@ -696,7 +757,6 @@ function doGet(e) {
         return;
       }
 
-      // Si hay coincidencias de búsqueda, se da prioridad al resaltado amarillo
       if (searchMatches.length > 0) {
         let lastIndex = 0;
         let html = '';
@@ -722,7 +782,6 @@ function doGet(e) {
         return;
       }
 
-      // Si no hay búsqueda activa, subrayar los enlaces en azul
       const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
       let lastIndex = 0;
       let html = '';
@@ -1018,13 +1077,11 @@ function doGet(e) {
       showToast('Hoja local vaciada.', 'info');
     };
 
-    // BOTÓN COPIAR TODO
     document.getElementById('btn-copy-all').onclick = () => {
       navigator.clipboard.writeText(editor.value);
       showToast('Texto copiado al portapapeles.', 'success');
     };
 
-    // MODO NOCHE TESLA
     const btnTheme = document.getElementById('btn-theme');
     function toggleTheme() {
       document.documentElement.classList.toggle('dark');
