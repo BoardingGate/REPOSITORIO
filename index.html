@@ -40,7 +40,7 @@
     }
     textarea:focus { outline: none; }
 
-    /* Alineación idéntica entre el lienzo de marcas amarillas y el textarea */
+    /* Alineación idéntica entre el lienzo de marcas/enlaces y el textarea */
     .editor-typography {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       font-size: 1.05rem;
@@ -61,6 +61,17 @@
     <span id="toast-message"></span>
   </div>
 
+  <!-- PASTILLA FLOTANTE PARA LANZAR ENLACES AL TOCARLOS EN EL TEXTO -->
+  <div id="url-launcher" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 hidden items-center gap-2 px-3.5 py-2 bg-zinc-900/95 text-white dark:bg-zinc-100/95 dark:text-zinc-900 rounded-full shadow-2xl border border-zinc-700/80 dark:border-zinc-300 text-xs font-semibold backdrop-blur-md transition-all">
+    <span class="text-blue-400 dark:text-blue-600">🔗</span>
+    <span id="url-launcher-label" class="max-w-[160px] sm:max-w-xs truncate font-mono text-[11px]"></span>
+    <a id="url-launcher-btn" href="#" target="_blank" rel="noopener noreferrer" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-xs flex items-center gap-1 active:scale-95 transition-transform shrink-0">
+      <span>Abrir</span>
+      <span>↗</span>
+    </a>
+    <button id="url-launcher-close" class="text-zinc-400 hover:text-white dark:hover:text-zinc-900 px-1 text-xs">✕</button>
+  </div>
+
   <!-- BARRA SUPERIOR ULTRA COMPACTA (UNA SOLA LÍNEA GARANTIZADA) -->
   <header id="top-bar" class="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/95 border-b border-zinc-200 dark:border-zinc-800 backdrop-blur-md shadow-xs">
     <div class="max-w-7xl mx-auto px-2 sm:px-3 py-1.5 flex flex-nowrap items-center justify-between gap-1.5 sm:gap-2">
@@ -74,7 +85,6 @@
           <span>Tesla <span class="text-blue-600 font-normal">Drive</span></span>
           <span class="text-[10px] text-zinc-400 font-normal hidden sm:inline">(by <a href="https://x.com/boardinggate" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-600 dark:text-blue-400 underline decoration-zinc-300 dark:decoration-zinc-700">@BoardingGate</a>)</span>
         </span>
-        <!-- Literal simplificado: solo Conectado / Offline -->
         <span id="badge-drive" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">Offline</span>
       </div>
 
@@ -94,7 +104,6 @@
 
           <!-- Botones interiores del buscador -->
           <div class="absolute right-1 flex items-center gap-0.5">
-            <!-- Aspa de borrado rápido (✕) -->
             <button
               id="btn-search-clear"
               type="button"
@@ -102,13 +111,11 @@
               class="hidden w-5 h-5 items-center justify-center rounded-full text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[11px] font-bold transition-colors shrink-0"
             >✕</button>
 
-            <!-- Contador de coincidencias visible -->
             <span
               id="search-count"
               class="text-[11px] font-bold font-mono text-blue-700 dark:text-blue-300 px-1 py-0.5 bg-blue-100/80 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/80 rounded hidden select-none whitespace-nowrap shrink-0"
             >0/0</span>
 
-            <!-- Botones anterior / siguiente -->
             <button
               id="btn-search-prev"
               type="button"
@@ -125,7 +132,7 @@
         </div>
       </div>
 
-      <!-- Lado Derecho: Acciones compactas en una sola línea -->
+      <!-- Lado Derecho: Acciones compactas -->
       <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 whitespace-nowrap">
         
         <!-- BOTÓN GUARDAR EN GOOGLE DRIVE -->
@@ -164,7 +171,7 @@
     </div>
   </header>
 
-  <!-- LIENZO DE ESCRITURA CON CAPA DE RESALTADO AMARILLO -->
+  <!-- LIENZO DE ESCRITURA CON CAPA DE ENLACES Y MARCAS -->
   <main class="flex-1 flex flex-col p-1.5 sm:p-3">
     <div class="flex-1 flex justify-center w-full">
       <div class="word-sheet w-full max-w-5xl bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 flex flex-col transition-colors">
@@ -177,15 +184,15 @@
             <span id="stat-words">0 palabras</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="hidden sm:inline text-zinc-400">Ctrl+F para buscar</span>
+            <span class="hidden sm:inline text-zinc-400">Ctrl+F para buscar · Toca un enlace para abrirlo</span>
             <span id="stat-chars" class="font-mono">0 car</span>
           </div>
         </div>
 
-        <!-- Contenedor sincronizado (Fondo con marcas amarillas + Textarea interactivo) -->
+        <!-- Contenedor sincronizado (Fondo con enlaces y marcas + Textarea interactivo) -->
         <div class="relative flex-1 flex flex-col min-h-[70vh]">
           
-          <!-- CAPA INFERIOR DE RESALTADO -->
+          <!-- CAPA INFERIOR: Dibuja subrayado azul de URLs y resaltado amarillo de búsquedas -->
           <div
             id="editor-backdrop"
             aria-hidden="true"
@@ -206,9 +213,9 @@ Ejemplo:
 - Presión recomendada: 2.9 bar (42 psi)
 - Asistencia 24h: 900 123 456
 
-[GARAGE Y CLAVES]
-- Código portón: #8821*
-- Alarma de casa: 5821"
+[ENLACES ÚTILES]
+- Superchargers: https://www.tesla.com/findus
+- Rutas: https://maps.google.com"
           ></textarea>
 
         </div>
@@ -217,7 +224,7 @@ Ejemplo:
     </div>
   </main>
 
-  <!-- MODAL DE CONFIGURACIÓN DRIVE (CON SELECTOR DE MODO DE GUARDADO INTEGRADO) -->
+  <!-- MODAL DE CONFIGURACIÓN DRIVE -->
   <div id="modal-drive" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
     <div class="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-4 text-zinc-900 dark:text-zinc-100 text-xs max-h-[92vh] overflow-y-auto">
       
@@ -228,7 +235,6 @@ Ejemplo:
         <button id="modal-drive-close" class="text-zinc-400 hover:text-zinc-600 p-1">✕</button>
       </div>
 
-      <!-- Campo URL -->
       <div>
         <label class="block font-semibold mb-1 text-zinc-800 dark:text-zinc-200">1. Pega la URL de tu aplicación web (Apps Script):</label>
         <div class="flex gap-1.5">
@@ -238,7 +244,6 @@ Ejemplo:
         <div id="drive-test-msg" class="text-[11px] mt-1.5 font-medium hidden p-2 rounded-lg"></div>
       </div>
 
-      <!-- SELECTOR DE MODO DE GUARDADO MOVIDO AQUÍ PARA DESPEJAR LA CABECERA -->
       <div class="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-1.5">
         <label for="save-mode" class="block font-bold text-zinc-800 dark:text-zinc-200">2. Modo de guardado habitual:</label>
         <select id="save-mode" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 text-xs font-medium text-zinc-800 dark:text-zinc-100 outline-none">
@@ -248,7 +253,6 @@ Ejemplo:
         <p class="text-[10px] text-zinc-500 dark:text-zinc-400">Con "Añadir al final", si guardas desde el móvil o el coche, lo que escribas se anexará al fichero sin destruir lo existente.</p>
       </div>
 
-      <!-- Instrucciones de configuración -->
       <div class="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-2">
         <p class="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1">
           <span>🛡️</span> Protección contra sobreescritura garantizada:
@@ -320,7 +324,7 @@ Ejemplo:
     </div>
   </div>
 
-  <!-- MODAL DE CONFIRMACIÓN (VACIAR) -->
+  <!-- MODAL DE CONFIRMACIÓN -->
   <div id="modal-clear" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
     <div class="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-red-200 dark:border-red-900/40 p-4 text-zinc-900 dark:text-zinc-100 space-y-3">
       <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
@@ -342,7 +346,7 @@ Ejemplo:
     const SCRIPT_URL_KEY = 'tesla_drive_script_url';
     const SAVE_MODE_KEY = 'tesla_drive_save_mode';
 
-    // CÓDIGO DE GOOGLE APPS SCRIPT
+    // CÓDIGO DE GOOGLE APPS SCRIPT (DEVUELVE TEXTO PLANO PURO A GROK)
     const APPS_SCRIPT_SOURCE = `function doPost(e) {
   try {
     var fileName = "Tesla_Grok_Knowledge_Base.txt";
@@ -421,6 +425,7 @@ function doGet(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
     
+    // TEXTO PLANO DIRECTO PARA QUE GROK LO LEA POR VOZ AL INSTANTE SIN JS
     return ContentService.createTextOutput(content)
       .setMimeType(ContentService.MimeType.TEXT);
   } catch (err) {
@@ -441,7 +446,13 @@ function doGet(e) {
     const grokUrlInput = document.getElementById('grok-url-input');
     const saveModeSelect = document.getElementById('save-mode');
 
-    // Cargar preferencia de modo de guardado guardada
+    // Elementos del lanzador flotante de URLs
+    const urlLauncher = document.getElementById('url-launcher');
+    const urlLauncherLabel = document.getElementById('url-launcher-label');
+    const urlLauncherBtn = document.getElementById('url-launcher-btn');
+    const urlLauncherClose = document.getElementById('url-launcher-close');
+
+    // Cargar preferencia de guardado
     saveModeSelect.value = localStorage.getItem(SAVE_MODE_KEY) || 'append';
     saveModeSelect.addEventListener('change', () => {
       localStorage.setItem(SAVE_MODE_KEY, saveModeSelect.value);
@@ -463,7 +474,6 @@ function doGet(e) {
       lastScrollY = currentScrollY;
     }, { passive: true });
 
-    // Estado simplificado: solo Conectado u Offline
     let driveScriptUrl = localStorage.getItem(SCRIPT_URL_KEY) || '';
     function updateDriveStatus() {
       if (driveScriptUrl) {
@@ -504,9 +514,72 @@ function doGet(e) {
     editor.addEventListener('input', () => {
       updateStats();
       runSearch(false);
+      checkUrlUnderCursor();
     });
     updateStats();
 
+    // ========================================================
+    // DETECCIÓN Y LANZAMIENTO DE ENLACES WEB EN EL VISOR
+    // ========================================================
+    function getUrlAtPosition(text, pos) {
+      if (!text) return null;
+      const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+      let match;
+      while ((match = urlRegex.exec(text)) !== null) {
+        let url = match[0];
+        let start = match.index;
+        // Limpiar puntuación típica al final de frase
+        url = url.replace(/[.,;:!?)\]}>"']+$/, '');
+        let end = start + url.length;
+
+        if (pos >= start && pos <= end) {
+          let fullUrl = url.startsWith('http://') || url.startsWith('https://') ? url : ('https://' + url);
+          return { url: fullUrl, display: url, start, end };
+        }
+      }
+      return null;
+    }
+
+    function showUrlLauncher(detected) {
+      urlLauncherLabel.textContent = detected.display;
+      urlLauncherBtn.href = detected.url;
+      urlLauncher.classList.remove('hidden');
+      urlLauncher.classList.add('flex');
+    }
+
+    function hideUrlLauncher() {
+      urlLauncher.classList.add('hidden');
+      urlLauncher.classList.remove('flex');
+    }
+
+    function checkUrlUnderCursor(e) {
+      const pos = editor.selectionStart;
+      const text = editor.value;
+      const detected = getUrlAtPosition(text, pos);
+
+      // Si hace Ctrl+Clic o Cmd+Clic en PC, abre directamente
+      if (e && (e.ctrlKey || e.metaKey) && e.type === 'click' && detected) {
+        window.open(detected.url, '_blank');
+        return;
+      }
+
+      if (detected) {
+        showUrlLauncher(detected);
+      } else {
+        hideUrlLauncher();
+      }
+    }
+
+    // Detectar al tocar, hacer clic o mover el cursor
+    editor.addEventListener('click', checkUrlUnderCursor);
+    editor.addEventListener('keyup', checkUrlUnderCursor);
+    editor.addEventListener('touchend', () => setTimeout(checkUrlUnderCursor, 100));
+
+    urlLauncherClose.addEventListener('click', hideUrlLauncher);
+
+    // ========================================================
+    // SINCRONIZACIÓN Y GUARDADO DRIVE
+    // ========================================================
     async function autoLoadFromDrive() {
       if (!driveScriptUrl) return;
       syncStatus.textContent = 'Sincronizando con Drive...';
@@ -595,7 +668,7 @@ function doGet(e) {
     });
 
     // ========================================================
-    // BUSCADOR MULTI-PALABRA CON FOCO PROTEGIDO Y CONTADOR
+    // BUSCADOR Y RESALTADO DE TEXTO + ENLACES AZULES
     // ========================================================
     const searchInput = document.getElementById('search-input');
     const searchCount = document.getElementById('search-count');
@@ -615,36 +688,67 @@ function doGet(e) {
         .replace(/'/g, '&#039;');
     }
 
+    // Renderiza las marcas amarillas si hay búsqueda, o subraya los enlaces en azul si no hay búsqueda
     function renderHighlights() {
       const text = editor.value;
-      if (!text || searchMatches.length === 0) {
+      if (!text) {
         editorHighlights.innerHTML = '';
         return;
       }
 
-      let lastIndex = 0;
-      let html = '';
+      // Si hay coincidencias de búsqueda, se da prioridad al resaltado amarillo
+      if (searchMatches.length > 0) {
+        let lastIndex = 0;
+        let html = '';
 
-      searchMatches.forEach((m, idx) => {
-        html += escapeHtml(text.substring(lastIndex, m.start));
+        searchMatches.forEach((m, idx) => {
+          html += escapeHtml(text.substring(lastIndex, m.start));
 
-        const isCurrent = (idx === currentMatchIndex);
-        
-        const highlightClass = isCurrent
-          ? 'bg-amber-400 dark:bg-yellow-400 text-transparent rounded-xs ring-2 ring-amber-600 dark:ring-yellow-200 shadow-sm'
-          : 'bg-yellow-300/85 dark:bg-yellow-500/60 text-transparent rounded-xs';
+          const isCurrent = (idx === currentMatchIndex);
+          const highlightClass = isCurrent
+            ? 'bg-amber-400 dark:bg-yellow-400 text-transparent rounded-xs ring-2 ring-amber-600 dark:ring-yellow-200 shadow-sm'
+            : 'bg-yellow-300/85 dark:bg-yellow-500/60 text-transparent rounded-xs';
 
-        html += `<mark class="${highlightClass}">${escapeHtml(text.substring(m.start, m.end))}</mark>`;
-        lastIndex = m.end;
-      });
+          html += `<mark class="${highlightClass}">${escapeHtml(text.substring(m.start, m.end))}</mark>`;
+          lastIndex = m.end;
+        });
 
-      html += escapeHtml(text.substring(lastIndex));
-      
-      if (text.endsWith('\n')) {
-        html += '<br/>&nbsp;';
+        html += escapeHtml(text.substring(lastIndex));
+        if (text.endsWith('\n')) html += '<br/>&nbsp;';
+
+        editorHighlights.innerHTML = html;
+        editorBackdrop.scrollTop = editor.scrollTop;
+        editorBackdrop.scrollLeft = editor.scrollLeft;
+        return;
       }
 
-      editorHighlights.innerHTML = html;
+      // Si no hay búsqueda activa, subrayar los enlaces en azul
+      const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+      let lastIndex = 0;
+      let html = '';
+      let match;
+      let foundUrls = false;
+
+      while ((match = urlRegex.exec(text)) !== null) {
+        foundUrls = true;
+        let raw = match[0];
+        let start = match.index;
+        let clean = raw.replace(/[.,;:!?)\]}>"']+$/, '');
+        let end = start + clean.length;
+
+        html += escapeHtml(text.substring(lastIndex, start));
+        html += `<span class="underline decoration-blue-500/80 dark:decoration-blue-400/80 underline-offset-4 decoration-2 text-transparent">${escapeHtml(clean)}</span>`;
+        lastIndex = end;
+      }
+
+      if (foundUrls) {
+        html += escapeHtml(text.substring(lastIndex));
+        if (text.endsWith('\n')) html += '<br/>&nbsp;';
+        editorHighlights.innerHTML = html;
+      } else {
+        editorHighlights.innerHTML = '';
+      }
+
       editorBackdrop.scrollTop = editor.scrollTop;
       editorBackdrop.scrollLeft = editor.scrollLeft;
     }
@@ -909,6 +1013,7 @@ function doGet(e) {
       editor.value = '';
       updateStats();
       renderHighlights();
+      hideUrlLauncher();
       modalClear.classList.add('hidden');
       showToast('Hoja local vaciada.', 'info');
     };
