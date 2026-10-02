@@ -40,8 +40,10 @@
     }
     textarea:focus { outline: none; }
 
-    /* Estilo tipográfico base compartido para sincronización exacta */
+    /* Estilo tipográfico base con soporte para tamaños ultra pequeños (hasta 5px) */
     .editor-typography {
+      -webkit-text-size-adjust: none;
+      text-size-adjust: none;
       line-height: 1.625;
       letter-spacing: normal;
       word-spacing: normal;
@@ -174,10 +176,10 @@
     <div class="flex-1 flex justify-center w-full">
       <div class="word-sheet w-full max-w-5xl bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 flex flex-col transition-colors">
         
-        <!-- BARRA SUB-CABECERA DE LA HOJA: ESTADO Y CONTROLES COMPACTOS DE FUENTE -->
+        <!-- BARRA SUB-CABECERA DE LA HOJA: ESTADO Y CONTROLES DE TIPOGRAFÍA -->
         <div class="flex items-center justify-between px-3 py-1.5 text-[11px] text-zinc-400 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50 select-none flex-wrap gap-2">
           
-          <!-- Lado Izquierdo: Estado y Estadísticas -->
+          <!-- Lado Izquierdo: Estadísticas -->
           <div class="flex items-center gap-2">
             <span id="sync-status">Listo</span>
             <span class="text-zinc-300 dark:text-zinc-700">|</span>
@@ -186,19 +188,19 @@
             <span id="stat-chars" class="font-mono hidden xs:inline">0 car</span>
           </div>
 
-          <!-- Lado Derecho: Controles compactos de Tamaño y Fuente -->
+          <!-- Lado Derecho: Controles de Tamaño (hasta 5px) y Tipo de Fuente (Mono por defecto) -->
           <div class="flex items-center gap-1.5 shrink-0">
             <!-- Selector tamaño: A- y A+ -->
             <div class="flex items-center border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden bg-white dark:bg-zinc-800 shadow-2xs">
-              <button id="btn-font-dec" class="px-2 py-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-700 font-bold text-[11px] text-zinc-700 dark:text-zinc-300 active:scale-95 transition-all select-none" title="Reducir tamaño de letra">A-</button>
+              <button id="btn-font-dec" class="px-2 py-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-700 font-bold text-[11px] text-zinc-700 dark:text-zinc-300 active:scale-95 transition-all select-none" title="Reducir tamaño (mínimo 5px)">A-</button>
               <span id="font-size-display" class="px-1.5 text-[10px] font-mono font-semibold text-zinc-500 dark:text-zinc-400 select-none border-x border-zinc-100 dark:border-zinc-700">17</span>
-              <button id="btn-font-inc" class="px-2 py-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-700 font-bold text-[11px] text-zinc-700 dark:text-zinc-300 active:scale-95 transition-all select-none" title="Aumentar tamaño de letra">A+</button>
+              <button id="btn-font-inc" class="px-2 py-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-700 font-bold text-[11px] text-zinc-700 dark:text-zinc-300 active:scale-95 transition-all select-none" title="Aumentar tamaño">A+</button>
             </div>
 
-            <!-- Selector tipo de fuente -->
+            <!-- Selector tipo de fuente (Mono seleccionada por defecto) -->
             <select id="font-family-select" class="px-2 py-0.5 text-[10px] font-semibold rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 outline-none cursor-pointer shadow-2xs" title="Cambiar tipo de letra">
+              <option value="mono" selected>Mono (Código/Técnica)</option>
               <option value="sans">Sans (Moderna)</option>
-              <option value="mono">Mono (Código/Técnica)</option>
               <option value="serif">Serif (Libro)</option>
             </select>
           </div>
@@ -475,7 +477,7 @@ function doGet(e) {
     const urlLauncherArrow = document.getElementById('url-launcher-arrow');
 
     // ========================================================
-    // GESTIÓN DE FUENTES Y TAMAÑO (COMPACTA Y SINCRONIZADA)
+    // GESTIÓN DE FUENTES Y TAMAÑO (POR DEFECTO MONO, HASTA 5PX)
     // ========================================================
     const btnFontDec = document.getElementById('btn-font-dec');
     const btnFontInc = document.getElementById('btn-font-inc');
@@ -483,24 +485,25 @@ function doGet(e) {
     const fontFamilySelect = document.getElementById('font-family-select');
 
     let currentFontSize = parseInt(localStorage.getItem(FONT_SIZE_KEY), 10) || 17;
-    let currentFontFamily = localStorage.getItem(FONT_FAMILY_KEY) || 'sans';
+    // POR DEFECTO MONOESPACIADA
+    let currentFontFamily = localStorage.getItem(FONT_FAMILY_KEY) || 'mono';
 
     function applyTypography() {
-      // Límites entre 12px y 28px
-      if (currentFontSize < 12) currentFontSize = 12;
+      // Límites ampliados: desde 5px hasta 28px
+      if (currentFontSize < 5) currentFontSize = 5;
       if (currentFontSize > 28) currentFontSize = 28;
 
       fontSizeDisplay.textContent = currentFontSize;
       const sizePx = currentFontSize + 'px';
 
-      let fontStyleStr = "'Inter', system-ui, -apple-system, sans-serif";
-      if (currentFontFamily === 'mono') {
-        fontStyleStr = "'ui-monospace', SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+      let fontStyleStr = "'ui-monospace', SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+      if (currentFontFamily === 'sans') {
+        fontStyleStr = "'Inter', system-ui, -apple-system, sans-serif";
       } else if (currentFontFamily === 'serif') {
         fontStyleStr = "Georgia, Cambria, 'Times New Roman', serif";
       }
 
-      // Aplicar sincrónicamente al textarea y a la capa inferior de marcas
+      // Sincronización exacta en ambos elementos
       editor.style.fontSize = sizePx;
       editorHighlights.style.fontSize = sizePx;
 
@@ -529,7 +532,7 @@ function doGet(e) {
       applyTypography();
     });
 
-    // Aplicar tipografía guardada al cargar
+    // Inicializar tipografía con 'mono' por defecto
     applyTypography();
 
     saveModeSelect.value = localStorage.getItem(SAVE_MODE_KEY) || 'append';
