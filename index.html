@@ -39,6 +39,19 @@
       box-shadow: 0 4px 25px -4px rgba(0, 0, 0, 0.7);
     }
     textarea:focus { outline: none; }
+
+    /* Alineación idéntica entre el lienzo de resaltado y el textarea */
+    .editor-typography {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.625;
+      letter-spacing: normal;
+      word-spacing: normal;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      tab-size: 2;
+    }
   </style>
 </head>
 <body class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
@@ -61,7 +74,7 @@
         <span id="badge-drive" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">Offline</span>
       </div>
 
-      <!-- Centro: Buscador táctil optimizado para Tesla -->
+      <!-- Centro: Buscador táctil con resaltado amarillo -->
       <div class="flex-1 max-w-sm sm:max-w-md mx-1 sm:mx-2 min-w-[210px]">
         <div class="relative flex items-center">
           <span class="absolute left-2.5 text-zinc-400 pointer-events-none text-xs">🔍</span>
@@ -75,9 +88,9 @@
             class="w-full pl-8 pr-28 py-1.5 text-xs sm:text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           />
 
-          <!-- Botones interiores del buscador (con medidas táctiles generosas para Tesla) -->
+          <!-- Botones interiores del buscador -->
           <div class="absolute right-1 flex items-center gap-1">
-            <!-- Aspa de limpieza rápida -->
+            <!-- Aspa de borrado rápido (✕) -->
             <button
               id="btn-search-clear"
               type="button"
@@ -85,10 +98,10 @@
               class="hidden w-6 h-6 items-center justify-center rounded-full text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-bold transition-colors"
             >✕</button>
 
-            <!-- Contador de resultados -->
+            <!-- Contador de coincidencias -->
             <span id="search-count" class="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 px-0.5 hidden select-none">0/0</span>
 
-            <!-- Botón Anterior -->
+            <!-- Botón Anterior amplio para Tesla -->
             <button
               id="btn-search-prev"
               type="button"
@@ -96,7 +109,7 @@
               class="w-7 h-7 sm:w-8 sm:h-7 flex items-center justify-center rounded-md bg-zinc-200/80 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-200 text-xs font-bold active:scale-95 transition-all select-none"
             >▲</button>
 
-            <!-- Botón Siguiente -->
+            <!-- Botón Siguiente amplio para Tesla -->
             <button
               id="btn-search-next"
               type="button"
@@ -107,9 +120,9 @@
         </div>
       </div>
 
-      <!-- Lado Derecho: Acciones de Guardado y Configuración -->
+      <!-- Lado Derecho: Acciones -->
       <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap shrink-0">
-        <!-- SELECTOR MODO DE GUARDADO (Añadir al final por defecto para no pisar) -->
+        <!-- SELECTOR MODO DE GUARDADO (Añadir al final por defecto) -->
         <select id="save-mode" class="px-1.5 py-1 text-[11px] font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 outline-none" title="Método de guardado">
           <option value="append" selected>➕ Añadir al final</option>
           <option value="overwrite">🔄 Reemplazar todo</option>
@@ -127,7 +140,7 @@
           <span id="btn-config-text">Drive</span>
         </button>
 
-        <!-- BOTÓN ASISTENTE GROK -->
+        <!-- BOTÓN GROK -->
         <button id="btn-grok-help" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all" title="Ver cómo preguntar a Grok en el Tesla">
           <span>⚡ Grok</span>
         </button>
@@ -145,13 +158,13 @@
     </div>
   </header>
 
-  <!-- LIENZO DE ESCRITURA ESTILO WORD -->
+  <!-- LIENZO DE ESCRITURA CON CAPA DE RESALTADO AMARILLO -->
   <main class="flex-1 flex flex-col p-1.5 sm:p-3">
     <div class="flex-1 flex justify-center w-full">
       <div class="word-sheet w-full max-w-5xl bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 flex flex-col transition-colors">
         
         <!-- Estado interno de la hoja -->
-        <div class="flex items-center justify-between px-3 py-1 text-[11px] text-zinc-400 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50">
+        <div class="flex items-center justify-between px-3 py-1 text-[11px] text-zinc-400 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50 select-none">
           <div class="flex items-center gap-2">
             <span id="sync-status">Listo</span>
             <span class="text-zinc-300 dark:text-zinc-700">|</span>
@@ -163,11 +176,22 @@
           </div>
         </div>
 
-        <!-- Área de edición -->
-        <div class="flex-1 p-3 sm:p-6 md:p-8 flex flex-col">
+        <!-- Contenedor sincronizado (Fondo con marcas amarillas + Textarea interactivo) -->
+        <div class="relative flex-1 flex flex-col min-h-[70vh]">
+          
+          <!-- CAPA INFERIOR DE RESALTADO: Muestra los términos encontrados en amarillo -->
+          <div
+            id="editor-backdrop"
+            aria-hidden="true"
+            class="absolute inset-0 p-3 sm:p-6 md:p-8 pointer-events-none select-none overflow-hidden m-0 border-0"
+          >
+            <div id="editor-highlights" class="editor-typography w-full min-h-full text-transparent m-0 p-0"></div>
+          </div>
+
+          <!-- ÁREA DE EDICIÓN NATIVA: Fondo transparente para que el amarillo brille a través -->
           <textarea
             id="editor"
-            class="w-full flex-1 resize-none bg-transparent outline-none border-none p-0 leading-relaxed text-base sm:text-lg min-h-[70vh] text-zinc-900 dark:text-zinc-100"
+            class="editor-typography relative z-10 w-full flex-1 resize-none bg-transparent outline-none border-none p-3 sm:p-6 md:p-8 min-h-[70vh] text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 m-0"
             placeholder="Escribe aquí las notas que quieres que Grok te responda por voz en el Tesla...
 
 Ejemplo:
@@ -180,6 +204,7 @@ Ejemplo:
 - Código portón: #8821*
 - Alarma de casa: 5821"
           ></textarea>
+
         </div>
 
       </div>
@@ -245,7 +270,7 @@ Ejemplo:
     </div>
   </div>
 
-  <!-- MODAL: CÓMO USARLO CON GROK EN EL TESLA -->
+  <!-- MODAL: GROK TESLA -->
   <div id="modal-grok" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
     <div class="relative w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3.5 text-zinc-900 dark:text-zinc-100 text-xs">
       
@@ -267,7 +292,7 @@ Ejemplo:
       <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1.5">
         <p class="font-bold text-emerald-950 dark:text-emerald-200">2. Enlace corto y orden por voz:</p>
         <p class="text-zinc-600 dark:text-zinc-300">
-          Crea en <a href="https://tinyurl.com" target="_blank" class="text-blue-600 underline font-bold">tinyurl.com</a> un alias corto como <code class="bg-emerald-100 dark:bg-emerald-900 px-1 py-0.5 rounded font-mono">mistesla</code> y di en el coche:
+          Crea en <a href="https://tinyurl.com" target="_blank" class="text-blue-600 underline font-bold">tinyurl.com</a> un alias como <code class="bg-emerald-100 dark:bg-emerald-900 px-1 py-0.5 rounded font-mono">mistesla</code> y di:
         </p>
         <div class="p-2 bg-white dark:bg-zinc-800 rounded border border-emerald-200 dark:border-emerald-900 font-mono text-[11px] text-emerald-800 dark:text-emerald-300">
           "Grok, consulta la web tinyurl.com/mistesla y dime el código del garaje"
@@ -326,7 +351,6 @@ Ejemplo:
       if (!candidate.isTrashed()) { file = candidate; break; }
     }
 
-    // ACCIÓN TEST: NO TOCA EL FICHERO
     if (action === "test") {
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
@@ -336,7 +360,6 @@ Ejemplo:
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // MODO APPEND (AÑADIR AL FINAL)
     if (action === "append") {
       if (file) {
         var existing = file.getBlob().getDataAsString();
@@ -346,7 +369,6 @@ Ejemplo:
         file = DriveApp.getRootFolder().createFile(fileName, content, MimeType.PLAIN_TEXT);
       }
     } else {
-      // MODO OVERWRITE (REEMPLAZO)
       if (file) {
         file.setContent(content);
       } else {
@@ -392,6 +414,8 @@ function doGet(e) {
 }`;
 
     const editor = document.getElementById('editor');
+    const editorBackdrop = document.getElementById('editor-backdrop');
+    const editorHighlights = document.getElementById('editor-highlights');
     const syncStatus = document.getElementById('sync-status');
     const statWords = document.getElementById('stat-words');
     const statChars = document.getElementById('stat-chars');
@@ -400,6 +424,12 @@ function doGet(e) {
     const topBar = document.getElementById('top-bar');
     const grokUrlInput = document.getElementById('grok-url-input');
     const saveModeSelect = document.getElementById('save-mode');
+
+    // Sincronizar el scroll vertical del fondo con el editor
+    editor.addEventListener('scroll', () => {
+      editorBackdrop.scrollTop = editor.scrollTop;
+      editorBackdrop.scrollLeft = editor.scrollLeft;
+    });
 
     // Auto-ocultar cabecera al hacer scroll en Tesla
     let lastScrollY = window.scrollY;
@@ -430,7 +460,6 @@ function doGet(e) {
     }
     updateDriveStatus();
 
-    // Contenido inicial local
     editor.value = localStorage.getItem(STORAGE_KEY) || '';
 
     function showToast(msg, type = 'info') {
@@ -451,13 +480,14 @@ function doGet(e) {
       statChars.textContent = text.length + ' car';
       localStorage.setItem(STORAGE_KEY, text);
     }
+
     editor.addEventListener('input', () => {
       updateStats();
       runSearch(false);
     });
     updateStats();
 
-    // Sincronización automática inicial
+    // Sincronización automática de Drive
     async function autoLoadFromDrive() {
       if (!driveScriptUrl) return;
       syncStatus.textContent = 'Sincronizando con Drive...';
@@ -478,6 +508,7 @@ function doGet(e) {
               editor.value = remoteContent;
             }
             updateStats();
+            renderHighlights();
             syncStatus.textContent = 'Sincronizado (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
           }
         }
@@ -487,7 +518,7 @@ function doGet(e) {
     }
     autoLoadFromDrive();
 
-    // Guardado en Google Drive
+    // Guardado en Drive
     async function saveToDrive() {
       localStorage.setItem(STORAGE_KEY, editor.value);
 
@@ -547,7 +578,7 @@ function doGet(e) {
     });
 
     // ========================================================
-    // BUSCADOR CON PROTECCIÓN DE FOCO Y CONTROLES TÁCTILES TESLA
+    // BUSCADOR CON RESALTADO EN AMARILLO Y CONTROL DE FOCO
     // ========================================================
     const searchInput = document.getElementById('search-input');
     const searchCount = document.getElementById('search-count');
@@ -557,6 +588,54 @@ function doGet(e) {
     
     let searchMatches = [];
     let currentMatchIndex = -1;
+
+    // Escapar caracteres para HTML seguro
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Renderizar las marcas amarillas en la capa de fondo
+    function renderHighlights() {
+      const text = editor.value;
+      if (!text || searchMatches.length === 0) {
+        editorHighlights.innerHTML = '';
+        return;
+      }
+
+      let lastIndex = 0;
+      let html = '';
+
+      searchMatches.forEach((m, idx) => {
+        // Texto previo al match
+        html += escapeHtml(text.substring(lastIndex, m.start));
+
+        const isCurrent = (idx === currentMatchIndex);
+        
+        // AMARILLO INTENSO CON BORDE PARA LA COINCIDENCIA ACTIVA, AMARILLO SUAVE PARA LAS DEMÁS
+        const highlightClass = isCurrent
+          ? 'bg-amber-400 dark:bg-yellow-400 text-transparent rounded-xs ring-2 ring-amber-600 dark:ring-yellow-200 shadow-sm'
+          : 'bg-yellow-300/80 dark:bg-yellow-500/60 text-transparent rounded-xs';
+
+        html += `<mark class="${highlightClass}">${escapeHtml(text.substring(m.start, m.end))}</mark>`;
+        lastIndex = m.end;
+      });
+
+      html += escapeHtml(text.substring(lastIndex));
+      
+      // Ajuste si termina en salto de línea
+      if (text.endsWith('\n')) {
+        html += '<br/>&nbsp;';
+      }
+
+      editorHighlights.innerHTML = html;
+      editorBackdrop.scrollTop = editor.scrollTop;
+      editorBackdrop.scrollLeft = editor.scrollLeft;
+    }
 
     function runSearch(autoScroll = true) {
       const term = searchInput.value;
@@ -571,11 +650,13 @@ function doGet(e) {
         btnSearchClear.classList.add('hidden');
         btnSearchClear.classList.remove('flex');
         searchCount.classList.add('hidden');
+        renderHighlights();
         return;
       }
 
       if (!term.trim()) {
         searchCount.classList.add('hidden');
+        renderHighlights();
         return;
       }
 
@@ -594,15 +675,17 @@ function doGet(e) {
       if (searchMatches.length > 0) {
         currentMatchIndex = 0;
         searchCount.textContent = `1/${searchMatches.length}`;
+        renderHighlights();
         if (autoScroll) {
           scrollToMatch(currentMatchIndex);
         }
       } else {
         searchCount.textContent = '0/0';
+        renderHighlights();
       }
     }
 
-    // Desplaza la vista a la coincidencia SIN quitarle el foco al input de búsqueda
+    // Desplazar la vista a la coincidencia SIN cambiar el foco de la casilla de búsqueda
     function scrollToMatch(index) {
       if (searchMatches.length === 0) return;
       if (index >= searchMatches.length) index = 0;
@@ -611,26 +694,29 @@ function doGet(e) {
       currentMatchIndex = index;
       searchCount.textContent = `${currentMatchIndex + 1}/${searchMatches.length}`;
 
+      renderHighlights();
+
       const match = searchMatches[currentMatchIndex];
 
-      // Ajustamos el cursor y la selección en el editor sin activar editor.focus()
+      // Ajustamos el cursor interno
       editor.setSelectionRange(match.start, match.end);
 
-      // Calculamos la posición visual de la línea y hacemos scroll suave en el editor
+      // Calculamos la posición y desplazamos suavemente
       const linesBefore = editor.value.substring(0, match.start).split('\n').length;
       const totalLines = Math.max(1, editor.value.split('\n').length);
       const lineHeight = editor.scrollHeight / totalLines;
       const targetScroll = Math.max(0, (linesBefore * lineHeight) - (editor.clientHeight / 2));
       
       editor.scrollTop = targetScroll;
+      editorBackdrop.scrollTop = targetScroll;
     }
 
-    // Evento al escribir en la búsqueda (EL FOCO NUNCA SE VA DEL INPUT)
+    // Al escribir, la búsqueda se ejecuta y el foco permanece en el input
     searchInput.addEventListener('input', () => {
       runSearch(true);
     });
 
-    // Navegación con teclado dentro del buscador
+    // Navegar con teclas Enter y Shift+Enter sin abandonar el input
     searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -644,7 +730,7 @@ function doGet(e) {
       }
     });
 
-    // Función para borrar el campo de búsqueda con el aspa
+    // Limpieza con el aspa (✕)
     function clearSearch() {
       searchInput.value = '';
       btnSearchClear.classList.add('hidden');
@@ -652,10 +738,11 @@ function doGet(e) {
       searchCount.classList.add('hidden');
       searchMatches = [];
       currentMatchIndex = -1;
+      renderHighlights();
       searchInput.focus();
     }
 
-    // Evitar que el clic en los botones táctiles robe el foco del campo
+    // Evitar pérdida de foco al pulsar sobre los botones táctiles
     const preventFocusSteal = (e) => e.preventDefault();
 
     btnSearchClear.addEventListener('mousedown', preventFocusSteal);
@@ -694,7 +781,6 @@ function doGet(e) {
     document.getElementById('modal-drive-close').onclick = closeDriveModal;
     document.getElementById('btn-drive-cancel').onclick = closeDriveModal;
 
-    // Copiar código del script
     document.getElementById('btn-copy-script').onclick = () => {
       navigator.clipboard.writeText(APPS_SCRIPT_SOURCE);
       showToast('Código copiado al portapapeles.', 'success');
@@ -717,7 +803,7 @@ function doGet(e) {
       closeDriveModal();
     };
 
-    // PROBAR CONEXIÓN SIN BORRAR NADA
+    // PROBAR CONEXIÓN SIN MODIFICAR EL ARCHIVO
     document.getElementById('btn-test-drive').onclick = async () => {
       const url = inputDriveUrl.value.trim();
       const msg = document.getElementById('drive-test-msg');
@@ -794,6 +880,7 @@ function doGet(e) {
     clearConfirm.onclick = () => {
       editor.value = '';
       updateStats();
+      renderHighlights();
       modalClear.classList.add('hidden');
       showToast('Hoja local vaciada.', 'info');
     };
