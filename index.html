@@ -61,79 +61,73 @@
     <span id="toast-message"></span>
   </div>
 
-  <!-- BARRA SUPERIOR CON BUSCADOR MULTI-PALABRA Y CONTROLES TÁCTILES -->
+  <!-- BARRA SUPERIOR ULTRA COMPACTA (UNA SOLA LÍNEA GARANTIZADA) -->
   <header id="top-bar" class="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/95 border-b border-zinc-200 dark:border-zinc-800 backdrop-blur-md shadow-xs">
-    <div class="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
-
-   <!-- Lado Izquierdo: Identificador con autor reducido y Estado -->
+    <div class="max-w-7xl mx-auto px-2 sm:px-3 py-1.5 flex flex-nowrap items-center justify-between gap-1.5 sm:gap-2">
+      
+      <!-- Lado Izquierdo: Identificador con autor reducido y Estado simplificado -->
       <div class="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
         <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-xs">
           ⚡
         </div>
         <span class="font-bold text-xs flex items-center gap-1">
           <span>Tesla <span class="text-blue-600 font-normal">Drive</span></span>
-          <span class="text-[10px] text-zinc-400 font-normal">(by <a href="https://x.com/boardinggate" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-600 dark:text-blue-400 underline decoration-zinc-300 dark:decoration-zinc-700">@BoardingGate</a>)</span>
+          <span class="text-[10px] text-zinc-400 font-normal hidden sm:inline">(by <a href="https://x.com/boardinggate" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-600 dark:text-blue-400 underline decoration-zinc-300 dark:decoration-zinc-700">@BoardingGate</a>)</span>
         </span>
+        <!-- Literal simplificado: solo Conectado / Offline -->
         <span id="badge-drive" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">Offline</span>
       </div>
-      
-       <!-- Centro: Buscador multi-palabra con contador grande -->
-      <div class="flex-1 max-w-sm sm:max-w-lg mx-1 sm:mx-2 min-w-[220px]">
+
+      <!-- Centro: Buscador táctil multi-palabra -->
+      <div class="flex-1 max-w-xs sm:max-w-md mx-1 min-w-[150px]">
         <div class="relative flex items-center">
-          <span class="absolute left-2.5 text-zinc-400 pointer-events-none text-xs">🔍</span>
+          <span class="absolute left-2 text-zinc-400 pointer-events-none text-xs">🔍</span>
           
           <input
             id="search-input"
             type="text"
             autocomplete="off"
             spellcheck="false"
-            placeholder="Buscar palabras (ej: PAYPAL JABLE)..."
-            class="w-full pl-8 pr-32 sm:pr-36 py-1.5 text-xs sm:text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+            placeholder="Buscar..."
+            class="w-full pl-6 pr-28 sm:pr-32 py-1 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           />
 
           <!-- Botones interiores del buscador -->
-          <div class="absolute right-1 flex items-center gap-1">
+          <div class="absolute right-1 flex items-center gap-0.5">
             <!-- Aspa de borrado rápido (✕) -->
             <button
               id="btn-search-clear"
               type="button"
               title="Borrar búsqueda"
-              class="hidden w-6 h-6 items-center justify-center rounded-full text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-bold transition-colors shrink-0"
+              class="hidden w-5 h-5 items-center justify-center rounded-full text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[11px] font-bold transition-colors shrink-0"
             >✕</button>
 
-            <!-- Contador de coincidencias GRANDE Y VISIBLE PARA TESLA -->
+            <!-- Contador de coincidencias visible -->
             <span
               id="search-count"
-              class="text-xs sm:text-sm font-bold font-mono text-blue-700 dark:text-blue-300 px-1.5 py-0.5 bg-blue-100/80 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/80 rounded-md hidden select-none whitespace-nowrap shrink-0"
+              class="text-[11px] font-bold font-mono text-blue-700 dark:text-blue-300 px-1 py-0.5 bg-blue-100/80 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/80 rounded hidden select-none whitespace-nowrap shrink-0"
             >0/0</span>
 
-            <!-- Botón Anterior amplio -->
+            <!-- Botones anterior / siguiente -->
             <button
               id="btn-search-prev"
               type="button"
               title="Anterior (Shift+Enter)"
-              class="w-7 h-7 sm:w-8 sm:h-7 flex items-center justify-center rounded-md bg-zinc-200/80 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-200 text-xs font-bold active:scale-95 transition-all select-none shrink-0"
+              class="w-6 h-6 sm:w-7 sm:h-6 flex items-center justify-center rounded bg-zinc-200/80 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-200 text-[10px] font-bold active:scale-95 transition-all select-none shrink-0"
             >▲</button>
-
-            <!-- Botón Siguiente amplio -->
             <button
               id="btn-search-next"
               type="button"
               title="Siguiente (Enter)"
-              class="w-7 h-7 sm:w-8 sm:h-7 flex items-center justify-center rounded-md bg-zinc-200/80 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-200 text-xs font-bold active:scale-95 transition-all select-none shrink-0"
+              class="w-6 h-6 sm:w-7 sm:h-6 flex items-center justify-center rounded bg-zinc-200/80 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-200 text-[10px] font-bold active:scale-95 transition-all select-none shrink-0"
             >▼</button>
           </div>
         </div>
       </div>
 
-      <!-- Lado Derecho: Acciones -->
-      <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap shrink-0">
-        <!-- SELECTOR MODO DE GUARDADO (Añadir al final por defecto) -->
-        <select id="save-mode" class="px-1.5 py-1 text-[11px] font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 outline-none" title="Método de guardado">
-          <option value="append" selected>➕ Añadir al final</option>
-          <option value="overwrite">🔄 Reemplazar todo</option>
-        </select>
-
+      <!-- Lado Derecho: Acciones compactas en una sola línea -->
+      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 whitespace-nowrap">
+        
         <!-- BOTÓN GUARDAR EN GOOGLE DRIVE -->
         <button id="btn-save" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition-all" title="Guardar en Google Drive (Ctrl+S)">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
@@ -141,7 +135,7 @@
         </button>
 
         <!-- BOTÓN CONFIGURAR DRIVE -->
-        <button id="btn-config-drive" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all">
+        <button id="btn-config-drive" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all" title="Configuración de Google Drive">
           <span>☁️</span>
           <span id="btn-config-text">Drive</span>
         </button>
@@ -151,12 +145,18 @@
           <span>⚡ Grok</span>
         </button>
 
-        <!-- BOTONES SECUNDARIOS -->
-        <button id="btn-copy-all" class="px-1.5 py-1 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">Copiar</button>
-        <button id="btn-clear" class="px-1.5 py-1 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded">Limpiar</button>
+        <!-- BOTÓN COPIAR (ICONO) -->
+        <button id="btn-copy-all" class="w-7 h-7 flex items-center justify-center rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-white transition-all active:scale-95" title="Copiar todo al portapapeles">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+        </button>
+
+        <!-- BOTÓN LIMPIAR (ICONO) -->
+        <button id="btn-clear" class="w-7 h-7 flex items-center justify-center rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50/50 dark:bg-red-950/30 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/50 transition-all active:scale-95" title="Vaciar hoja de notas">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
 
         <!-- MODO DÍA / NOCHE TESLA -->
-        <button id="btn-theme" class="px-2 py-1 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+        <button id="btn-theme" class="w-7 h-7 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300" title="Cambiar tema">
           <span id="theme-icon">🌙</span>
         </button>
       </div>
@@ -217,7 +217,7 @@ Ejemplo:
     </div>
   </main>
 
-  <!-- MODAL DE CONFIGURACIÓN DRIVE (PROTEGIDO) -->
+  <!-- MODAL DE CONFIGURACIÓN DRIVE (CON SELECTOR DE MODO DE GUARDADO INTEGRADO) -->
   <div id="modal-drive" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
     <div class="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-4 text-zinc-900 dark:text-zinc-100 text-xs max-h-[92vh] overflow-y-auto">
       
@@ -228,6 +228,7 @@ Ejemplo:
         <button id="modal-drive-close" class="text-zinc-400 hover:text-zinc-600 p-1">✕</button>
       </div>
 
+      <!-- Campo URL -->
       <div>
         <label class="block font-semibold mb-1 text-zinc-800 dark:text-zinc-200">1. Pega la URL de tu aplicación web (Apps Script):</label>
         <div class="flex gap-1.5">
@@ -237,6 +238,17 @@ Ejemplo:
         <div id="drive-test-msg" class="text-[11px] mt-1.5 font-medium hidden p-2 rounded-lg"></div>
       </div>
 
+      <!-- SELECTOR DE MODO DE GUARDADO MOVIDO AQUÍ PARA DESPEJAR LA CABECERA -->
+      <div class="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-1.5">
+        <label for="save-mode" class="block font-bold text-zinc-800 dark:text-zinc-200">2. Modo de guardado habitual:</label>
+        <select id="save-mode" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 text-xs font-medium text-zinc-800 dark:text-zinc-100 outline-none">
+          <option value="append" selected>➕ Añadir al final (Recomendado: no sobreescribe notas de otros dispositivos)</option>
+          <option value="overwrite">🔄 Reemplazar todo el archivo en Drive</option>
+        </select>
+        <p class="text-[10px] text-zinc-500 dark:text-zinc-400">Con "Añadir al final", si guardas desde el móvil o el coche, lo que escribas se anexará al fichero sin destruir lo existente.</p>
+      </div>
+
+      <!-- Instrucciones de configuración -->
       <div class="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-2">
         <p class="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1">
           <span>🛡️</span> Protección contra sobreescritura garantizada:
@@ -308,7 +320,7 @@ Ejemplo:
     </div>
   </div>
 
-  <!-- MODAL DE CONFIRMACIÓN -->
+  <!-- MODAL DE CONFIRMACIÓN (VACIAR) -->
   <div id="modal-clear" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
     <div class="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-red-200 dark:border-red-900/40 p-4 text-zinc-900 dark:text-zinc-100 space-y-3">
       <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
@@ -328,6 +340,7 @@ Ejemplo:
   <script>
     const STORAGE_KEY = 'tesla_grok_doc_content';
     const SCRIPT_URL_KEY = 'tesla_drive_script_url';
+    const SAVE_MODE_KEY = 'tesla_drive_save_mode';
 
     // CÓDIGO DE GOOGLE APPS SCRIPT
     const APPS_SCRIPT_SOURCE = `function doPost(e) {
@@ -428,6 +441,12 @@ function doGet(e) {
     const grokUrlInput = document.getElementById('grok-url-input');
     const saveModeSelect = document.getElementById('save-mode');
 
+    // Cargar preferencia de modo de guardado guardada
+    saveModeSelect.value = localStorage.getItem(SAVE_MODE_KEY) || 'append';
+    saveModeSelect.addEventListener('change', () => {
+      localStorage.setItem(SAVE_MODE_KEY, saveModeSelect.value);
+    });
+
     editor.addEventListener('scroll', () => {
       editorBackdrop.scrollTop = editor.scrollTop;
       editorBackdrop.scrollLeft = editor.scrollLeft;
@@ -444,11 +463,12 @@ function doGet(e) {
       lastScrollY = currentScrollY;
     }, { passive: true });
 
+    // Estado simplificado: solo Conectado u Offline
     let driveScriptUrl = localStorage.getItem(SCRIPT_URL_KEY) || '';
     function updateDriveStatus() {
       if (driveScriptUrl) {
         btnConfigText.textContent = 'Drive ✓';
-        badgeDrive.textContent = 'Drive Conectado';
+        badgeDrive.textContent = 'Conectado';
         badgeDrive.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
         grokUrlInput.value = driveScriptUrl;
       } else {
@@ -575,7 +595,7 @@ function doGet(e) {
     });
 
     // ========================================================
-    // BUSCADOR MULTI-PALABRA CON CONTADOR DESTACADO Y SIN ROBO DE FOCO
+    // BUSCADOR MULTI-PALABRA CON FOCO PROTEGIDO Y CONTADOR
     // ========================================================
     const searchInput = document.getElementById('search-input');
     const searchCount = document.getElementById('search-count');
@@ -595,7 +615,6 @@ function doGet(e) {
         .replace(/'/g, '&#039;');
     }
 
-    // Renderizar todas las coincidencias en amarillo
     function renderHighlights() {
       const text = editor.value;
       if (!text || searchMatches.length === 0) {
@@ -611,7 +630,6 @@ function doGet(e) {
 
         const isCurrent = (idx === currentMatchIndex);
         
-        // Coincidencia activa en amarillo/ámbar fuerte con borde; las demás en amarillo suave
         const highlightClass = isCurrent
           ? 'bg-amber-400 dark:bg-yellow-400 text-transparent rounded-xs ring-2 ring-amber-600 dark:ring-yellow-200 shadow-sm'
           : 'bg-yellow-300/85 dark:bg-yellow-500/60 text-transparent rounded-xs';
@@ -631,7 +649,6 @@ function doGet(e) {
       editorBackdrop.scrollLeft = editor.scrollLeft;
     }
 
-    // Búsqueda multi-término: separa palabras y localiza cualquiera de ellas
     function runSearch(autoScroll = true) {
       const rawTerm = searchInput.value;
       searchMatches = [];
@@ -648,7 +665,6 @@ function doGet(e) {
         return;
       }
 
-      // Desglosar la búsqueda en términos individuales no vacíos
       const tokens = rawTerm.toLowerCase().split(/\s+/).filter(t => t.length > 0);
 
       if (tokens.length === 0) {
@@ -661,7 +677,6 @@ function doGet(e) {
       const lowerText = text.toLowerCase();
       let rawMatches = [];
 
-      // Localizar cada término por separado
       tokens.forEach(token => {
         let pos = lowerText.indexOf(token);
         while (pos !== -1) {
@@ -677,10 +692,8 @@ function doGet(e) {
         return;
       }
 
-      // Ordenar apariciones en el orden en que aparecen en el documento
       rawMatches.sort((a, b) => a.start - b.start || b.end - a.end);
 
-      // Combinar solapamientos (por ejemplo, si buscan dos términos muy parecidos)
       const merged = [];
       for (const m of rawMatches) {
         if (merged.length === 0) {
@@ -708,7 +721,6 @@ function doGet(e) {
       }
     }
 
-    // Desplazar vista a la coincidencia seleccionada sin robar el foco
     function scrollToMatch(index) {
       if (searchMatches.length === 0) return;
       if (index >= searchMatches.length) index = 0;
@@ -731,12 +743,10 @@ function doGet(e) {
       editorBackdrop.scrollTop = targetScroll;
     }
 
-    // Búsqueda en tiempo real (el foco sigue en el input)
     searchInput.addEventListener('input', () => {
       runSearch(true);
     });
 
-    // Navegación con teclado
     searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -750,7 +760,6 @@ function doGet(e) {
       }
     });
 
-    // Limpiar búsqueda
     function clearSearch() {
       searchInput.value = '';
       btnSearchClear.classList.add('hidden');
@@ -762,7 +771,6 @@ function doGet(e) {
       searchInput.focus();
     }
 
-    // Evitar que el clic en botones táctiles robe el foco del campo
     const preventFocusSteal = (e) => e.preventDefault();
 
     btnSearchClear.addEventListener('mousedown', preventFocusSteal);
@@ -815,6 +823,7 @@ function doGet(e) {
     document.getElementById('btn-drive-save-url').onclick = () => {
       driveScriptUrl = inputDriveUrl.value.trim();
       localStorage.setItem(SCRIPT_URL_KEY, driveScriptUrl);
+      localStorage.setItem(SAVE_MODE_KEY, saveModeSelect.value);
       updateDriveStatus();
       if (driveScriptUrl) {
         showToast('Drive conectado correctamente.', 'success');
