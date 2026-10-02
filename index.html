@@ -40,10 +40,8 @@
     }
     textarea:focus { outline: none; }
 
-    /* Alineación idéntica entre el lienzo de marcas y el textarea */
+    /* Estilo tipográfico base compartido para sincronización exacta */
     .editor-typography {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      font-size: 1.05rem;
       line-height: 1.625;
       letter-spacing: normal;
       word-spacing: normal;
@@ -80,11 +78,11 @@
     <button id="url-launcher-close" class="text-zinc-400 hover:text-white dark:hover:text-zinc-900 px-1 text-xs">✕</button>
   </div>
 
-  <!-- BARRA SUPERIOR ULTRA COMPACTA (UNA SOLA LÍNEA) -->
+  <!-- BARRA SUPERIOR ULTRA COMPACTA (UNA SOLA LÍNEA GARANTIZADA) -->
   <header id="top-bar" class="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/95 border-b border-zinc-200 dark:border-zinc-800 backdrop-blur-md shadow-xs">
     <div class="max-w-7xl mx-auto px-2 sm:px-3 py-1.5 flex flex-nowrap items-center justify-between gap-1.5 sm:gap-2">
       
-      <!-- Lado Izquierdo -->
+      <!-- Lado Izquierdo: Identificador y Estado -->
       <div class="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
         <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-xs">
           ⚡
@@ -176,20 +174,38 @@
     <div class="flex-1 flex justify-center w-full">
       <div class="word-sheet w-full max-w-5xl bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 flex flex-col transition-colors">
         
-        <!-- Estado interno -->
-        <div class="flex items-center justify-between px-3 py-1 text-[11px] text-zinc-400 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50 select-none">
+        <!-- BARRA SUB-CABECERA DE LA HOJA: ESTADO Y CONTROLES COMPACTOS DE FUENTE -->
+        <div class="flex items-center justify-between px-3 py-1.5 text-[11px] text-zinc-400 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50 select-none flex-wrap gap-2">
+          
+          <!-- Lado Izquierdo: Estado y Estadísticas -->
           <div class="flex items-center gap-2">
             <span id="sync-status">Listo</span>
             <span class="text-zinc-300 dark:text-zinc-700">|</span>
             <span id="stat-words">0 palabras</span>
+            <span class="text-zinc-300 dark:text-zinc-700 hidden xs:inline">|</span>
+            <span id="stat-chars" class="font-mono hidden xs:inline">0 car</span>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="hidden sm:inline text-zinc-400">Toca un enlace, teléfono o email para interactuar</span>
-            <span id="stat-chars" class="font-mono">0 car</span>
+
+          <!-- Lado Derecho: Controles compactos de Tamaño y Fuente -->
+          <div class="flex items-center gap-1.5 shrink-0">
+            <!-- Selector tamaño: A- y A+ -->
+            <div class="flex items-center border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden bg-white dark:bg-zinc-800 shadow-2xs">
+              <button id="btn-font-dec" class="px-2 py-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-700 font-bold text-[11px] text-zinc-700 dark:text-zinc-300 active:scale-95 transition-all select-none" title="Reducir tamaño de letra">A-</button>
+              <span id="font-size-display" class="px-1.5 text-[10px] font-mono font-semibold text-zinc-500 dark:text-zinc-400 select-none border-x border-zinc-100 dark:border-zinc-700">17</span>
+              <button id="btn-font-inc" class="px-2 py-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-700 font-bold text-[11px] text-zinc-700 dark:text-zinc-300 active:scale-95 transition-all select-none" title="Aumentar tamaño de letra">A+</button>
+            </div>
+
+            <!-- Selector tipo de fuente -->
+            <select id="font-family-select" class="px-2 py-0.5 text-[10px] font-semibold rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 outline-none cursor-pointer shadow-2xs" title="Cambiar tipo de letra">
+              <option value="sans">Sans (Moderna)</option>
+              <option value="mono">Mono (Código/Técnica)</option>
+              <option value="serif">Serif (Libro)</option>
+            </select>
           </div>
+
         </div>
 
-        <!-- Contenedor sincronizado -->
+        <!-- Contenedor sincronizado (Fondo + Textarea) -->
         <div class="relative flex-1 flex flex-col min-h-[70vh]">
           
           <!-- CAPA INFERIOR DE MARCAS -->
@@ -347,6 +363,8 @@ Ejemplo:
     const STORAGE_KEY = 'tesla_grok_doc_content';
     const SCRIPT_URL_KEY = 'tesla_drive_script_url';
     const SAVE_MODE_KEY = 'tesla_drive_save_mode';
+    const FONT_SIZE_KEY = 'tesla_doc_font_size';
+    const FONT_FAMILY_KEY = 'tesla_doc_font_family';
 
     const APPS_SCRIPT_SOURCE = `function doPost(e) {
   try {
@@ -456,6 +474,64 @@ function doGet(e) {
     const urlLauncherClose = document.getElementById('url-launcher-close');
     const urlLauncherArrow = document.getElementById('url-launcher-arrow');
 
+    // ========================================================
+    // GESTIÓN DE FUENTES Y TAMAÑO (COMPACTA Y SINCRONIZADA)
+    // ========================================================
+    const btnFontDec = document.getElementById('btn-font-dec');
+    const btnFontInc = document.getElementById('btn-font-inc');
+    const fontSizeDisplay = document.getElementById('font-size-display');
+    const fontFamilySelect = document.getElementById('font-family-select');
+
+    let currentFontSize = parseInt(localStorage.getItem(FONT_SIZE_KEY), 10) || 17;
+    let currentFontFamily = localStorage.getItem(FONT_FAMILY_KEY) || 'sans';
+
+    function applyTypography() {
+      // Límites entre 12px y 28px
+      if (currentFontSize < 12) currentFontSize = 12;
+      if (currentFontSize > 28) currentFontSize = 28;
+
+      fontSizeDisplay.textContent = currentFontSize;
+      const sizePx = currentFontSize + 'px';
+
+      let fontStyleStr = "'Inter', system-ui, -apple-system, sans-serif";
+      if (currentFontFamily === 'mono') {
+        fontStyleStr = "'ui-monospace', SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+      } else if (currentFontFamily === 'serif') {
+        fontStyleStr = "Georgia, Cambria, 'Times New Roman', serif";
+      }
+
+      // Aplicar sincrónicamente al textarea y a la capa inferior de marcas
+      editor.style.fontSize = sizePx;
+      editorHighlights.style.fontSize = sizePx;
+
+      editor.style.fontFamily = fontStyleStr;
+      editorHighlights.style.fontFamily = fontStyleStr;
+
+      localStorage.setItem(FONT_SIZE_KEY, currentFontSize);
+      localStorage.setItem(FONT_FAMILY_KEY, currentFontFamily);
+
+      renderHighlights();
+    }
+
+    btnFontDec.addEventListener('click', () => {
+      currentFontSize -= 1;
+      applyTypography();
+    });
+
+    btnFontInc.addEventListener('click', () => {
+      currentFontSize += 1;
+      applyTypography();
+    });
+
+    fontFamilySelect.value = currentFontFamily;
+    fontFamilySelect.addEventListener('change', (e) => {
+      currentFontFamily = e.target.value;
+      applyTypography();
+    });
+
+    // Aplicar tipografía guardada al cargar
+    applyTypography();
+
     saveModeSelect.value = localStorage.getItem(SAVE_MODE_KEY) || 'append';
     saveModeSelect.addEventListener('change', () => {
       localStorage.setItem(SAVE_MODE_KEY, saveModeSelect.value);
@@ -539,7 +615,6 @@ function doGet(e) {
     editor.addEventListener('touchstart', recordTouchPosition, { passive: true });
     editor.addEventListener('mousedown', recordTouchPosition);
 
-    // Encuentra todos los elementos interactivos en el texto
     function extractAllActionables(text) {
       if (!text) return [];
       const results = [];
@@ -562,15 +637,13 @@ function doGet(e) {
         });
       }
 
-      // 2. TELÉFONOS (Móviles, fijos e internacionales: 9 a 15 dígitos o con prefijo +)
+      // 2. TELÉFONOS (9 a 15 dígitos o prefijo +)
       const phoneRegex = /(?:\+[\d\s.-]{7,20}|\b(?:\d[\s.-]?){9,14}\b)/gi;
       while ((m = phoneRegex.exec(text)) !== null) {
         let raw = m[0].replace(/[.,;:!?)\]}>"']+$/, '');
         const digits = raw.replace(/\D/g, '');
         
-        // Validación: debe tener aspecto real de teléfono (9 a 15 dígitos)
         if ((digits.length >= 9 && digits.length <= 15) || (raw.startsWith('+') && digits.length >= 8)) {
-          // Asegurar que no solapa con un email ya detectado
           const overlaps = results.some(r => m.index >= r.start && m.index < r.end);
           if (!overlaps) {
             const cleanPhone = raw.replace(/[\s.-]/g, '');
@@ -632,8 +705,6 @@ function doGet(e) {
       urlLauncherIcon.textContent = detected.icon;
       urlLauncherBtnText.textContent = detected.btnText;
       urlLauncherBtnIcon.textContent = detected.btnIcon;
-      
-      // Aplicar color específico (azul = web, verde = teléfono, morado = email)
       urlLauncherBtn.className = `px-2.5 py-1 ${detected.colorClass} text-white rounded-lg font-bold text-xs flex items-center gap-1 active:scale-95 transition-transform shrink-0 shadow-xs`;
 
       urlLauncher.classList.remove('hidden');
@@ -650,7 +721,7 @@ function doGet(e) {
         const textBefore = editor.value.substring(0, detected.start);
         const lineIndex = textBefore.split('\n').length - 1;
         const style = window.getComputedStyle(editor);
-        const lineHeight = parseFloat(style.lineHeight) || 27;
+        const lineHeight = parseFloat(style.lineHeight) || (currentFontSize * 1.625);
         const paddingTop = parseFloat(style.paddingTop) || 24;
         
         targetY = rect.top + paddingTop + (lineIndex * lineHeight) - editor.scrollTop + (lineHeight / 2);
@@ -690,7 +761,6 @@ function doGet(e) {
       const text = editor.value;
       const detected = getActionableAtPosition(text, pos);
 
-      // Si hace Ctrl+Clic en PC, abre la acción directamente
       if (e && (e.ctrlKey || e.metaKey) && e.type === 'click' && detected) {
         window.open(detected.href, '_blank');
         return;
@@ -800,7 +870,7 @@ function doGet(e) {
     });
 
     // ========================================================
-    // BUSCADOR Y RESALTADO DE TEXTO + ENLACES AZULES/VERDES/MORADOS
+    // BUSCADOR Y RESALTADO DE TEXTO
     // ========================================================
     const searchInput = document.getElementById('search-input');
     const searchCount = document.getElementById('search-count');
@@ -852,7 +922,6 @@ function doGet(e) {
         return;
       }
 
-      // Si no hay búsqueda, subrayar elementos interactivos con sus colores respectivos
       const actionables = extractAllActionables(text);
       if (actionables.length > 0) {
         let lastIndex = 0;
