@@ -80,7 +80,7 @@
     <button id="url-launcher-close" class="text-zinc-400 hover:text-white dark:hover:text-zinc-900 px-1 text-xs">✕</button>
   </div>
 
-  <!-- BARRA SUPERIOR ULTRA COMPACTA (UNA SOLA LÍNEA GARANTIZADA) -->
+  <!-- BARRA SUPERIOR ULTRA COMPACTA -->
   <header id="top-bar" class="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/95 border-b border-zinc-200 dark:border-zinc-800 backdrop-blur-md shadow-xs">
     <div class="max-w-7xl mx-auto px-2 sm:px-3 py-1.5 flex flex-nowrap items-center justify-between gap-1.5 sm:gap-2">
       
@@ -141,7 +141,7 @@
 
       <!-- Lado Derecho: Acciones -->
       <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 whitespace-nowrap">
-        <button id="btn-save" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition-all" title="Guardar en Google Drive (Ctrl+S)">
+        <button id="btn-save" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition-all" title="Guardar en Google Drive ahora (Ctrl+S)">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
           <span id="btn-save-text">Guardar</span>
         </button>
@@ -176,28 +176,26 @@
     <div class="flex-1 flex justify-center w-full">
       <div class="word-sheet w-full max-w-5xl bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 flex flex-col transition-colors">
         
-        <!-- BARRA SUB-CABECERA DE LA HOJA: ESTADO Y CONTROLES DE TIPOGRAFÍA -->
+        <!-- BARRA SUB-CABECERA DE LA HOJA -->
         <div class="flex items-center justify-between px-3 py-1.5 text-[11px] text-zinc-400 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50 select-none flex-wrap gap-2">
           
-          <!-- Lado Izquierdo: Estadísticas -->
+          <!-- Lado Izquierdo: Estado -->
           <div class="flex items-center gap-2">
-            <span id="sync-status">Listo</span>
+            <span id="sync-status">Iniciando...</span>
             <span class="text-zinc-300 dark:text-zinc-700">|</span>
             <span id="stat-words">0 palabras</span>
             <span class="text-zinc-300 dark:text-zinc-700 hidden xs:inline">|</span>
             <span id="stat-chars" class="font-mono hidden xs:inline">0 car</span>
           </div>
 
-          <!-- Lado Derecho: Controles de Tamaño (hasta 5px) y Tipo de Fuente (Mono por defecto) -->
+          <!-- Lado Derecho: Controles de Tipografía -->
           <div class="flex items-center gap-1.5 shrink-0">
-            <!-- Selector tamaño: A- y A+ -->
             <div class="flex items-center border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden bg-white dark:bg-zinc-800 shadow-2xs">
               <button id="btn-font-dec" class="px-2 py-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-700 font-bold text-[11px] text-zinc-700 dark:text-zinc-300 active:scale-95 transition-all select-none" title="Reducir tamaño (mínimo 5px)">A-</button>
               <span id="font-size-display" class="px-1.5 text-[10px] font-mono font-semibold text-zinc-500 dark:text-zinc-400 select-none border-x border-zinc-100 dark:border-zinc-700">17</span>
               <button id="btn-font-inc" class="px-2 py-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-700 font-bold text-[11px] text-zinc-700 dark:text-zinc-300 active:scale-95 transition-all select-none" title="Aumentar tamaño">A+</button>
             </div>
 
-            <!-- Selector tipo de fuente (Mono seleccionada por defecto) -->
             <select id="font-family-select" class="px-2 py-0.5 text-[10px] font-semibold rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 outline-none cursor-pointer shadow-2xs" title="Cambiar tipo de letra">
               <option value="mono" selected>Mono (Código/Técnica)</option>
               <option value="sans">Sans (Moderna)</option>
@@ -230,7 +228,6 @@ Ejemplo:
 - Matrícula: 1234-XYZ
 - Presión recomendada: 2.9 bar (42 psi)
 - Asistencia 24h: 900 123 456
-- Móvil grúa: +34 612 34 56 78
 - Seguro: siniestros@segurotesla.com
 
 [ENLACES ÚTILES]
@@ -244,13 +241,13 @@ Ejemplo:
     </div>
   </main>
 
-  <!-- MODAL DE CONFIGURACIÓN DRIVE (COMPLETO) -->
+  <!-- MODAL DE CONFIGURACIÓN DRIVE -->
   <div id="modal-drive" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-sm">
     <div class="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-4 text-zinc-900 dark:text-zinc-100 text-xs max-h-[92vh] overflow-y-auto">
       
       <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
         <h3 class="text-sm font-bold flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
-          <span>☁️</span> Conectar Google Apps Script (Seguro Multi-Dispositivo)
+          <span>☁️</span> Conectar Google Apps Script (Sincronización Automática)
         </h3>
         <button id="modal-drive-close" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1 text-sm font-bold">✕</button>
       </div>
@@ -259,34 +256,25 @@ Ejemplo:
         <label class="block font-semibold mb-1 text-zinc-800 dark:text-zinc-200">1. Pega la URL de tu aplicación web (Apps Script):</label>
         <div class="flex gap-1.5">
           <input id="input-drive-url" type="url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="flex-1 px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
-          <button id="btn-test-drive" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shrink-0">Probar sin borrar</button>
+          <button id="btn-test-drive" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shrink-0">Probar conexión</button>
         </div>
         <div id="drive-test-msg" class="text-[11px] mt-1.5 font-medium hidden p-2 rounded-lg"></div>
       </div>
 
-      <div class="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-1.5">
-        <label for="save-mode" class="block font-bold text-zinc-800 dark:text-zinc-200">2. Modo de guardado habitual:</label>
-        <select id="save-mode" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 text-xs font-medium text-zinc-800 dark:text-zinc-100 outline-none">
-          <option value="append" selected>➕ Añadir al final (Recomendado: no sobreescribe notas de otros dispositivos)</option>
-          <option value="overwrite">🔄 Reemplazar todo el archivo en Drive</option>
-        </select>
-        <p class="text-[10px] text-zinc-500 dark:text-zinc-400">Con "Añadir al final", si guardas desde el móvil o el coche, lo que escribas se anexará al fichero sin destruir lo existente.</p>
-      </div>
-
       <div class="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-2">
         <p class="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1">
-          <span>🛡️</span> Protección contra sobreescritura garantizada:
+          <span>🔄</span> Sincronización en dos direcciones:
         </p>
         <p class="text-zinc-600 dark:text-zinc-300 text-[11px] leading-relaxed">
-          Al probar o configurar desde otro equipo o el coche, <strong>el fichero de notas en Google Drive nunca se destruirá ni se sobreescribirá</strong>.
+          Al entrar a la app, se descargará automáticamente la versión de Google Drive. Si realizas cambios, se autoguardan en Drive y en tu almacenamiento local. También se comprueba la sincronización cada 5 minutos.
         </p>
         <ol class="list-decimal list-inside space-y-1.5 text-zinc-600 dark:text-zinc-300 text-[11px] leading-relaxed">
           <li>Abre <a href="https://script.google.com" target="_blank" class="text-blue-600 underline font-bold">script.google.com</a> y crea un <strong>"Nuevo proyecto"</strong>.</li>
-          <li>Borra lo que aparezca y pega el código con el botón verde.</li>
+          <li>Borra el código que aparezca y pega el código actualizado con el botón inferior.</li>
           <li>Pulsa en <strong>Implementar &gt; Nueva implementación</strong>.</li>
           <li>En tipo (⚙️) elige <strong>Aplicación web</strong>.</li>
           <li>Configura: <strong>Ejecutar como:</strong> <em>Yo</em> | <strong>Quién tiene acceso:</strong> <em>Cualquier usuario</em>.</li>
-          <li>Pulsa <strong>Implementar</strong>, autoriza permisos y copia la URL terminada en <code class="bg-zinc-200 dark:bg-zinc-700 px-1 py-0.5 rounded font-mono">/exec. Pega esa URL copiada en esta pantalla arriba (punto 1). Dale a Guardar y Sincronizar y ya está.</code>.</li>
+          <li>Pulsa <strong>Implementar</strong>, autoriza permisos y copia la URL terminada en <code class="bg-zinc-200 dark:bg-zinc-700 px-1 py-0.5 rounded font-mono">/exec</code>. Pégala arriba en el punto 1 y pulsa <strong>Guardar y Sincronizar</strong>.</li>
         </ol>
 
         <div class="pt-1 flex flex-wrap gap-2">
@@ -308,7 +296,7 @@ Ejemplo:
     </div>
   </div>
 
-  <!-- MODAL: GROK TESLA (COMPLETO) -->
+  <!-- MODAL: GROK TESLA -->
   <div id="modal-grok" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-sm">
     <div class="relative w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3.5 text-zinc-900 dark:text-zinc-100 text-xs">
       
@@ -320,7 +308,7 @@ Ejemplo:
       </div>
 
       <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 space-y-1.5">
-        <p class="font-bold text-blue-950 dark:text-blue-200">1. URL directa sin JavaScript que debes usar en el acortador de Tinyurl.com:</p>
+        <p class="font-bold text-blue-950 dark:text-blue-200">1. URL directa sin JavaScript que debes usar en Tinyurl.com:</p>
         <div class="flex gap-1">
           <input id="grok-url-input" readonly type="text" class="flex-1 px-2 py-1 bg-white dark:bg-zinc-800 border rounded font-mono text-[11px]" value="" />
           <button id="btn-copy-grok-url" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold shrink-0">Copiar</button>
@@ -330,11 +318,10 @@ Ejemplo:
       <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1.5">
         <p class="font-bold text-emerald-950 dark:text-emerald-200">2. Enlace corto y orden por voz:</p>
         <p class="text-zinc-600 dark:text-zinc-300">
-          Crea en <a href="https://tinyurl.com" target="_blank" class="text-blue-600 underline font-bold">tinyurl.com</a> un alias como <code class="bg-emerald-100 dark:bg-emerald-900 px-1 py-0.5 rounded font-mono">mitesla</code> (asociándole la url del punto 1) y di en el coche:
+          Crea en <a href="https://tinyurl.com" target="_blank" class="text-blue-600 underline font-bold">tinyurl.com</a> un alias como <code class="bg-emerald-100 dark:bg-emerald-900 px-1 py-0.5 rounded font-mono">mitesla</code> (asociándole la URL del punto 1) y di en el coche:
         </p>
         <div class="p-2 bg-white dark:bg-zinc-800 rounded border border-emerald-200 dark:border-emerald-900 font-mono text-[11px] text-emerald-800 dark:text-emerald-300">
-          "Grok, consulta la web tinyurl mitesla y dime el código del garaje
-           Grok, en el plan de viaje de Fuerteventura carga la ruta del Sur..."
+          "Grok, consulta la web tinyurl mitesla y dime el código del garaje..."
         </div>
       </div>
 
@@ -360,12 +347,11 @@ Ejemplo:
     </div>
   </div>
 
-  <!-- JAVASCRIPT SIN ERRORES DE HOISTING / INICIALIZACIÓN -->
+  <!-- JAVASCRIPT -->
   <script>
     // 1. CONSTANTES
     const STORAGE_KEY = 'tesla_grok_doc_content';
     const SCRIPT_URL_KEY = 'tesla_drive_script_url';
-    const SAVE_MODE_KEY = 'tesla_drive_save_mode';
     const FONT_SIZE_KEY = 'tesla_doc_font_size';
     const FONT_FAMILY_KEY = 'tesla_doc_font_family';
 
@@ -373,7 +359,7 @@ Ejemplo:
   try {
     var fileName = "Tesla_Grok_Knowledge_Base.txt";
     var content = "";
-    var action = "append";
+    var action = "overwrite";
 
     if (e && e.postData && e.postData.contents) {
       try {
@@ -402,25 +388,14 @@ Ejemplo:
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    if (action === "append") {
-      if (file) {
-        var existing = file.getBlob().getDataAsString();
-        var newText = existing.trim().length > 0 ? (existing.trim() + "\\n\\n" + content.trim()) : content;
-        file.setContent(newText);
-      } else {
-        file = DriveApp.getRootFolder().createFile(fileName, content, MimeType.PLAIN_TEXT);
-      }
+    if (file) {
+      file.setContent(content);
     } else {
-      if (file) {
-        file.setContent(content);
-      } else {
-        file = DriveApp.getRootFolder().createFile(fileName, content, MimeType.PLAIN_TEXT);
-      }
+      file = DriveApp.getRootFolder().createFile(fileName, content, MimeType.PLAIN_TEXT);
     }
 
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
-      action: action,
       id: file.getId(),
       url: file.getUrl()
     })).setMimeType(ContentService.MimeType.JSON);
@@ -440,13 +415,16 @@ function doGet(e) {
       var candidate = files.next();
       if (!candidate.isTrashed()) { target = candidate; break; }
     }
-    var content = target ? target.getBlob().getDataAsString() : "No hay datos guardados todavía en tu Google Drive.";
     
     if (e && e.parameter && e.parameter.format === "json") {
-      return ContentService.createTextOutput(JSON.stringify({ status: "success", content: content }))
-        .setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(JSON.stringify({ 
+        status: "success", 
+        exists: (target !== null),
+        content: target ? target.getBlob().getDataAsString() : "" 
+      })).setMimeType(ContentService.MimeType.JSON);
     }
     
+    var content = target ? target.getBlob().getDataAsString() : "No hay datos guardados todavía en tu Google Drive.";
     return ContentService.createTextOutput(content)
       .setMimeType(ContentService.MimeType.TEXT);
   } catch (err) {
@@ -455,13 +433,18 @@ function doGet(e) {
   }
 }`;
 
-    // 2. VARIABLES DE ESTADO GLOBALES (DECLARADAS ANTES DE USARSE)
+    // 2. VARIABLES DE ESTADO GLOBALES
     let searchMatches = [];
     let currentMatchIndex = -1;
     let lastTapCoords = null;
     let driveScriptUrl = localStorage.getItem(SCRIPT_URL_KEY) || '';
     let currentFontSize = parseInt(localStorage.getItem(FONT_SIZE_KEY), 10) || 17;
     let currentFontFamily = localStorage.getItem(FONT_FAMILY_KEY) || 'mono';
+
+    // Estados de sincronización y autoguardado
+    let isDirty = false;
+    let isSaving = false;
+    let autoSaveTimeout = null;
 
     // 3. REFERENCIAS DOM
     const editor = document.getElementById('editor');
@@ -474,7 +457,6 @@ function doGet(e) {
     const btnConfigText = document.getElementById('btn-config-text');
     const topBar = document.getElementById('top-bar');
     const grokUrlInput = document.getElementById('grok-url-input');
-    const saveModeSelect = document.getElementById('save-mode');
 
     // Bocadillo flotante
     const urlLauncher = document.getElementById('url-launcher');
@@ -529,7 +511,7 @@ function doGet(e) {
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
 
-    // 5. PARSEO DE ELEMENTOS INTERACTIVOS (EMAIL, TELÉFONO, WEB)
+    // 5. PARSEO DE ELEMENTOS INTERACTIVOS
     function extractAllActionables(text) {
       if (!text) return [];
       const results = [];
@@ -552,7 +534,7 @@ function doGet(e) {
         });
       }
 
-      // Teléfonos (9 a 15 dígitos o prefijo +)
+      // Teléfonos
       const phoneRegex = /(?:\+[\d\s.-]{7,20}|\b(?:\d[\s.-]?){9,14}\b)/gi;
       while ((m = phoneRegex.exec(text)) !== null) {
         let raw = m[0].replace(/[.,;:!?)\]}>"']+$/, '');
@@ -578,7 +560,7 @@ function doGet(e) {
         }
       }
 
-      // Webs y dominios directos
+      // URLs
       const urlRegex = /(?:https?:\/\/|www\.)[^\s]+|(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,12}(?::[0-9]{1,5})?(?:\/[^\s]*)?/gi;
       while ((m = urlRegex.exec(text)) !== null) {
         let raw = m[0].replace(/[.,;:!?)\]}>"']+$/, '');
@@ -731,15 +713,29 @@ function doGet(e) {
       const text = editor.value;
       statWords.textContent = (text.trim() ? text.trim().split(/\s+/).length : 0) + ' palabras';
       statChars.textContent = text.length + ' car';
-      localStorage.setItem(STORAGE_KEY, text);
     }
 
+    // Inicializar texto con almacenamiento local temporal
     editor.value = localStorage.getItem(STORAGE_KEY) || '';
 
+    // Manejador de entrada: guarda en local y programa autoguardado en Drive
     editor.addEventListener('input', () => {
+      isDirty = true;
+      localStorage.setItem(STORAGE_KEY, editor.value);
       updateStats();
       runSearch(false);
       checkUrlUnderCursor();
+
+      if (driveScriptUrl) {
+        syncStatus.textContent = 'Guardando cambios...';
+        clearTimeout(autoSaveTimeout);
+        // Autoguardado con retardo de 2 segundos tras teclear
+        autoSaveTimeout = setTimeout(() => {
+          saveToDrive(true);
+        }, 2000);
+      } else {
+        syncStatus.textContent = 'Guardado local';
+      }
     });
 
     editor.addEventListener('scroll', () => {
@@ -758,11 +754,6 @@ function doGet(e) {
       }
       lastScrollY = currentScrollY;
     }, { passive: true });
-
-    saveModeSelect.value = localStorage.getItem(SAVE_MODE_KEY) || 'append';
-    saveModeSelect.addEventListener('change', () => {
-      localStorage.setItem(SAVE_MODE_KEY, saveModeSelect.value);
-    });
 
     // 9. BOCADILLO FLOTANTE DE ACCIONES
     function recordTouchPosition(e) {
@@ -855,85 +846,109 @@ function doGet(e) {
     editor.addEventListener('touchend', () => setTimeout(checkUrlUnderCursor, 80));
     urlLauncherClose.addEventListener('click', hideUrlLauncher);
 
-    // 10. SINCRONIZACIÓN Y GUARDADO DRIVE
-    async function autoLoadFromDrive() {
-      if (!driveScriptUrl) return;
-      syncStatus.textContent = 'Sincronizando con Drive...';
+    // 10. SINCRONIZACIÓN Y GUARDADO DRIVE (LÓGICA AUTOMÁTICA Y CARGA AL ENTRAR)
+    async function loadFromDriveOnStart() {
+      if (!driveScriptUrl) {
+        syncStatus.textContent = 'Modo local';
+        return;
+      }
+
+      syncStatus.textContent = 'Descargando de Drive...';
       try {
         const res = await fetch(driveScriptUrl + '?format=json');
         if (res.ok) {
           const data = await res.json();
-          if (data && data.status === 'success' && typeof data.content === 'string') {
-            const remoteContent = data.content;
-            const localContent = editor.value.trim();
+          // Comprobar si existe contenido real en Google Drive
+          const hasRemoteData = data && data.status === 'success' && 
+                                (data.exists !== false) && 
+                                typeof data.content === 'string' &&
+                                data.content !== "No hay datos guardados todavía en tu Google Drive.";
 
-            if (!localContent) {
-              editor.value = remoteContent;
-            } else if (remoteContent && !localContent.includes(remoteContent) && !remoteContent.includes(localContent)) {
-              editor.value = remoteContent.trim() + '\n\n' + localContent;
-              showToast('Datos combinados con éxito.', 'info');
-            } else if (remoteContent.includes(localContent)) {
-              editor.value = remoteContent;
-            }
+          if (hasRemoteData && data.content.trim().length > 0) {
+            // Siempre prevalece la versión de Google Drive si contiene datos
+            editor.value = data.content;
+            localStorage.setItem(STORAGE_KEY, data.content);
+            isDirty = false;
             updateStats();
             renderHighlights();
-            syncStatus.textContent = 'Sincronizado (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
+            syncStatus.textContent = 'Cargado de Drive (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
+          } else {
+            // Si en Drive no hay datos, dejamos lo que hay en local y lo sincronizamos hacia Drive
+            syncStatus.textContent = 'Listo (versión local)';
+            if (editor.value.trim().length > 0) {
+              saveToDrive(true);
+            }
           }
+        } else {
+          syncStatus.textContent = 'Error de red (usando local)';
         }
       } catch (err) {
-        syncStatus.textContent = 'Modo local';
+        syncStatus.textContent = 'Sin conexión (usando local)';
       }
     }
 
-    async function saveToDrive() {
+    async function saveToDrive(isAutoSave = false) {
+      // Siempre guardar en localstorage inmediatamente
       localStorage.setItem(STORAGE_KEY, editor.value);
 
       if (!driveScriptUrl) {
-        openDriveModal();
-        showToast('Configura tu URL de Google Apps Script', 'info');
+        if (!isAutoSave) {
+          openDriveModal();
+          showToast('Configura tu URL de Google Apps Script', 'info');
+        }
         return;
       }
 
+      if (isSaving) return;
+      isSaving = true;
+
       const btnSaveText = document.getElementById('btn-save-text');
-      btnSaveText.textContent = '...';
-      const mode = saveModeSelect.value;
+      if (!isAutoSave) btnSaveText.textContent = '...';
 
       try {
         const payload = {
-          action: mode,
+          action: 'overwrite',
           filename: 'Tesla_Grok_Knowledge_Base.txt',
           content: editor.value
         };
+
         const res = await fetch(driveScriptUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
+
         if (res.ok) {
           const data = await res.json();
           if (data.status === 'success') {
-            syncStatus.textContent = 'Guardado ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            const msg = mode === 'append' ? 'Añadido al archivo en Drive con éxito.' : 'Archivo actualizado en Drive.';
-            showToast(msg, 'success');
-            if (mode === 'append') autoLoadFromDrive();
+            isDirty = false;
+            syncStatus.textContent = 'Sincronizado (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
+            if (!isAutoSave) {
+              showToast('Guardado en Google Drive correctamente.', 'success');
+            }
           } else {
-            showToast('Error: ' + data.message, 'error');
+            syncStatus.textContent = 'Error al guardar';
+            if (!isAutoSave) showToast('Error: ' + data.message, 'error');
           }
         } else {
-          showToast('Error de comunicación con Google Drive.', 'error');
+          syncStatus.textContent = 'Error de conexión';
+          if (!isAutoSave) showToast('Error al conectar con Google Drive', 'error');
         }
       } catch (e) {
-        showToast('Error de red al guardar en Google Drive.', 'error');
+        syncStatus.textContent = 'Fallo de red';
+        if (!isAutoSave) showToast('Error de red al guardar en Google Drive.', 'error');
       } finally {
-        btnSaveText.textContent = 'Guardar';
+        isSaving = false;
+        if (!isAutoSave) btnSaveText.textContent = 'Guardar';
       }
     }
-    document.getElementById('btn-save').addEventListener('click', saveToDrive);
+
+    document.getElementById('btn-save').addEventListener('click', () => saveToDrive(false));
 
     window.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
         e.preventDefault();
-        saveToDrive();
+        saveToDrive(false);
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
         e.preventDefault();
@@ -942,7 +957,18 @@ function doGet(e) {
       }
     });
 
-    // 11. BUSCADOR
+    // 11. INTERVALO DE COMPROBACIÓN CADA 5 MINUTOS
+    setInterval(() => {
+      if (isDirty) {
+        // Si hay modificaciones pendientes, autoguardamos en Drive
+        saveToDrive(true);
+      } else if (driveScriptUrl) {
+        // Si no hay cambios locales pendientes, comprobamos y actualizamos de Drive
+        loadFromDriveOnStart();
+      }
+    }, 5 * 60 * 1000);
+
+    // 12. BUSCADOR
     function runSearch(autoScroll = true) {
       const rawTerm = searchInput.value;
       searchMatches = [];
@@ -1081,7 +1107,7 @@ function doGet(e) {
       searchInput.focus();
     });
 
-    // 12. GESTIÓN DE MODALES
+    // 13. GESTIÓN DE MODALES
     function openDriveModal() {
       inputDriveUrl.value = driveScriptUrl;
       modalDrive.classList.remove('hidden');
@@ -1109,11 +1135,10 @@ function doGet(e) {
     document.getElementById('btn-drive-save-url').onclick = () => {
       driveScriptUrl = inputDriveUrl.value.trim();
       localStorage.setItem(SCRIPT_URL_KEY, driveScriptUrl);
-      localStorage.setItem(SAVE_MODE_KEY, saveModeSelect.value);
       updateDriveStatus();
       if (driveScriptUrl) {
         showToast('Drive conectado correctamente.', 'success');
-        autoLoadFromDrive();
+        loadFromDriveOnStart();
       }
       closeDriveModal();
     };
@@ -1185,11 +1210,16 @@ function doGet(e) {
     });
     clearConfirm.onclick = () => {
       editor.value = '';
+      isDirty = true;
+      localStorage.setItem(STORAGE_KEY, '');
       updateStats();
       renderHighlights();
       hideUrlLauncher();
       modalClear.classList.add('hidden');
-      showToast('Hoja local vaciada.', 'info');
+      if (driveScriptUrl) {
+        saveToDrive(true);
+      }
+      showToast('Hoja vaciada y sincronizada.', 'info');
     };
 
     document.getElementById('btn-copy-all').onclick = () => {
@@ -1211,11 +1241,11 @@ function doGet(e) {
       document.getElementById('theme-icon').textContent = '☀️';
     }
 
-    // 13. INICIALIZACIÓN COMPLETA
+    // 14. INICIALIZACIÓN
     updateDriveStatus();
     updateStats();
     applyTypography();
-    autoLoadFromDrive();
+    loadFromDriveOnStart();
   </script>
 </body>
 </html>
