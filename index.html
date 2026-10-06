@@ -22,7 +22,6 @@
   </script>
 
   <style>
-    /* Ocultar barra superior al hacer scroll para pantalla de Tesla */
     #top-bar {
       transition: transform 0.25s ease-in-out, opacity 0.2s ease-in-out;
     }
@@ -40,7 +39,6 @@
     }
     textarea:focus { outline: none; }
 
-    /* Estilo tipográfico base con soporte para tamaños ultra pequeños (hasta 5px) */
     .editor-typography {
       -webkit-text-size-adjust: none;
       text-size-adjust: none;
@@ -53,7 +51,6 @@
       tab-size: 2;
     }
 
-    /* Animación de vibración para PIN erróneo */
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-8px); }
@@ -71,16 +68,16 @@
     <span id="toast-message"></span>
   </div>
 
-  <!-- PANTALLA COMPLETA DE BLOQUEO POR PIN (SOLO SE ACTIVA SI EXISTE PIN EN GDRIVE) -->
+  <!-- PANTALLA COMPLETA DE BLOQUEO POR PIN (CON CONTROL DE ESTADO ASÍNCRONO) -->
   <div id="lock-screen" class="fixed inset-0 z-50 bg-zinc-950/98 backdrop-blur-2xl flex flex-col items-center justify-center p-4 select-none hidden">
     <div id="lock-container" class="w-full max-w-xs flex flex-col items-center space-y-6">
       
       <div class="text-center space-y-1">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-2xl text-blue-400 mb-2 shadow-lg">
+        <div id="lock-icon" class="w-14 h-14 mx-auto rounded-2xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-2xl text-blue-400 mb-2 shadow-lg transition-transform">
           🔒
         </div>
         <h2 class="text-lg font-bold text-white tracking-wide">Acceso Protegido</h2>
-        <p id="lock-subtitle" class="text-xs text-zinc-400">Introduce tu PIN de 4 dígitos</p>
+        <p id="lock-subtitle" class="text-xs text-zinc-400">Introduce el código PIN de 4 dígitos</p>
       </div>
 
       <!-- Indicadores de dígitos -->
@@ -91,10 +88,10 @@
         <div id="dot-3" class="w-4 h-4 rounded-full border-2 border-zinc-600 transition-all duration-200"></div>
       </div>
 
-      <div id="lock-error-msg" class="text-xs font-semibold text-red-400 h-4 text-center"></div>
+      <div id="lock-error-msg" class="text-xs font-semibold text-amber-400 h-5 text-center flex items-center justify-center"></div>
 
       <!-- Teclado Numérico Touch Grande (Especial Tesla) -->
-      <div class="grid grid-cols-3 gap-3 w-full max-w-[260px]">
+      <div id="pin-pad" class="grid grid-cols-3 gap-3 w-full max-w-[260px] transition-opacity">
         <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="1">1</button>
         <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="2">2</button>
         <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="3">3</button>
@@ -109,6 +106,18 @@
         <button id="btn-pin-backspace" type="button" class="h-14 rounded-2xl bg-zinc-900/60 border border-zinc-800/60 text-zinc-400 text-lg hover:bg-zinc-800 active:scale-95 transition-all">⌫</button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- BARRA DE ALERTA DE SINCRONIZACIÓN FALLIDA -->
+  <div id="sync-warning-bar" class="hidden bg-amber-500 text-zinc-950 px-3 py-2 text-xs font-semibold flex items-center justify-between border-b border-amber-600 z-40 select-none">
+    <div class="flex items-center gap-2">
+      <span>⚠️</span>
+      <span id="sync-warning-text">No se pudieron descargar los datos de Drive. Modo edición bloqueado para evitar sobreescritura accidental.</span>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+      <button id="btn-force-retry" class="px-2.5 py-1 bg-zinc-900 text-white hover:bg-zinc-800 rounded font-bold text-xs transition-colors">Reintentar</button>
+      <button id="btn-unlock-offline" class="px-2 py-1 bg-amber-600 hover:bg-amber-700 text-zinc-950 font-medium rounded text-[11px] underline">Editar en local bajo mi riesgo</button>
     </div>
   </div>
 
@@ -192,7 +201,7 @@
 
       <!-- Lado Derecho: Acciones -->
       <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 whitespace-nowrap">
-        <button id="btn-save" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition-all" title="Guardar en Google Drive ahora (Ctrl+S)">
+        <button id="btn-save" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition-all disabled:opacity-50" title="Guardar en Google Drive ahora (Ctrl+S)">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
           <span id="btn-save-text">Guardar</span>
         </button>
@@ -236,7 +245,7 @@
           
           <!-- Lado Izquierdo: Estado -->
           <div class="flex items-center gap-2">
-            <span id="sync-status">Iniciando...</span>
+            <span id="sync-status" class="flex items-center gap-1">Conectando...</span>
             <span class="text-zinc-300 dark:text-zinc-700">|</span>
             <span id="stat-words">0 palabras</span>
             <span class="text-zinc-300 dark:text-zinc-700 hidden xs:inline">|</span>
@@ -272,22 +281,12 @@
             <div id="editor-highlights" class="editor-typography w-full min-h-full text-transparent m-0 p-0"></div>
           </div>
 
-          <!-- ÁREA DE EDICIÓN NATIVA -->
+          <!-- ÁREA DE EDICIÓN NATIVA (INICIA BLOQUEADA HASTA CONFIRMAR CON GDRIVE) -->
           <textarea
             id="editor"
-            class="editor-typography relative z-10 w-full flex-1 resize-none bg-transparent outline-none border-none p-3 sm:p-6 md:p-8 min-h-[70vh] text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 m-0"
-            placeholder="Escribe aquí las notas que quieres que Grok te responda por voz en el Tesla...
-
-Ejemplo:
-[VEHÍCULO]
-- Matrícula: 1234-XYZ
-- Presión recomendada: 2.9 bar (42 psi)
-- Asistencia 24h: 900 123 456
-- Seguro: siniestros@segurotesla.com
-
-[ENLACES ÚTILES]
-- Superchargers: tesla.com/findus
-- Rutas: google.com/maps"
+            readonly
+            class="editor-typography relative z-10 w-full flex-1 resize-none bg-transparent outline-none border-none p-3 sm:p-6 md:p-8 min-h-[70vh] text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 m-0 disabled:opacity-60 cursor-wait"
+            placeholder="Esperando conexión con Google Drive para sincronizar de forma segura..."
           ></textarea>
 
         </div>
@@ -444,7 +443,7 @@ Ejemplo:
     const FONT_FAMILY_KEY = 'tesla_doc_font_family';
     const LOCAL_HASH_KEY = 'tesla_doc_pin_hash';
 
-    // APPS SCRIPT
+    // APPS SCRIPT ROBUSTO Y SIN CONDICIONES DE CARRERA
     const APPS_SCRIPT_SOURCE = `function getOrCreateFile(name, defaultContent) {
   var files = DriveApp.getRootFolder().getFilesByName(name);
   while (files.hasNext()) {
@@ -467,7 +466,6 @@ function getSecurityConfig() {
       }
     }
   } catch(e) {}
-  // Estado inicial limpio si no existe o es nuevo: hasPin = false
   return { hasPin: false, pinHash: "" };
 }
 
@@ -477,6 +475,8 @@ function saveSecurityConfig(cfg) {
 }
 
 function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
   try {
     var fileName = "Tesla_Grok_Knowledge_Base.txt";
     var content = "";
@@ -521,7 +521,6 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // Si hay PIN configurado en Drive, verificar autorización
     if (sec.hasPin === true && sec.pinHash !== pinHash) {
       return ContentService.createTextOutput(JSON.stringify({ status: "unauthorized", message: "PIN incorrecto" })).setMimeType(ContentService.MimeType.JSON);
     }
@@ -537,6 +536,8 @@ function doPost(e) {
 
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
   }
 }
 
@@ -547,7 +548,6 @@ function doGet(e) {
     var paramFormat = (e && e.parameter && e.parameter.format);
     var reqPinHash = (e && e.parameter && e.parameter.pinHash) || "";
 
-    // 1. Estado inicial de seguridad
     if (paramFormat === "status") {
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
@@ -555,7 +555,6 @@ function doGet(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 2. Consulta de contenido JSON
     if (paramFormat === "json") {
       if (sec.hasPin === true && sec.pinHash !== reqPinHash) {
         return ContentService.createTextOutput(JSON.stringify({ 
@@ -580,7 +579,6 @@ function doGet(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
     
-    // 3. Respuesta texto plano para Grok por voz
     var files = DriveApp.getRootFolder().getFilesByName(fileName);
     var target = null;
     while (files.hasNext()) {
@@ -603,11 +601,13 @@ function doGet(e) {
     let currentFontSize = parseInt(localStorage.getItem(FONT_SIZE_KEY), 10) || 17;
     let currentFontFamily = localStorage.getItem(FONT_FAMILY_KEY) || 'mono';
     
-    // Variables de seguridad
+    // Variables de seguridad y validación
     let enteredPin = '';
     let isAppLocked = false;
+    let isVerifyingPin = false;
     let activePinHash = localStorage.getItem(LOCAL_HASH_KEY) || '';
     let driveHasPin = false;
+    let isSyncReady = false; // Solo permite edición cuando Drive confirme o se fuerce
 
     // Estados de sincronización
     let isDirty = false;
@@ -625,12 +625,17 @@ function doGet(e) {
     const btnConfigText = document.getElementById('btn-config-text');
     const topBar = document.getElementById('top-bar');
     const grokUrlInput = document.getElementById('grok-url-input');
+    const syncWarningBar = document.getElementById('sync-warning-bar');
+    const btnForceRetry = document.getElementById('btn-force-retry');
+    const btnUnlockOffline = document.getElementById('btn-unlock-offline');
 
-    // Elementos de bloqueo por PIN
+    // Bloqueo PIN
     const lockScreen = document.getElementById('lock-screen');
     const lockContainer = document.getElementById('lock-container');
+    const lockIcon = document.getElementById('lock-icon');
     const lockSubtitle = document.getElementById('lock-subtitle');
     const lockErrorMsg = document.getElementById('lock-error-msg');
+    const pinPad = document.getElementById('pin-pad');
     const btnPinClear = document.getElementById('btn-pin-clear');
     const btnPinBackspace = document.getElementById('btn-pin-backspace');
     const pinKeys = document.querySelectorAll('.pin-key');
@@ -701,7 +706,34 @@ function doGet(e) {
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
 
-    // 5. GESTIÓN DEL BLOQUEO POR PIN
+    // CONTROL DEL BLOQUEO DE ESCRITURA
+    function enableEditor(textValue = null) {
+      isSyncReady = true;
+      if (textValue !== null) {
+        editor.value = textValue;
+        localStorage.setItem(STORAGE_KEY, textValue);
+      }
+      editor.removeAttribute('readonly');
+      editor.classList.remove('cursor-wait');
+      editor.placeholder = "Escribe aquí las notas que quieres que Grok te responda por voz en el Tesla...";
+      document.getElementById('btn-save').removeAttribute('disabled');
+      syncWarningBar.classList.add('hidden');
+      updateStats();
+      renderHighlights();
+    }
+
+    function lockEditorForSafety(warningReason) {
+      isSyncReady = false;
+      editor.setAttribute('readonly', 'true');
+      editor.classList.add('cursor-wait');
+      document.getElementById('btn-save').setAttribute('disabled', 'true');
+      syncWarningBar.classList.remove('hidden');
+      if (warningReason) {
+        document.getElementById('sync-warning-text').textContent = warningReason;
+      }
+    }
+
+    // 5. GESTIÓN DEL BLOQUEO POR PIN (ASÍNCRONO Y SEGURO)
     function updatePinBadge(enabled) {
       if (enabled) {
         pinStatusBadge.textContent = 'Activado en Google Drive ✓';
@@ -731,22 +763,26 @@ function doGet(e) {
 
     function lockApp(reasonText = "Introduce el código PIN de 4 dígitos") {
       isAppLocked = true;
+      isVerifyingPin = false;
       enteredPin = '';
       lockSubtitle.textContent = reasonText;
       lockErrorMsg.textContent = '';
+      pinPad.style.opacity = '1';
+      pinPad.style.pointerEvents = 'auto';
       updatePinDots();
       lockScreen.classList.remove('hidden');
     }
 
     function unlockApp() {
       isAppLocked = false;
+      isVerifyingPin = false;
       enteredPin = '';
       lockScreen.classList.add('hidden');
       showToast('Acceso autorizado', 'success');
     }
 
     async function handlePinInput(digit) {
-      if (!isAppLocked) return;
+      if (!isAppLocked || isVerifyingPin) return;
       if (enteredPin.length < 4) {
         enteredPin += digit;
         updatePinDots();
@@ -754,40 +790,54 @@ function doGet(e) {
       }
 
       if (enteredPin.length === 4) {
+        // Bloquear teclado inmediatamente para evitar falsos errores por pulsaciones extra
+        isVerifyingPin = true;
+        pinPad.style.opacity = '0.5';
+        pinPad.style.pointerEvents = 'none';
+        lockErrorMsg.textContent = 'Verificando con Google Drive...';
+
         const calculatedHash = await hashPin(enteredPin);
         
         if (driveScriptUrl) {
-          lockErrorMsg.textContent = 'Validando con Google Drive...';
           try {
-            const res = await fetch(`${driveScriptUrl}?format=json&pinHash=${calculatedHash}`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 9000);
+
+            const res = await fetch(`${driveScriptUrl}?format=json&pinHash=${calculatedHash}`, { signal: controller.signal });
+            clearTimeout(timeoutId);
             const data = await res.json();
 
             if (data.status === 'success') {
               activePinHash = calculatedHash;
               localStorage.setItem(LOCAL_HASH_KEY, activePinHash);
               
-              if (data.content && data.content !== "No hay datos guardados todavía en tu Google Drive.") {
-                editor.value = data.content;
-                localStorage.setItem(STORAGE_KEY, data.content);
-                updateStats();
-                renderHighlights();
-              }
+              const remoteContent = (data.content && data.content !== "No hay datos guardados todavía en tu Google Drive.") ? data.content : "";
+              enableEditor(remoteContent);
+              syncStatus.textContent = 'Sincronizado (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
+              
               setTimeout(unlockApp, 150);
               return;
             }
-          } catch(err) {}
-        } else if (activePinHash && activePinHash === calculatedHash) {
-          setTimeout(unlockApp, 150);
-          return;
+          } catch(err) {
+            lockErrorMsg.textContent = 'Fallo de red al verificar. Comprueba la señal.';
+            pinPad.style.opacity = '1';
+            pinPad.style.pointerEvents = 'auto';
+            isVerifyingPin = false;
+            return;
+          }
         }
 
+        // Si la verificación falló
         lockErrorMsg.textContent = 'Código PIN incorrecto';
         lockContainer.classList.add('shake');
         setTimeout(() => {
           lockContainer.classList.remove('shake');
           enteredPin = '';
           updatePinDots();
-        }, 450);
+          pinPad.style.opacity = '1';
+          pinPad.style.pointerEvents = 'auto';
+          isVerifyingPin = false;
+        }, 500);
       }
     }
 
@@ -798,7 +848,7 @@ function doGet(e) {
     });
 
     btnPinBackspace.addEventListener('click', () => {
-      if (enteredPin.length > 0) {
+      if (!isVerifyingPin && enteredPin.length > 0) {
         enteredPin = enteredPin.slice(0, -1);
         updatePinDots();
         lockErrorMsg.textContent = '';
@@ -806,13 +856,15 @@ function doGet(e) {
     });
 
     btnPinClear.addEventListener('click', () => {
-      enteredPin = '';
-      updatePinDots();
-      lockErrorMsg.textContent = '';
+      if (!isVerifyingPin) {
+        enteredPin = '';
+        updatePinDots();
+        lockErrorMsg.textContent = '';
+      }
     });
 
     window.addEventListener('keydown', (e) => {
-      if (!isAppLocked) return;
+      if (!isAppLocked || isVerifyingPin) return;
       if (e.key >= '0' && e.key <= '9') {
         e.preventDefault();
         handlePinInput(e.key);
@@ -903,6 +955,17 @@ function doGet(e) {
 
     btnLockManual.addEventListener('click', () => {
       lockApp();
+    });
+
+    btnForceRetry.addEventListener('click', () => {
+      checkDriveSecurityAndLoad();
+    });
+
+    btnUnlockOffline.addEventListener('click', () => {
+      if (confirm('Atención: Si editas en local sin haber sincronizado con Drive, podrías sobreescribir notas más recientes cuando vuelva la conexión. ¿Deseas desbloquear el editor de todos modos?')) {
+        enableEditor(localStorage.getItem(STORAGE_KEY) || '');
+        syncStatus.textContent = 'Modo local forzado ⚠️';
+      }
     });
 
     // 6. PARSEO DE ELEMENTOS INTERACTIVOS
@@ -1096,10 +1159,8 @@ function doGet(e) {
       statChars.textContent = text.length + ' car';
     }
 
-    // Inicializar texto localmente de inmediato (para inicio instantáneo)
-    editor.value = localStorage.getItem(STORAGE_KEY) || '';
-
     editor.addEventListener('input', () => {
+      if (!isSyncReady) return;
       isDirty = true;
       localStorage.setItem(STORAGE_KEY, editor.value);
       updateStats();
@@ -1118,7 +1179,7 @@ function doGet(e) {
     });
 
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden' && isDirty && driveScriptUrl) {
+      if (document.visibilityState === 'hidden' && isDirty && driveScriptUrl && isSyncReady) {
         clearTimeout(autoSaveTimeout);
         saveToDrive(true);
       }
@@ -1211,7 +1272,7 @@ function doGet(e) {
     }
 
     function checkUrlUnderCursor(e) {
-      if (isAppLocked) return;
+      if (isAppLocked || !isSyncReady) return;
       const pos = editor.selectionStart;
       const text = editor.value;
       const detected = getActionableAtPosition(text, pos);
@@ -1233,58 +1294,51 @@ function doGet(e) {
     editor.addEventListener('touchend', () => setTimeout(checkUrlUnderCursor, 80));
     urlLauncherClose.addEventListener('click', hideUrlLauncher);
 
-    // 11. INICIO ROBUSTO: VERIFICACIÓN DEL ESTADO INICIAL
+    // 11. INICIO ROBUSTO: PRIORIDAD ABSOLUTA A GOOGLE DRIVE
     async function checkDriveSecurityAndLoad() {
       if (!driveScriptUrl) {
         syncStatus.textContent = 'Modo local';
         updatePinBadge(false);
+        enableEditor(localStorage.getItem(STORAGE_KEY) || '');
         return;
       }
 
-      syncStatus.textContent = 'Verificando con Drive...';
+      syncStatus.textContent = 'Sincronizando con Drive...';
       try {
-        // Consultar el estado real de seguridad en Drive
         const secRes = await fetch(`${driveScriptUrl}?format=status`);
         if (secRes.ok) {
           const secData = await secRes.json();
-          // Solo bloqueamos si Drive confirma explícitamente que TIENE PIN
           driveHasPin = (secData.status === 'success' && secData.hasPin === true);
           updatePinBadge(driveHasPin);
 
           if (driveHasPin) {
-            // Existe un PIN en Drive: protegemos la vista
-            editor.value = '';
-            renderHighlights();
+            lockEditorForSafety();
             lockApp("Introduce tu PIN de Google Drive");
             return;
           }
         }
 
-        // Estado inicial sin PIN en Drive: permitimos el acceso directo y cargamos el documento
+        // Si Drive no tiene PIN, traemos el contenido definitivo
         const res = await fetch(`${driveScriptUrl}?format=json`);
         if (res.ok) {
           const data = await res.json();
-          if (data.status === 'success' && data.content && data.content !== "No hay datos guardados todavía en tu Google Drive.") {
-            editor.value = data.content;
-            localStorage.setItem(STORAGE_KEY, data.content);
+          if (data.status === 'success') {
+            const remoteText = (data.content && data.content !== "No hay datos guardados todavía en tu Google Drive.") ? data.content : "";
+            enableEditor(remoteText);
             isDirty = false;
-            updateStats();
-            renderHighlights();
             syncStatus.textContent = 'Cargado de Drive (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
-          } else {
-            syncStatus.textContent = 'Listo (versión local)';
+            return;
           }
         }
+        throw new Error('Respuesta no válida');
       } catch (err) {
-        syncStatus.textContent = 'Sin conexión';
-        if (activePinHash) {
-          lockApp("Modo offline: introduce tu PIN guardado");
-        }
+        syncStatus.textContent = 'Error de conexión';
+        lockEditorForSafety('No se pudo conectar con Drive. Edición bloqueada para proteger tus notas.');
       }
     }
 
     async function saveToDrive(isAutoSave = false) {
-      if (isAppLocked) return;
+      if (isAppLocked || !isSyncReady) return;
       localStorage.setItem(STORAGE_KEY, editor.value);
 
       if (!driveScriptUrl) {
@@ -1322,6 +1376,7 @@ function doGet(e) {
             syncStatus.textContent = 'Sincronizado (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
             if (!isAutoSave) showToast('Guardado en Google Drive correctamente.', 'success');
           } else if (data.status === 'unauthorized') {
+            lockEditorForSafety();
             lockApp("Sesión caducada. Introduce tu PIN de Drive");
           } else {
             syncStatus.textContent = 'Error al guardar';
@@ -1339,7 +1394,7 @@ function doGet(e) {
     document.getElementById('btn-save').addEventListener('click', () => saveToDrive(false));
 
     window.addEventListener('keydown', (e) => {
-      if (isAppLocked) return;
+      if (isAppLocked || !isSyncReady) return;
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
         e.preventDefault();
         saveToDrive(false);
@@ -1353,7 +1408,7 @@ function doGet(e) {
 
     // 12. COMPROBACIÓN CADA 5 MINUTOS
     setInterval(() => {
-      if (isAppLocked) return;
+      if (isAppLocked || !isSyncReady) return;
       if (isDirty) {
         saveToDrive(true);
       } else if (driveScriptUrl) {
