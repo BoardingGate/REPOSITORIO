@@ -729,12 +729,19 @@ function doGet(e) {
       if (driveScriptUrl) {
         syncStatus.textContent = 'Guardando cambios...';
         clearTimeout(autoSaveTimeout);
-        // Autoguardado con retardo de 2 segundos tras teclear
+        // Autoguardado con retardo de 60 segundos tras teclear
         autoSaveTimeout = setTimeout(() => {
           saveToDrive(true);
-        }, 2000);
+        }, 60000);
       } else {
         syncStatus.textContent = 'Guardado local';
+      }
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden' && isDirty && driveScriptUrl) {
+        clearTimeout(autoSaveTimeout);
+        saveToDrive(true);
       }
     });
 
