@@ -52,6 +52,16 @@
       overflow-wrap: break-word;
       tab-size: 2;
     }
+
+    /* Animación de vibración para PIN erróneo */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake {
+      animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+    }
   </style>
 </head>
 <body class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
@@ -61,10 +71,51 @@
     <span id="toast-message"></span>
   </div>
 
+  <!-- PANTALLA COMPLETA DE BLOQUEO POR PIN (ACCESO TESLA) -->
+  <div id="lock-screen" class="fixed inset-0 z-50 bg-zinc-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 select-none hidden">
+    <div id="lock-container" class="w-full max-w-xs flex flex-col items-center space-y-6">
+      
+      <div class="text-center space-y-1">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-2xl text-blue-400 mb-2 shadow-lg">
+          🔒
+        </div>
+        <h2 class="text-lg font-bold text-white tracking-wide">Acceso Protegido</h2>
+        <p class="text-xs text-zinc-400">Introduce el código PIN de 4 dígitos</p>
+      </div>
+
+      <!-- Indicadores de dígitos -->
+      <div class="flex items-center gap-4 py-2">
+        <div id="dot-0" class="w-4 h-4 rounded-full border-2 border-zinc-600 transition-all duration-200"></div>
+        <div id="dot-1" class="w-4 h-4 rounded-full border-2 border-zinc-600 transition-all duration-200"></div>
+        <div id="dot-2" class="w-4 h-4 rounded-full border-2 border-zinc-600 transition-all duration-200"></div>
+        <div id="dot-3" class="w-4 h-4 rounded-full border-2 border-zinc-600 transition-all duration-200"></div>
+      </div>
+
+      <div id="lock-error-msg" class="text-xs font-semibold text-red-400 h-4 text-center"></div>
+
+      <!-- Teclado Numérico Touch Grande (Ideal para pantalla de Tesla) -->
+      <div class="grid grid-cols-3 gap-3 w-full max-w-[260px]">
+        <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="1">1</button>
+        <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="2">2</button>
+        <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="3">3</button>
+        <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="4">4</button>
+        <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="5">5</button>
+        <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="6">6</button>
+        <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="7">7</button>
+        <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="8">8</button>
+        <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="9">9</button>
+        <button id="btn-pin-clear" type="button" class="h-14 rounded-2xl bg-zinc-900/60 border border-zinc-800/60 text-zinc-400 text-xs font-semibold hover:bg-zinc-800 active:scale-95 transition-all">C</button>
+        <button type="button" class="pin-key h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xl font-bold hover:bg-zinc-800 active:scale-95 transition-all" data-val="0">0</button>
+        <button id="btn-pin-backspace" type="button" class="h-14 rounded-2xl bg-zinc-900/60 border border-zinc-800/60 text-zinc-400 text-lg hover:bg-zinc-800 active:scale-95 transition-all">⌫</button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- BOCADILLO FLOTANTE MULTIACCIÓN (WEB, TELÉFONO, EMAIL) -->
   <div
     id="url-launcher"
-    class="fixed z-50 hidden items-center gap-2 px-3 py-1.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 rounded-xl shadow-2xl border border-zinc-700/80 dark:border-zinc-300 text-xs font-semibold transition-all duration-150 pointer-events-auto"
+    class="fixed z-40 hidden items-center gap-2 px-3 py-1.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 rounded-xl shadow-2xl border border-zinc-700/80 dark:border-zinc-300 text-xs font-semibold transition-all duration-150 pointer-events-auto"
     style="top: 0px; left: 0px;"
   >
     <div id="url-launcher-arrow" class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 dark:bg-zinc-100 rotate-45 border-r border-b border-zinc-700/80 dark:border-zinc-300 pointer-events-none"></div>
@@ -146,9 +197,13 @@
           <span id="btn-save-text">Guardar</span>
         </button>
 
-        <button id="btn-config-drive" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all" title="Configuración de Google Drive">
-          <span>☁️</span>
+        <button id="btn-config-drive" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all" title="Configuración de Google Drive y Seguridad">
+          <span>⚙️</span>
           <span id="btn-config-text">Drive</span>
+        </button>
+
+        <button id="btn-lock-manual" class="w-7 h-7 flex items-center justify-center rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 active:scale-95 transition-all" title="Bloquear con PIN ahora">
+          <span id="btn-lock-icon">🔒</span>
         </button>
 
         <button id="btn-grok-help" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all" title="Ver cómo preguntar a Grok en el Tesla">
@@ -241,19 +296,53 @@ Ejemplo:
     </div>
   </main>
 
-  <!-- MODAL DE CONFIGURACIÓN DRIVE -->
+  <!-- MODAL DE CONFIGURACIÓN DRIVE Y PIN -->
   <div id="modal-drive" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/70 backdrop-blur-sm">
     <div class="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-4 text-zinc-900 dark:text-zinc-100 text-xs max-h-[92vh] overflow-y-auto">
       
       <div class="flex items-center justify-between border-b pb-2 dark:border-zinc-800">
         <h3 class="text-sm font-bold flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
-          <span>☁️</span> Conectar Google Apps Script (Sincronización Automática)
+          <span>⚙️</span> Configuración de Google Drive y Seguridad
         </h3>
         <button id="modal-drive-close" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1 text-sm font-bold">✕</button>
       </div>
 
+      <!-- SECCIÓN CÓDIGO PIN (4 CIFRAS) -->
+      <div class="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5 text-xs">
+            <span>🔒</span> Clave de Acceso (PIN de 4 Cifras)
+          </span>
+          <span id="pin-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300">Desactivado</span>
+        </div>
+        <p class="text-zinc-600 dark:text-zinc-400 text-[11px] leading-relaxed">
+          Protege el acceso a tus notas cuando abras esta web en la pantalla del Tesla. Solo tú con el PIN podrás desbloquearla.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+          <div>
+            <label class="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Nuevo PIN (4 dígitos):</label>
+            <input id="input-new-pin" type="password" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="Ej: 1234" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-center tracking-widest text-sm font-bold" />
+          </div>
+          <div>
+            <label class="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Repetir PIN:</label>
+            <input id="input-confirm-pin" type="password" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="Repite los 4 dígitos" class="w-full px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-center tracking-widest text-sm font-bold" />
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+          <button id="btn-save-pin" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors text-xs shadow-xs">
+            Guardar PIN
+          </button>
+          <button id="btn-remove-pin" class="px-3 py-1.5 bg-red-100 hover:bg-red-200 dark:bg-red-950/60 dark:hover:bg-red-900/80 text-red-700 dark:text-red-300 font-semibold rounded-lg transition-colors text-xs border border-red-200 dark:border-red-800">
+            Desactivar PIN
+          </button>
+        </div>
+      </div>
+
+      <!-- SECCIÓN CONEXIÓN GOOGLE APPS SCRIPT -->
       <div>
-        <label class="block font-semibold mb-1 text-zinc-800 dark:text-zinc-200">1. Pega la URL de tu aplicación web (Apps Script):</label>
+        <label class="block font-semibold mb-1 text-zinc-800 dark:text-zinc-200">1. URL de tu aplicación web (Apps Script):</label>
         <div class="flex gap-1.5">
           <input id="input-drive-url" type="url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="flex-1 px-2.5 py-1.5 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 font-mono text-xs" />
           <button id="btn-test-drive" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shrink-0">Probar conexión</button>
@@ -354,6 +443,7 @@ Ejemplo:
     const SCRIPT_URL_KEY = 'tesla_drive_script_url';
     const FONT_SIZE_KEY = 'tesla_doc_font_size';
     const FONT_FAMILY_KEY = 'tesla_doc_font_family';
+    const PIN_KEY = 'tesla_doc_pin_code';
 
     const APPS_SCRIPT_SOURCE = `function doPost(e) {
   try {
@@ -440,6 +530,8 @@ function doGet(e) {
     let driveScriptUrl = localStorage.getItem(SCRIPT_URL_KEY) || '';
     let currentFontSize = parseInt(localStorage.getItem(FONT_SIZE_KEY), 10) || 17;
     let currentFontFamily = localStorage.getItem(FONT_FAMILY_KEY) || 'mono';
+    let enteredPin = '';
+    let isAppLocked = false;
 
     // Estados de sincronización y autoguardado
     let isDirty = false;
@@ -457,6 +549,20 @@ function doGet(e) {
     const btnConfigText = document.getElementById('btn-config-text');
     const topBar = document.getElementById('top-bar');
     const grokUrlInput = document.getElementById('grok-url-input');
+
+    // Elementos de bloqueo por PIN
+    const lockScreen = document.getElementById('lock-screen');
+    const lockContainer = document.getElementById('lock-container');
+    const lockErrorMsg = document.getElementById('lock-error-msg');
+    const btnPinClear = document.getElementById('btn-pin-clear');
+    const btnPinBackspace = document.getElementById('btn-pin-backspace');
+    const pinKeys = document.querySelectorAll('.pin-key');
+    const inputNewPin = document.getElementById('input-new-pin');
+    const inputConfirmPin = document.getElementById('input-confirm-pin');
+    const btnSavePin = document.getElementById('btn-save-pin');
+    const btnRemovePin = document.getElementById('btn-remove-pin');
+    const pinStatusBadge = document.getElementById('pin-status-badge');
+    const btnLockManual = document.getElementById('btn-lock-manual');
 
     // Bocadillo flotante
     const urlLauncher = document.getElementById('url-launcher');
@@ -511,7 +617,158 @@ function doGet(e) {
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
 
-    // 5. PARSEO DE ELEMENTOS INTERACTIVOS
+    // 5. SISTEMA DE SEGURIDAD (CÓDIGO PIN)
+    function getSavedPin() {
+      return localStorage.getItem(PIN_KEY) || '';
+    }
+
+    function updatePinBadge() {
+      const pin = getSavedPin();
+      if (pin) {
+        pinStatusBadge.textContent = 'Activado (4 cifras)';
+        pinStatusBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
+        btnRemovePin.classList.remove('hidden');
+        btnLockManual.classList.remove('hidden');
+      } else {
+        pinStatusBadge.textContent = 'Desactivado';
+        pinStatusBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300';
+        btnRemovePin.classList.add('hidden');
+        btnLockManual.classList.add('hidden');
+      }
+    }
+
+    function updatePinDots() {
+      for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (i < enteredPin.length) {
+          dot.className = 'w-4 h-4 rounded-full bg-blue-500 border-2 border-blue-400 scale-110 transition-all duration-150 shadow-sm';
+        } else {
+          dot.className = 'w-4 h-4 rounded-full border-2 border-zinc-600 transition-all duration-150';
+        }
+      }
+    }
+
+    function lockApp() {
+      const pin = getSavedPin();
+      if (!pin) return;
+      isAppLocked = true;
+      enteredPin = '';
+      lockErrorMsg.textContent = '';
+      updatePinDots();
+      lockScreen.classList.remove('hidden');
+    }
+
+    function unlockApp() {
+      isAppLocked = false;
+      enteredPin = '';
+      lockScreen.classList.add('hidden');
+      showToast('Acceso concedido', 'success');
+    }
+
+    function handlePinInput(digit) {
+      if (!isAppLocked) return;
+      if (enteredPin.length < 4) {
+        enteredPin += digit;
+        updatePinDots();
+        lockErrorMsg.textContent = '';
+      }
+
+      if (enteredPin.length === 4) {
+        const savedPin = getSavedPin();
+        if (enteredPin === savedPin) {
+          setTimeout(unlockApp, 150);
+        } else {
+          lockErrorMsg.textContent = 'Código PIN incorrecto';
+          lockContainer.classList.add('shake');
+          setTimeout(() => {
+            lockContainer.classList.remove('shake');
+            enteredPin = '';
+            updatePinDots();
+          }, 450);
+        }
+      }
+    }
+
+    pinKeys.forEach(btn => {
+      btn.addEventListener('click', () => {
+        handlePinInput(btn.getAttribute('data-val'));
+      });
+    });
+
+    btnPinBackspace.addEventListener('click', () => {
+      if (enteredPin.length > 0) {
+        enteredPin = enteredPin.slice(0, -1);
+        updatePinDots();
+        lockErrorMsg.textContent = '';
+      }
+    });
+
+    btnPinClear.addEventListener('click', () => {
+      enteredPin = '';
+      updatePinDots();
+      lockErrorMsg.textContent = '';
+    });
+
+    // Soporte teclado físico para el PIN
+    window.addEventListener('keydown', (e) => {
+      if (!isAppLocked) return;
+      if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault();
+        handlePinInput(e.key);
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        if (enteredPin.length > 0) {
+          enteredPin = enteredPin.slice(0, -1);
+          updatePinDots();
+        }
+      } else if (e.key === 'Escape') {
+        enteredPin = '';
+        updatePinDots();
+      }
+    });
+
+    // Guardar nuevo PIN desde modal de configuración
+    btnSavePin.addEventListener('click', () => {
+      const pin1 = inputNewPin.value.trim();
+      const pin2 = inputConfirmPin.value.trim();
+
+      if (!/^\d{4}$/.test(pin1)) {
+        showToast('El PIN debe tener exactamente 4 dígitos numéricos', 'error');
+        return;
+      }
+      if (pin1 !== pin2) {
+        showToast('Los dos códigos introducidos no coinciden', 'error');
+        return;
+      }
+
+      localStorage.setItem(PIN_KEY, pin1);
+      inputNewPin.value = '';
+      inputConfirmPin.value = '';
+      updatePinBadge();
+      showToast('Código PIN configurado correctamente', 'success');
+    });
+
+    // Eliminar PIN
+    btnRemovePin.addEventListener('click', () => {
+      if (confirm('¿Seguro que deseas desactivar la protección por PIN?')) {
+        localStorage.removeItem(PIN_KEY);
+        inputNewPin.value = '';
+        inputConfirmPin.value = '';
+        updatePinBadge();
+        showToast('PIN eliminado. Acceso sin clave activado', 'info');
+      }
+    });
+
+    btnLockManual.addEventListener('click', () => {
+      if (getSavedPin()) {
+        lockApp();
+      } else {
+        openDriveModal();
+        showToast('Configura primero un PIN de 4 cifras', 'info');
+      }
+    });
+
+    // 6. PARSEO DE ELEMENTOS INTERACTIVOS
     function extractAllActionables(text) {
       if (!text) return [];
       const results = [];
@@ -596,7 +853,7 @@ function doGet(e) {
       return null;
     }
 
-    // 6. RENDERIZADO DE MARCAS Y RESALTADO
+    // 7. RENDERIZADO DE MARCAS Y RESALTADO
     function renderHighlights() {
       const text = editor.value;
       if (!text) {
@@ -651,7 +908,7 @@ function doGet(e) {
       editorBackdrop.scrollLeft = editor.scrollLeft;
     }
 
-    // 7. GESTIÓN DE FUENTES Y TAMAÑO
+    // 8. GESTIÓN DE FUENTES Y TAMAÑO
     function applyTypography() {
       if (currentFontSize < 5) currentFontSize = 5;
       if (currentFontSize > 28) currentFontSize = 28;
@@ -694,7 +951,7 @@ function doGet(e) {
       applyTypography();
     });
 
-    // 8. ESTADO DE DRIVE Y ESTADÍSTICAS
+    // 9. ESTADO DE DRIVE Y ESTADÍSTICAS
     function updateDriveStatus() {
       if (driveScriptUrl) {
         btnConfigText.textContent = 'Drive ✓';
@@ -729,7 +986,6 @@ function doGet(e) {
       if (driveScriptUrl) {
         syncStatus.textContent = 'Guardando cambios...';
         clearTimeout(autoSaveTimeout);
-        // Autoguardado con retardo de 60 segundos tras teclear
         autoSaveTimeout = setTimeout(() => {
           saveToDrive(true);
         }, 60000);
@@ -762,7 +1018,7 @@ function doGet(e) {
       lastScrollY = currentScrollY;
     }, { passive: true });
 
-    // 9. BOCADILLO FLOTANTE DE ACCIONES
+    // 10. BOCADILLO FLOTANTE DE ACCIONES
     function recordTouchPosition(e) {
       if (e.touches && e.touches[0]) {
         lastTapCoords = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -832,6 +1088,7 @@ function doGet(e) {
     }
 
     function checkUrlUnderCursor(e) {
+      if (isAppLocked) return;
       const pos = editor.selectionStart;
       const text = editor.value;
       const detected = getActionableAtPosition(text, pos);
@@ -853,7 +1110,7 @@ function doGet(e) {
     editor.addEventListener('touchend', () => setTimeout(checkUrlUnderCursor, 80));
     urlLauncherClose.addEventListener('click', hideUrlLauncher);
 
-    // 10. SINCRONIZACIÓN Y GUARDADO DRIVE (LÓGICA AUTOMÁTICA Y CARGA AL ENTRAR)
+    // 11. SINCRONIZACIÓN Y GUARDADO DRIVE (LÓGICA AUTOMÁTICA Y CARGA AL ENTRAR)
     async function loadFromDriveOnStart() {
       if (!driveScriptUrl) {
         syncStatus.textContent = 'Modo local';
@@ -865,14 +1122,12 @@ function doGet(e) {
         const res = await fetch(driveScriptUrl + '?format=json');
         if (res.ok) {
           const data = await res.json();
-          // Comprobar si existe contenido real en Google Drive
           const hasRemoteData = data && data.status === 'success' && 
                                 (data.exists !== false) && 
                                 typeof data.content === 'string' &&
                                 data.content !== "No hay datos guardados todavía en tu Google Drive.";
 
           if (hasRemoteData && data.content.trim().length > 0) {
-            // Siempre prevalece la versión de Google Drive si contiene datos
             editor.value = data.content;
             localStorage.setItem(STORAGE_KEY, data.content);
             isDirty = false;
@@ -880,7 +1135,6 @@ function doGet(e) {
             renderHighlights();
             syncStatus.textContent = 'Cargado de Drive (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
           } else {
-            // Si en Drive no hay datos, dejamos lo que hay en local y lo sincronizamos hacia Drive
             syncStatus.textContent = 'Listo (versión local)';
             if (editor.value.trim().length > 0) {
               saveToDrive(true);
@@ -895,7 +1149,6 @@ function doGet(e) {
     }
 
     async function saveToDrive(isAutoSave = false) {
-      // Siempre guardar en localstorage inmediatamente
       localStorage.setItem(STORAGE_KEY, editor.value);
 
       if (!driveScriptUrl) {
@@ -953,6 +1206,7 @@ function doGet(e) {
     document.getElementById('btn-save').addEventListener('click', () => saveToDrive(false));
 
     window.addEventListener('keydown', (e) => {
+      if (isAppLocked) return;
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
         e.preventDefault();
         saveToDrive(false);
@@ -964,18 +1218,16 @@ function doGet(e) {
       }
     });
 
-    // 11. INTERVALO DE COMPROBACIÓN CADA 5 MINUTOS
+    // 12. INTERVALO DE COMPROBACIÓN CADA 5 MINUTOS
     setInterval(() => {
       if (isDirty) {
-        // Si hay modificaciones pendientes, autoguardamos en Drive
         saveToDrive(true);
       } else if (driveScriptUrl) {
-        // Si no hay cambios locales pendientes, comprobamos y actualizamos de Drive
         loadFromDriveOnStart();
       }
     }, 5 * 60 * 1000);
 
-    // 12. BUSCADOR
+    // 13. BUSCADOR
     function runSearch(autoScroll = true) {
       const rawTerm = searchInput.value;
       searchMatches = [];
@@ -1114,9 +1366,12 @@ function doGet(e) {
       searchInput.focus();
     });
 
-    // 13. GESTIÓN DE MODALES
+    // 14. GESTIÓN DE MODALES
     function openDriveModal() {
       inputDriveUrl.value = driveScriptUrl;
+      inputNewPin.value = '';
+      inputConfirmPin.value = '';
+      updatePinBadge();
       modalDrive.classList.remove('hidden');
       modalDrive.classList.add('flex');
     }
@@ -1248,7 +1503,11 @@ function doGet(e) {
       document.getElementById('theme-icon').textContent = '☀️';
     }
 
-    // 14. INICIALIZACIÓN
+    // 15. INICIALIZACIÓN
+    updatePinBadge();
+    if (getSavedPin()) {
+      lockApp();
+    }
     updateDriveStatus();
     updateStats();
     applyTypography();
