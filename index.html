@@ -68,9 +68,9 @@
     <span id="toast-message"></span>
   </div>
 
-  <!-- PANTALLA COMPLETA DE BLOQUEO POR PIN (CON CONTROL DE ESTADO ASÍNCRONO) -->
+  <!-- PANTALLA COMPLETA DE BLOQUEO POR PIN (CON REINTENTO MANUAL Y GESTIÓN DE TIMEOUT) -->
   <div id="lock-screen" class="fixed inset-0 z-50 bg-zinc-950/98 backdrop-blur-2xl flex flex-col items-center justify-center p-4 select-none hidden">
-    <div id="lock-container" class="w-full max-w-xs flex flex-col items-center space-y-6">
+    <div id="lock-container" class="w-full max-w-xs flex flex-col items-center space-y-5">
       
       <div class="text-center space-y-1">
         <div id="lock-icon" class="w-14 h-14 mx-auto rounded-2xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-2xl text-blue-400 mb-2 shadow-lg transition-transform">
@@ -81,14 +81,20 @@
       </div>
 
       <!-- Indicadores de dígitos -->
-      <div class="flex items-center gap-4 py-2">
+      <div class="flex items-center gap-4 py-1">
         <div id="dot-0" class="w-4 h-4 rounded-full border-2 border-zinc-600 transition-all duration-200"></div>
         <div id="dot-1" class="w-4 h-4 rounded-full border-2 border-zinc-600 transition-all duration-200"></div>
         <div id="dot-2" class="w-4 h-4 rounded-full border-2 border-zinc-600 transition-all duration-200"></div>
         <div id="dot-3" class="w-4 h-4 rounded-full border-2 border-zinc-600 transition-all duration-200"></div>
       </div>
 
-      <div id="lock-error-msg" class="text-xs font-semibold text-amber-400 h-5 text-center flex items-center justify-center"></div>
+      <!-- Mensaje de estado/error y botón de reintento -->
+      <div class="min-h-[28px] text-center flex flex-col items-center justify-center gap-1.5 w-full">
+        <div id="lock-error-msg" class="text-xs font-semibold text-amber-400"></div>
+        <button id="btn-pin-retry" class="hidden px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-bold border border-zinc-700 transition-all active:scale-95">
+          🔄 Reintentar conexión
+        </button>
+      </div>
 
       <!-- Teclado Numérico Touch Grande (Especial Tesla) -->
       <div id="pin-pad" class="grid grid-cols-3 gap-3 w-full max-w-[260px] transition-opacity">
@@ -281,7 +287,7 @@
             <div id="editor-highlights" class="editor-typography w-full min-h-full text-transparent m-0 p-0"></div>
           </div>
 
-          <!-- ÁREA DE EDICIÓN NATIVA (INICIA BLOQUEADA HASTA CONFIRMAR CON GDRIVE) -->
+          <!-- ÁREA DE EDICIÓN NATIVA -->
           <textarea
             id="editor"
             readonly
@@ -353,15 +359,15 @@
           <span>🔄</span> Sincronización en dos direcciones:
         </p>
         <p class="text-zinc-600 dark:text-zinc-300 text-[11px] leading-relaxed">
-          Al entrar a la app, se descargará automáticamente la versión de Google Drive. Si realizas cambios, se autoguardan en Drive y en tu almacenamiento local. También se comprueba la sincronización cada 5 minutos.
+          Al entrar a la app, se descargará automáticamente la versión de Google Drive. Si realizas cambios, se autoguardan en Drive y en tu almacenamiento local. También se comprueba la sincronización periódicamente.
         </p>
         <ol class="list-decimal list-inside space-y-1.5 text-zinc-600 dark:text-zinc-300 text-[11px] leading-relaxed">
-          <li>Abre <a href="https://script.google.com" target="_blank" class="text-blue-600 underline font-bold">script.google.com</a> y crea un <strong>"Nuevo proyecto"</strong>.</li>
-          <li>Borra el código que aparezca y pega el código actualizado con el botón inferior.</li>
-          <li>Pulsa en <strong>Implementar &gt; Nueva implementación</strong>.</li>
+          <li>Abre <a href="https://script.google.com" target="_blank" class="text-blue-600 underline font-bold">script.google.com</a> y abre tu proyecto.</li>
+          <li>Borra todo el código que tengas y pega el código actualizado con el botón inferior.</li>
+          <li>Pulsa en <strong>Implementar &gt; Nueva implementación</strong> (¡Importante hacer nueva implementación!).</li>
           <li>En tipo (⚙️) elige <strong>Aplicación web</strong>.</li>
           <li>Configura: <strong>Ejecutar como:</strong> <em>Yo</em> | <strong>Quién tiene acceso:</strong> <em>Cualquier usuario</em>.</li>
-          <li>Pulsa <strong>Implementar</strong>, autoriza permisos y copia la URL terminada en <code class="bg-zinc-200 dark:bg-zinc-700 px-1 py-0.5 rounded font-mono">/exec</code>. Pégala arriba en el punto 1 y pulsa <strong>Guardar y Sincronizar</strong>.</li>
+          <li>Pulsa <strong>Implementar</strong>, autoriza permisos y copia la URL terminada en <code class="bg-zinc-200 dark:bg-zinc-700 px-1 py-0.5 rounded font-mono">/exec</code>.</li>
         </ol>
 
         <div class="pt-1 flex flex-wrap gap-2">
@@ -443,14 +449,23 @@
     const FONT_FAMILY_KEY = 'tesla_doc_font_family';
     const LOCAL_HASH_KEY = 'tesla_doc_pin_hash';
 
-    // APPS SCRIPT ROBUSTO Y SIN CONDICIONES DE CARRERA
-    const APPS_SCRIPT_SOURCE = `function getOrCreateFile(name, defaultContent) {
-  var files = DriveApp.getRootFolder().getFilesByName(name);
+    // APPS SCRIPT ROBUSTO CON PROTECCIÓN CONTRA PARÁMETROS NULOS
+    const APPS_SCRIPT_SOURCE = `// Función de prueba por si pulsas 'Ejecutar' manualmente en la consola de Google
+function testRun() {
+  Logger.log("Ejecución manual de prueba correcta.");
+}
+
+function getOrCreateFile(name, defaultContent) {
+  var safeName = (name && typeof name === 'string' && name.trim().length > 0) 
+                 ? name.trim() 
+                 : "Tesla_Grok_Knowledge_Base.txt";
+  
+  var files = DriveApp.getRootFolder().getFilesByName(safeName);
   while (files.hasNext()) {
     var f = files.next();
     if (!f.isTrashed()) return f;
   }
-  return DriveApp.getRootFolder().createFile(name, defaultContent || "", MimeType.PLAIN_TEXT);
+  return DriveApp.getRootFolder().createFile(safeName, defaultContent || "", MimeType.PLAIN_TEXT);
 }
 
 function getSecurityConfig() {
@@ -476,7 +491,10 @@ function saveSecurityConfig(cfg) {
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
-  lock.tryLock(10000);
+  try {
+    lock.tryLock(15000);
+  } catch(lockErr) {}
+
   try {
     var fileName = "Tesla_Grok_Knowledge_Base.txt";
     var content = "";
@@ -537,13 +555,13 @@ function doPost(e) {
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
   } finally {
-    lock.releaseLock();
+    try { lock.releaseLock(); } catch(e){}
   }
 }
 
 function doGet(e) {
   try {
-    var fileName = (e && e.parameter && e.parameter.filename) || "Tesla_Grok_Knowledge_Base.txt";
+    var fileName = (e && e.parameter && e.parameter.filename) ? e.parameter.filename : "Tesla_Grok_Knowledge_Base.txt";
     var sec = getSecurityConfig();
     var paramFormat = (e && e.parameter && e.parameter.format);
     var reqPinHash = (e && e.parameter && e.parameter.pinHash) || "";
@@ -607,7 +625,7 @@ function doGet(e) {
     let isVerifyingPin = false;
     let activePinHash = localStorage.getItem(LOCAL_HASH_KEY) || '';
     let driveHasPin = false;
-    let isSyncReady = false; // Solo permite edición cuando Drive confirme o se fuerce
+    let isSyncReady = false;
 
     // Estados de sincronización
     let isDirty = false;
@@ -635,6 +653,7 @@ function doGet(e) {
     const lockIcon = document.getElementById('lock-icon');
     const lockSubtitle = document.getElementById('lock-subtitle');
     const lockErrorMsg = document.getElementById('lock-error-msg');
+    const btnPinRetry = document.getElementById('btn-pin-retry');
     const pinPad = document.getElementById('pin-pad');
     const btnPinClear = document.getElementById('btn-pin-clear');
     const btnPinBackspace = document.getElementById('btn-pin-backspace');
@@ -677,7 +696,28 @@ function doGet(e) {
     const clearInput = document.getElementById('clear-input');
     const clearConfirm = document.getElementById('clear-confirm');
 
-    // 4. FUNCIONES AUXILIARES
+    // 4. FUNCIONES AUXILIARES CON FETCH ROBUSTO
+    async function fetchWithRetry(url, options = {}, retries = 2, timeoutMs = 25000) {
+      for (let i = 0; i <= retries; i++) {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          const fetchOptions = {
+            ...options,
+            signal: controller.signal,
+            redirect: 'follow'
+          };
+          const res = await fetch(url, fetchOptions);
+          clearTimeout(id);
+          return res;
+        } catch (err) {
+          clearTimeout(id);
+          if (i === retries) throw err;
+          await new Promise(r => setTimeout(r, 1200)); // Espera antes del siguiente intento
+        }
+      }
+    }
+
     function escapeHtml(str) {
       return str
         .replace(/&/g, '&amp;')
@@ -733,7 +773,7 @@ function doGet(e) {
       }
     }
 
-    // 5. GESTIÓN DEL BLOQUEO POR PIN (ASÍNCRONO Y SEGURO)
+    // 5. GESTIÓN DEL BLOQUEO POR PIN
     function updatePinBadge(enabled) {
       if (enabled) {
         pinStatusBadge.textContent = 'Activado en Google Drive ✓';
@@ -767,6 +807,7 @@ function doGet(e) {
       enteredPin = '';
       lockSubtitle.textContent = reasonText;
       lockErrorMsg.textContent = '';
+      btnPinRetry.classList.add('hidden');
       pinPad.style.opacity = '1';
       pinPad.style.pointerEvents = 'auto';
       updatePinDots();
@@ -777,12 +818,67 @@ function doGet(e) {
       isAppLocked = false;
       isVerifyingPin = false;
       enteredPin = '';
+      btnPinRetry.classList.add('hidden');
       lockScreen.classList.add('hidden');
       showToast('Acceso autorizado', 'success');
     }
 
+    async function executePinVerification() {
+      if (!enteredPin || enteredPin.length !== 4) return;
+      isVerifyingPin = true;
+      btnPinRetry.classList.add('hidden');
+      pinPad.style.opacity = '0.5';
+      pinPad.style.pointerEvents = 'none';
+      lockErrorMsg.textContent = 'Conectando con Google Drive...';
+
+      const calculatedHash = await hashPin(enteredPin);
+      
+      if (driveScriptUrl) {
+        try {
+          const res = await fetchWithRetry(`${driveScriptUrl}?format=json&pinHash=${calculatedHash}`, {}, 2, 25000);
+          const data = await res.json();
+
+          if (data.status === 'success') {
+            activePinHash = calculatedHash;
+            localStorage.setItem(LOCAL_HASH_KEY, activePinHash);
+            
+            const remoteContent = (data.content && data.content !== "No hay datos guardados todavía en tu Google Drive.") ? data.content : "";
+            enableEditor(remoteContent);
+            syncStatus.textContent = 'Sincronizado (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
+            
+            setTimeout(unlockApp, 150);
+            return;
+          }
+        } catch(err) {
+          lockErrorMsg.textContent = 'Google Drive tardó en responder.';
+          btnPinRetry.classList.remove('hidden');
+          pinPad.style.opacity = '1';
+          pinPad.style.pointerEvents = 'auto';
+          isVerifyingPin = false;
+          return;
+        }
+      }
+
+      // Si el PIN fue incorrecto
+      lockErrorMsg.textContent = 'Código PIN incorrecto';
+      lockContainer.classList.add('shake');
+      setTimeout(() => {
+        lockContainer.classList.remove('shake');
+        enteredPin = '';
+        updatePinDots();
+        pinPad.style.opacity = '1';
+        pinPad.style.pointerEvents = 'auto';
+        isVerifyingPin = false;
+      }, 500);
+    }
+
+    btnPinRetry.addEventListener('click', () => {
+      executePinVerification();
+    });
+
     async function handlePinInput(digit) {
       if (!isAppLocked || isVerifyingPin) return;
+      btnPinRetry.classList.add('hidden');
       if (enteredPin.length < 4) {
         enteredPin += digit;
         updatePinDots();
@@ -790,54 +886,7 @@ function doGet(e) {
       }
 
       if (enteredPin.length === 4) {
-        // Bloquear teclado inmediatamente para evitar falsos errores por pulsaciones extra
-        isVerifyingPin = true;
-        pinPad.style.opacity = '0.5';
-        pinPad.style.pointerEvents = 'none';
-        lockErrorMsg.textContent = 'Verificando con Google Drive...';
-
-        const calculatedHash = await hashPin(enteredPin);
-        
-        if (driveScriptUrl) {
-          try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 9000);
-
-            const res = await fetch(`${driveScriptUrl}?format=json&pinHash=${calculatedHash}`, { signal: controller.signal });
-            clearTimeout(timeoutId);
-            const data = await res.json();
-
-            if (data.status === 'success') {
-              activePinHash = calculatedHash;
-              localStorage.setItem(LOCAL_HASH_KEY, activePinHash);
-              
-              const remoteContent = (data.content && data.content !== "No hay datos guardados todavía en tu Google Drive.") ? data.content : "";
-              enableEditor(remoteContent);
-              syncStatus.textContent = 'Sincronizado (' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ')';
-              
-              setTimeout(unlockApp, 150);
-              return;
-            }
-          } catch(err) {
-            lockErrorMsg.textContent = 'Fallo de red al verificar. Comprueba la señal.';
-            pinPad.style.opacity = '1';
-            pinPad.style.pointerEvents = 'auto';
-            isVerifyingPin = false;
-            return;
-          }
-        }
-
-        // Si la verificación falló
-        lockErrorMsg.textContent = 'Código PIN incorrecto';
-        lockContainer.classList.add('shake');
-        setTimeout(() => {
-          lockContainer.classList.remove('shake');
-          enteredPin = '';
-          updatePinDots();
-          pinPad.style.opacity = '1';
-          pinPad.style.pointerEvents = 'auto';
-          isVerifyingPin = false;
-        }, 500);
+        executePinVerification();
       }
     }
 
@@ -852,6 +901,7 @@ function doGet(e) {
         enteredPin = enteredPin.slice(0, -1);
         updatePinDots();
         lockErrorMsg.textContent = '';
+        btnPinRetry.classList.add('hidden');
       }
     });
 
@@ -860,6 +910,7 @@ function doGet(e) {
         enteredPin = '';
         updatePinDots();
         lockErrorMsg.textContent = '';
+        btnPinRetry.classList.add('hidden');
       }
     });
 
@@ -873,10 +924,12 @@ function doGet(e) {
         if (enteredPin.length > 0) {
           enteredPin = enteredPin.slice(0, -1);
           updatePinDots();
+          btnPinRetry.classList.add('hidden');
         }
       } else if (e.key === 'Escape') {
         enteredPin = '';
         updatePinDots();
+        btnPinRetry.classList.add('hidden');
       }
     });
 
@@ -902,7 +955,7 @@ function doGet(e) {
       const newHash = await hashPin(pin1);
 
       try {
-        const res = await fetch(driveScriptUrl, {
+        const res = await fetchWithRetry(driveScriptUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: 'set_pin', pinHash: newHash })
@@ -915,12 +968,12 @@ function doGet(e) {
           updatePinBadge(true);
           inputNewPin.value = '';
           inputConfirmPin.value = '';
-          showToast('PIN blindado en Google Drive correctamente', 'success');
+          showToast('PIN guardado en Google Drive correctamente', 'success');
         } else {
           showToast('Error: ' + data.message, 'error');
         }
       } catch (err) {
-        showToast('Error de red al guardar PIN en Drive', 'error');
+        showToast('Error de conexión al guardar PIN', 'error');
       } finally {
         btnSavePin.textContent = 'Guardar PIN en Google Drive';
       }
@@ -933,7 +986,7 @@ function doGet(e) {
 
       btnRemovePin.textContent = 'Desactivando...';
       try {
-        const res = await fetch(driveScriptUrl, {
+        const res = await fetchWithRetry(driveScriptUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: 'remove_pin', pinHash: activePinHash })
@@ -947,7 +1000,7 @@ function doGet(e) {
           showToast('PIN eliminado de Google Drive', 'info');
         }
       } catch (e) {
-        showToast('Error al conectar con Drive', 'error');
+        showToast('Error de red al desactivar PIN', 'error');
       } finally {
         btnRemovePin.textContent = 'Desactivar PIN';
       }
@@ -1172,7 +1225,7 @@ function doGet(e) {
         clearTimeout(autoSaveTimeout);
         autoSaveTimeout = setTimeout(() => {
           saveToDrive(true);
-        }, 60000);
+        }, 10000); // 10 segundos para mayor inmediatez
       } else {
         syncStatus.textContent = 'Guardado local';
       }
@@ -1305,7 +1358,7 @@ function doGet(e) {
 
       syncStatus.textContent = 'Sincronizando con Drive...';
       try {
-        const secRes = await fetch(`${driveScriptUrl}?format=status`);
+        const secRes = await fetchWithRetry(`${driveScriptUrl}?format=status`, {}, 2, 25000);
         if (secRes.ok) {
           const secData = await secRes.json();
           driveHasPin = (secData.status === 'success' && secData.hasPin === true);
@@ -1319,7 +1372,7 @@ function doGet(e) {
         }
 
         // Si Drive no tiene PIN, traemos el contenido definitivo
-        const res = await fetch(`${driveScriptUrl}?format=json`);
+        const res = await fetchWithRetry(`${driveScriptUrl}?format=json`, {}, 2, 25000);
         if (res.ok) {
           const data = await res.json();
           if (data.status === 'success') {
@@ -1333,7 +1386,7 @@ function doGet(e) {
         throw new Error('Respuesta no válida');
       } catch (err) {
         syncStatus.textContent = 'Error de conexión';
-        lockEditorForSafety('No se pudo conectar con Drive. Edición bloqueada para proteger tus notas.');
+        lockEditorForSafety('No se pudo conectar con Google Drive tras varios intentos. Pulsa reintentar cuando haya señal.');
       }
     }
 
@@ -1363,11 +1416,11 @@ function doGet(e) {
           pinHash: activePinHash
         };
 
-        const res = await fetch(driveScriptUrl, {
+        const res = await fetchWithRetry(driveScriptUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
-        });
+        }, 1, 25000);
 
         if (res.ok) {
           const data = await res.json();
@@ -1384,7 +1437,7 @@ function doGet(e) {
           }
         }
       } catch (e) {
-        syncStatus.textContent = 'Fallo de red';
+        syncStatus.textContent = 'Fallo de red al guardar';
       } finally {
         isSaving = false;
         if (!isAutoSave) btnSaveText.textContent = 'Guardar';
@@ -1604,11 +1657,11 @@ function doGet(e) {
       msg.textContent = 'Comprobando acceso seguro...';
       msg.className = 'text-[11px] mt-1.5 font-medium block p-2 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300';
       try {
-        const res = await fetch(url, {
+        const res = await fetchWithRetry(url, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: 'test' })
-        });
+        }, 1, 20000);
         const data = await res.json();
         if (data.status === 'success') {
           const detail = data.hasPin ? ' (PIN activo en Drive 🔒)' : ' (Sin PIN configurado ✓)';
